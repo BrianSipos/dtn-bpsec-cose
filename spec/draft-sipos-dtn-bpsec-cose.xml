@@ -284,6 +284,23 @@ The two provided figures are CBOR diagnostic notation <xref target="RFC7049" /> 
         <t>
 The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'.
         </t>
+        <figure anchor="fig-ex-mac-primary" title="Primary block CBOR diagnostic">
+          <artwork type="cbor">
+[
+  7, / BP version /
+  0, / flags /
+  0, / CRC type /
+  [1, '//dst/'], / destination /
+  [1, '//src/'], / source /
+  [1, '//src/'], / report-to /
+  [0, 40], / timestamp /
+  1000000 / lifetime /
+]
+          </artwork>
+        </figure>
+        <t>
+The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018281a000f4240'.
+        </t>
         <figure anchor="fig-ex-mac-target" title="Target block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -298,7 +315,7 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
           </artwork>
         </figure>
         <t>
-The target data to be signed is h'85070200004319012c'.
+The target data to be signed is concatenated from the primary encoded and h'85070200004319012c'.
         </t>
         <figure anchor="fig-ex-mac-asb" title="Abstract Security Block CBOR diagnostic">
           <artwork type="cbor">
@@ -316,7 +333,7 @@ The target data to be signed is h'85070200004319012c'.
            } / ,
           {}, / unprotected /
           null, / payload /
-          h'f1b16bb363311ef539d5ac53d1462e992db65176d2f9c6576c36df052c3b2b00' / tag /
+          h'91d5f4025cf5fdaf4979ae288cc4aee85b556d4c8c4a87ba880e2dd0b9dd2219' / tag /
         ]
       ]
     ]
@@ -333,6 +350,23 @@ The provided figures are CBOR diagnostic notation <xref target="RFC7049" /> of t
         <t>
 The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'.
         </t>
+        <figure anchor="fig-ex-encrypt-primary" title="Primary block CBOR diagnostic">
+          <artwork type="cbor">
+[
+  7, / BP version /
+  0, / flags /
+  0, / CRC type /
+  [1, '//dst/'], / destination /
+  [1, '//src/'], / source /
+  [1, '//src/'], / report-to /
+  [0, 40], / timestamp /
+  1000000 / lifetime /
+]
+          </artwork>
+        </figure>
+        <t>
+The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018281a000f4240'.
+        </t>
         <figure anchor="fig-ex-encrypt-init" title="Initial Target block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -347,7 +381,7 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
           </artwork>
         </figure>
         <t>
-The target plaintext is h'19012c' with AAD h'850702000040'.
+The target plaintext is h'19012c' with AAD concatenated from the primary encoded and h'850702000040'.
 A random IV is generated for this operation and is indicated in a standard way.
         </t>
         <figure anchor="fig-ex-encrypt-asb" title="Abstract Security Block CBOR diagnostic">
@@ -382,7 +416,7 @@ A random IV is generated for this operation and is indicated in a standard way.
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb160eb883724fe79ec976e289fc72c62e18' / ciphertext /
+  h'63bb16e3f7440706835f460dabc29e9dfc4284' / ciphertext /
 ]
           </artwork>
         </figure>

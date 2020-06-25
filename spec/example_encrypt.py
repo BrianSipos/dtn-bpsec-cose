@@ -8,6 +8,23 @@ from cryptography.hazmat.primitives.ciphers import aead
 privkey=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
 print('Key: {}'.format(binascii.hexlify(privkey)))
 
+iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
+
+# Primary block
+prim_dec = [
+    7,
+    0,
+    0,
+    [1, '//dst/'],
+    [1, '//src/'],
+    [1, '//src/'],
+    [0, 40],
+    1000000
+]
+prim_enc = cbor2.dumps(prim_dec)
+print('Primary: {}'.format(prim_dec))
+print('Encoded: {}'.format(binascii.hexlify(prim_enc)))
+
 # Block-to-encrypt
 target_dec = [
     7,
@@ -19,15 +36,15 @@ target_dec = [
 plaintext = target_dec[4]
 print('Block: {}'.format(target_dec))
 
-aad_dec = target_dec[:-1] + [bytes()]
-aad_enc = cbor2.dumps(aad_dec)
-print('AAD: {}'.format(aad_dec))
-print('Encoded: {}'.format(binascii.hexlify(aad_enc)))
+# Augmented block
+aug_dec = target_dec[:-1] + [bytes()]
+aug_enc = cbor2.dumps(aug_dec)
+print('Augmented block: {}'.format(aug_dec))
+print('Encoded: {}'.format(binascii.hexlify(aug_enc)))
 
 # Encrypt original block data
-iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
 cipher = aead.AESGCM(privkey)
-ciphertext = cipher.encrypt(iv, plaintext, aad_enc)
+ciphertext = cipher.encrypt(iv, plaintext, prim_enc + aug_enc)
 print('IV: {}'.format(binascii.hexlify(iv)))
 print('Plaintext: {}'.format(binascii.hexlify(plaintext)))
 print('Ciphertext: {}'.format(binascii.hexlify(ciphertext)))

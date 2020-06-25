@@ -55,13 +55,13 @@ add_custom_command(
         sort | uniq > "${MISSPELLING_TXT}"
 )
 
-find_program(CBORVERIFY diag2cbor.rb)
+find_program(CBORVERIFY diag2pretty.rb)
 if(CBORVERIFY)
     set(CBORERRORS_TXT "cborerrors.txt")
     add_custom_command(
         OUTPUT "${CBORERRORS_TXT}"
         DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
-        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//artwork[@type="cbor"]' "${CBORVERIFY}" >/dev/null 2>"${CBORERRORS_TXT}"
+        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//artwork[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}"
     )
     add_custom_target(
         cborerrors ALL
