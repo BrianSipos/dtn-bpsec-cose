@@ -291,7 +291,7 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'19012c', / type-specific-data:
+  h'19012c' / type-specific-data:
     300 \ age \
   /
 ]
@@ -340,7 +340,7 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'19012c', / type-specific-data:
+  h'19012c' / type-specific-data:
     300 \ age \
   /
 ]
@@ -367,7 +367,7 @@ A random IV is generated for this operation and is indicated in a standard way.
           { / unprotected /
             / iv / 5: h'6f3093eba5d85143c3dc484a'
           },
-          null, / payload /
+          null / payload /
         ]
       ]
     ]
@@ -382,7 +382,7 @@ A random IV is generated for this operation and is indicated in a standard way.
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb160eb883724fe79ec976e289fc72c62e18', / ciphertext /
+  h'63bb160eb883724fe79ec976e289fc72c62e18' / ciphertext /
 ]
           </artwork>
         </figure>
