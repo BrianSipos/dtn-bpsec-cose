@@ -1,4 +1,7 @@
+aad
 AAD
+acceptor
+acceptors
 acknowledgement
 acknowledgements
 AEAD
@@ -7,6 +10,7 @@ BCP
 BIB
 BPSec
 CBOR
+CEK
 ciphersuite
 ciphertext
 COSE
@@ -14,6 +18,7 @@ cryptographic
 decrypting
 dtn
 DTN
+ECDH
 encodings
 endian
 GCM
@@ -21,12 +26,21 @@ HMAC
 IANA
 IESG
 IETF
+interoperable
+interoperation
+keypair
+keypairs
 LLC
+OAEP
 PKI
 PKIX
 plaintext
 PSK
+PSS
 RKF
+RSA
+RSAES
+SHA
 TBD
 URI
 UTF

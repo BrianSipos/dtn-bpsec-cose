@@ -5,6 +5,13 @@ import hashlib
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac
 
+
+def encode_protected(map):
+    if len(map) == 0:
+        return b''
+    return cbor2.dumps(map)
+
+
 # 256-bit key
 privkey = binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
 print('Key: {}'.format(binascii.hexlify(privkey)))
@@ -36,20 +43,40 @@ target_enc = cbor2.dumps(target_dec)
 print('Block: {}'.format(target_dec))
 print('Encoded: {}'.format(binascii.hexlify(target_enc)))
 
-# Compute tag
+# COSE Headers
+protected_dec = {
+    1: 5  # alg: HMAC 256/256
+}
+unprotected_dec = {
+    4: b'mykey'  # kid: 'mykey'
+}
+protected_enc = encode_protected(protected_dec)
+print('Protected: {}'.format(protected_dec))
+print('Encoded: {}'.format(binascii.hexlify(protected_enc)))
+
+# MAC_structure Section 6.3
+mac_struct_dec = list()
+mac_struct_dec.append(b'MAC0')
+mac_struct_dec.append(protected_enc)
+mac_struct_dec.append(prim_enc)
+mac_struct_dec.append(target_enc)
+mac_struct_enc = cbor2.dumps(mac_struct_dec)
+print('MAC_structure (hex): {}'.format(map(binascii.hexlify, mac_struct_dec)))
+print('Encoded: {}'.format(binascii.hexlify(mac_struct_enc)))
+
 hasher = hmac.HMAC(privkey, hashes.SHA256(), backend=default_backend())
-hasher.update(prim_enc + target_enc)
+hasher.update(mac_struct_enc)
 tag = hasher.finalize()
-print('Digest: {}'.format(binascii.hexlify(tag)))
+print('Tag: {}'.format(binascii.hexlify(tag)))
 
 # COSE_MAC0 structure
-result_dec = [
-    binascii.unhexlify('a10105'),
-    {},
+message_dec = [
+    protected_enc,
+    unprotected_dec,
     None,
-    'tag'  # placeholder
+    tag
 ]
-print('Result: {}'.format(result_dec))
+print('Result: {}'.format(message_dec))
 
 # BIB structure
 asb_dec = [
@@ -60,8 +87,8 @@ asb_dec = [
         # Target num 2
         [
             [
-                17,  # COSE_Mac0
-                result_dec
+                17,  # COSE_MAC0
+                message_dec
             ]
         ]
     ]

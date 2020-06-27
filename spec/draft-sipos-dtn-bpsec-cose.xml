@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?rfc toc="yes"?>
-<rfc ipr="trust200902" category="std" docName="draft-bsipos-dtn-bpsec-cose-00">
+<rfc ipr="trust200902" category="std" docName="draft-bsipos-dtn-bpsec-cose-01">
   <front>
     <title abbrev="DTN BPSec COSE">
       DTN Bundle Protocol Security COSE Security Contexts
@@ -21,12 +21,13 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date year="2020" month="June" day="24" />
+    <date year="2020" month="June" day="26" />
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
       <t>
 This document defines an integrity security context and a confidentiality security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) blocks.
+A profile of COSE is also defined for BPSec interoperation.
       </t>
     </abstract>
   </front>
@@ -37,8 +38,8 @@ The Bundle Protocol Security (BPSec) Specification <xref target="I-D.ietf-dtn-bp
 The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC8152" /> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
       </t>
       <t>
-This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security.
-A bare minimum of interoperability algorithms and algorithm parameters is specified by this document.
+This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-contexts" />.
+A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-cose-profile" />.
       </t>
       <t>
 This document does not address how those COSE algorithms are intended to be used within a larger security context.
@@ -54,17 +55,17 @@ This document does not address how those COSE algorithms are intended to be used
       when, and only when, they appear in all capitals, as shown here.
       </t>
     </section>
-    <section title="BPSec Security Contexts">
+    <section anchor="sec-bpsec-contexts" title="BPSec Security Contexts">
       <t>
 Rather than defining a single security context for both integrity and confidentiality blocks, this document specifies two separate security contexts which are analogous to the two BPSec block types.
 Each security context allows a specific set of BPSec Result IDs.
       </t>
       <t>
-The existing COSE structure-marking tags in Section 2 of <xref target="RFC8152" /> SHALL be used as BPSec Result ID values for all COSE security contexts (see <xref target="tab-BIB-results" /> and <xref target="tab-BCB-results" />).
+The existing COSE message-marking tags in Section 2 of <xref target="RFC8152" /> SHALL be used as BPSec Result ID values for all COSE security contexts (see <xref target="tab-BIB-results" /> and <xref target="tab-BCB-results" />).
 This avoids the need for value-mapping between code points of the two registries.
       </t>
       <t>
-When embedding COSE structures, the CBOR-tagged form SHALL NOT be used.
+When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
 The Result ID values already provide the same information as the COSE tags.
       </t>
       <section title="COSE Integrity Context">
@@ -73,11 +74,11 @@ The COSE Integrity Context has a Security Context ID of TBD-CI.
         </t>
         <t>
 The integrity context SHALL allow only the Result IDs from <xref target="tab-BIB-results" />.
-Each integrity context result value SHALL consist of the COSE structure indicated by <xref target="tab-BIB-results" /> in its decoded form.
+Each integrity context result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results" /> in its decoded form.
         </t>
         <texttable anchor="tab-BIB-results" title="COSE Integrity Results">
           <ttcol>Result ID</ttcol>
-          <ttcol>Result Structure</ttcol>
+          <ttcol>Result Message</ttcol>
           <c>97</c>
           <c>COSE_Mac</c>
           <c>17</c>
@@ -89,8 +90,8 @@ Each integrity context result value SHALL consist of the COSE structure indicate
         </texttable>
         <t>
 Each integrity result SHALL use the "detached" payload form with nil payload value.
-The integrity result for COSE_Mac and COSE_Mac0 structures are computed by the procedure in Section 6.3 of <xref target="RFC8152" />.
-The integrity result for COSE_Sign and COSE_Sign1 structures are computed by the procedure in Section 4.4 of <xref target="RFC8152" />.
+The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in Section 6.3 of <xref target="RFC8152" />.
+The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in Section 4.4 of <xref target="RFC8152" />.
         </t>
         <t>
 [NOTE: This differs from base BPSec in that the entire block and the bundle primary is signed]
@@ -105,19 +106,6 @@ The canonically serialized primary block of the bundle.
             </t>
           </list>
         </t>
-        <section title="Interoperability Algorithms">
-          <t>
-[NOTE: This is identical to the <xref target="I-D.ietf-dtn-bpsec-interop-sc" /> minimum list.]
-The minimum set of integrity algorithms needed for interoperability is listed here.
-The full set of algorithms available is managed at <xref target="IANA-COSE" />.
-          </t>
-          <texttable title="Integrity Algorithms">
-            <ttcol>Name</ttcol>
-            <ttcol>Code</ttcol>
-            <c>HMAC 256/256</c>
-            <c>5</c>
-          </texttable>
-        </section>
       </section>
       <section title="COSE Confidentiality Context">
         <t>
@@ -125,11 +113,11 @@ The COSE Confidentiality Context has a Security Context ID of TBD-CC.
         </t>
         <t>
 The confidentiality context SHALL allow only the Result IDs from <xref target="tab-BCB-results" />.
-Each confidentiality context result value SHALL consist of the COSE structure indicated by <xref target="tab-BCB-results" /> in its decoded form.
+Each confidentiality context result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results" /> in its decoded form.
         </t>
         <texttable anchor="tab-BCB-results" title="COSE Confidentiality Results">
           <ttcol>Result ID</ttcol>
-          <ttcol>Result Structure</ttcol>
+          <ttcol>Result Message</ttcol>
           <c>96</c>
           <c>COSE_Encrypt</c>
           <c>16</c>
@@ -142,7 +130,7 @@ Because COSE encryption with AEAD appends the authentication tag with the cipher
         <t>
 Each confidentiality result SHALL use the "detached" payload form with nil payload value.
 The COSE plaintext and ciphertext correspond exactly with the target block-type-specific-data.
-The confidentiality result for COSE_Encrypt and COSE_Encrypt0 structures are computed by the procedure in Section 5.3 of <xref target="RFC8152" />.
+The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in Section 5.3 of <xref target="RFC8152" />.
         </t>
         <t>
 [NOTE: This differs from base BPSec in that AAD from the block and the bundle primary is used]
@@ -157,24 +145,109 @@ The canonically serialized augmented target block, which has its block-type-spec
             </t>
           </list>
         </t>
-        <section title="Interoperability Algorithms">
-          <t>
-[NOTE: This is identical to the <xref target="I-D.ietf-dtn-bpsec-interop-sc" /> minimum list.]
-The minimum set of integrity algorithms needed for interoperability is listed here.
-The full set of algorithms available is managed at <xref target="IANA-COSE" />.
-          </t>
-          <texttable title="Confidentiality Algorithms">
-            <ttcol>Name</ttcol>
-            <ttcol>Code</ttcol>
-            <c>A256GCM</c>
-            <c>3</c>
-          </texttable>
-        </section>
+      </section>
+    </section>
+    <section anchor="sec-cose-profile" title="COSE Profile for BPSec">
+      <t>
+This section contains requirements which apply to the use of COSE within BPSec across any security context use.
+      </t>
+      <t>
+When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the lower (content) layers.
+A BPSec security operation always occurs within the context of the immutable primary block and its parameters.
+When available and not implied by the bundle source, a COSE message SHOULD contain a key identifier in the highest layer.
+When a key identifier is not available, BPSec acceptors SHOULD use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
+      </t>
+      <t>
+The algorithms required by this profile focuses on networks using shared symmetric-keys, with recommended algorithms for Elliptic Curve (EC) keypairs and RSA keypairs.
+The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
+The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
+      </t>
+      <section anchor="sec-interop-alg" title="Interoperability Algorithms">
+        <t>
+[NOTE: The required list is identical to the <xref target="I-D.ietf-dtn-bpsec-interop-sc" /> list.]
+The set of integrity algorithms needed for interoperability is listed here.
+The full set of COSE algorithms available is managed at <xref target="IANA-COSE" />.
+        </t>
+        <t>
+Implementations conforming to this specification SHALL support the symmetric keyed algorithms of <xref target="tab-interop" />.
+Implementations capable of doing so SHOULD support the asymmetric keyed and key-encryption algorithms of <xref target="tab-interop" />.
+        </t>
+        <texttable anchor="tab-interop" title="Interoperability Algorithms">
+          <ttcol>BPSec Block</ttcol>
+          <ttcol>COSE Layer</ttcol>
+          <ttcol>Name</ttcol>
+          <ttcol>Code</ttcol>
+          <ttcol>Implementation Requirements</ttcol>
+          <c>Integrity</c>
+          <c>1</c>
+          <c>HMAC 256/256</c>
+          <c>5</c>
+          <c>Required</c>
+          <c>Integrity</c>
+          <c>1</c>
+          <c>ES256</c>
+          <c>-7</c>
+          <c>Recommended</c>
+          <c>Integrity</c>
+          <c>1</c>
+          <c>PS256</c>
+          <c>-37</c>
+          <c>Recommended</c>
+          <c>Confidentiality</c>
+          <c>1</c>
+          <c>A256GCM</c>
+          <c>3</c>
+          <c>Required</c>
+          <c>Confidentiality</c>
+          <c>2</c>
+          <c>A256KW</c>
+          <c>-5</c>
+          <c>Recommended</c>
+          <c>Integrity or Confidentiality</c>
+          <c>2</c>
+          <c>ECDH-ES + A256KW</c>
+          <c>-31</c>
+          <c>Recommended</c>
+          <c>Integrity or Confidentiality</c>
+          <c>2</c>
+          <c>RSAES-OAEP w/ SHA-256</c>
+          <c>-41</c>
+          <c>Recommended</c>
+        </texttable>
+        <t>
+The following are recommended key and recipient uses within COSE/BPSec:
+          <list style="hanging">
+            <t hangText="Symmetric Key Integrity:">
+When generating a BIB result from a symmetric key, implementations SHOULD use either a COSE_Mac0 or a COSE_Mac using the private key directly.
+When a COSE_Mac is used with a direct key, the recipient layer SHOULD include a key identifier.
+            </t>
+            <t hangText="EC Keypair Integrity:">
+When generating a BIB result from an EC keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 encryption of the symmetric key.
+When a COSE_Sign or COSE_Mac is used with EC keypair, the recipient layer SHOULD include a public key identifier.
+            </t>
+            <t hangText="RSA Keypair Integrity:">
+When generating a BIB result from an RSA keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 key-wrap of the symmetric key.
+When a COSE_Sign or COSE_Mac is used with RSA keypair, the recipient layer SHOULD include a public key identifier.
+When a COSE_Sign or COSE_Sign1 is used with RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230" />.
+            </t>
+            <t hangText="Symmetric Key Confidentiality:">
+When generating a BCB result from an symmetric key, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+When generating a BCB result from a symmetric key, implementations SHOULD NOT use COSE_Encrypt0 or COSE_Encrypt with direct content encryption key (CEK).
+Doing so risks key overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+            </t>
+            <t hangText="EC Keypair Confidentiality:">
+When generating a BCB result from an EC keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+            </t>
+            <t hangText="RSA Keypair Confidentiality:">
+When generating a BCB result from an RSA keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+            </t>
+          </list>
+        </t>
       </section>
     </section>
     <section title="Implementation Status">
       <t>
-[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942" />.]
+[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942" /> and <xref target="github-dtn-bpsec-cose" />.]
       </t>
       <t>
 This section records the status of known implementations of the
@@ -191,6 +264,10 @@ intended as, and must not be construed to be, a catalog of available
 implementations or their features. Readers are advised to note that
 other implementations can exist.
       </t>
+      <t>
+An example implementation of COSE over Blocks has been created as a GitHub project <xref target="github-dtn-bpsec-cose" /> and is intended to use as a proof-of-concept and as a possible source of interoperability testing.
+This example implementation only handles CBOR encoding/decoding and cryptographic functions, it does not construct actual BIB or BCB and does not integrate with a BP Agent.
+      </t>
     </section>
     <section anchor="sec-security" title="Security Considerations">
       <t>
@@ -201,12 +278,20 @@ All of the security considerations of the underlying BPSec <xref target="I-D.iet
       </t>
       <section title="Threat: BPSec Block Replay">
         <t>
-The bundle's primary block contains fields which should uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see Section 4.2.2 of <xref target="I-D.ietf-dtn-bpbis" />).
-Including the primary block in the AAD for integrity and confidentiality binds the verification of the secured block to its parent bundle and disallows replay of any block with its BIB or BCB.
+The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see Section 4.2.2 of <xref target="I-D.ietf-dtn-bpbis" />).
+These same fields are used to correlate Administrative Records with the bundles for which the records were generated.
+Including the primary block in the AAD for BPSec integrity and confidentiality binds the verification of the secured block to its parent bundle and disallows replay of any block with its BIB or BCB.
         </t>
         <t>
 This profile of COSE limits the encryption algorithms to only AEAD in order to include the context of the encrypted data as AAD.
 If an agent mistakenly allows the use of non-AEAD encryption when decrypting and verifying a BCB, the possibility of block replay attack is present.
+        </t>
+      </section>
+      <section title="Threat: Unidentifiable Key">
+        <t>
+The profile in <xref target="sec-interop-alg" /> recommends key identifiers when possible.
+If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), the security acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
+This leads to a situation, identified in BPSec Security Considerations, where a signature is verified to be valid but not from the expected Security Source.
         </t>
       </section>
       <section title="Threat: Algorithm Vulnerabilities">
@@ -266,6 +351,7 @@ The interoperability minimum algorithms and parameters are based on the draft <x
       <?rfc include="reference.RFC.8126.xml"?>
       <?rfc include="reference.RFC.8152.xml"?>
       <?rfc include="reference.RFC.8174.xml"?>
+      <?rfc include="reference.RFC.8230.xml"?>
       <?rfc include="reference.I-D.ietf-dtn-bpsec.xml"?>
     </references>
     <references title="Informative References">
@@ -274,16 +360,31 @@ The interoperability minimum algorithms and parameters are based on the draft <x
       <?rfc include="reference.RFC.7942.xml"?>
       <?rfc include="reference.I-D.ietf-dtn-bpbis.xml"?>
       <?rfc include="reference.I-D.ietf-dtn-bpsec-interop-sc.xml"?>
+      <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BSipos-RKF/dtn-bpsec-cose/">
+        <front>
+          <title>DTN Bundle Protocol Security COSE Security Contexts</title>
+          <author initials="B." surname="Sipos" fullname="Brian Sipos">
+            <organization abbrev="RKF Engineering">RKF Engineering Solutions, LLC</organization>
+          </author>
+          <date />
+        </front>
+      </reference>
     </references>
     <section title="Examples">
-      <section title="COSE_Mac0">
+      <section title="Symmetric Key COSE_Mac0">
         <t>
 This is an example of a MAC with implied recipient (and its key material).
 The two provided figures are CBOR diagnostic notation <xref target="RFC7049" /> of the target block being signed and the Abstract Security Block (which will itself be enveloped within a BIB).
         </t>
         <t>
-The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'.
+The 256-bit key used is shown below.
         </t>
+        <figure title="Symmetric Key">
+          <artwork type="cbor">
+/ signing key /
+h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'
+          </artwork>
+        </figure>
         <figure anchor="fig-ex-mac-primary" title="Primary block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -298,9 +399,6 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
 ]
           </artwork>
         </figure>
-        <t>
-The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018281a000f4240'.
-        </t>
         <figure anchor="fig-ex-mac-target" title="Target block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -315,8 +413,20 @@ The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f82014
           </artwork>
         </figure>
         <t>
-The target data to be signed is concatenated from the primary encoded and h'85070200004319012c'.
+The external_aad is the encoded primary block.
+The payload is the encoded target block.
         </t>
+        <figure anchor="fig-ex-mac-struct" title="MAC_structure CBOR diagnostic">
+          <artwork type="cbor">
+[
+  'MAC0', / context /
+  h'a10105', / protected /
+  h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018
+    281a000f4240', / external_aad /
+  h'85070200004319012c' / payload /
+]
+          </artwork>
+        </figure>
         <figure anchor="fig-ex-mac-asb" title="Abstract Security Block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -331,9 +441,12 @@ The target data to be signed is concatenated from the primary encoded and h'8507
           h'a10105' / protected {
              \ alg \ 1:5 \ HMAC 256//256 \
            } / ,
-          {}, / unprotected /
+          { / unprotected /
+            / kid / 4:'mykey'
+          },
           null, / payload /
-          h'91d5f4025cf5fdaf4979ae288cc4aee85b556d4c8c4a87ba880e2dd0b9dd2219' / tag /
+          h'd98308918d36dc4190a93f84c8d857015b75b78edea3360282555257c3be
+            f847' / tag /
         ]
       ]
     ]
@@ -342,14 +455,115 @@ The target data to be signed is concatenated from the primary encoded and h'8507
           </artwork>
         </figure>
       </section>
-      <section title="COSE_Encrypt0">
+      <section title="RSA Keypair COSE_Sign1">
         <t>
-This is an example of an encryption with implied recipient (and its key material).
+This is an example of a signature with implied recipient (and its key material).
+The two provided figures are CBOR diagnostic notation <xref target="RFC7049" /> of the target block being signed and the Abstract Security Block (which will itself be enveloped within a BIB).
+        </t>
+        <t>
+The 512-bit private key used is below. It is not supposed to be a secure configuration, only intended to explain the procedure.
+This signature uses zero-length salt for deterministic output, which differs from the parameter specified by <xref target="RFC8230" /> and is not recommended for normal use.
+        </t>
+        <figure>
+          <artwork type="pem">
+-----BEGIN RSA PRIVATE KEY-----
+MIIBOwIBAAJBAN21GdS0faAYgacepRmbr7TAT0wEuahjrBfAO0Dg1M5d37O9Tx9H
+vZw2OEcLq2WTvf0Kja1JWpqdoJm17LghhPkCAwEAAQJBAMgkJo9n6EhQFyrgdTZq
+3vES8gKz+U3TvJUsSdFFpZYsZhUaLKP9oxyIxl3IvK5iS0oAsW0nqI7aMcBoPmxZ
+pQECIQDuyd5uzvS0wnrsDWoDhiTm6O+PJoMQix9yH99HBUhWKQIhAO2wDP7e/Nnr
+A7rDSgM6+REGmt8I00NglFwShBUi4HJRAiAiJrLuTCEJXSsxaXW5DU1nzPa+FXb3
+Pb6Alvha8vF2iQIgbC7WK2dJBNKv9uCOHlxIItSzxtIYfjFGNYYD8i7Wo5ECIQDp
+5++fp04AMVAnE0uqNEnITkTWb91hAS8IjaYCqLGyEA==
+-----END RSA PRIVATE KEY-----
+</artwork>
+        </figure>
+        <figure anchor="fig-ex-sign-primary" title="Primary block CBOR diagnostic">
+          <artwork type="cbor">
+[
+  7, / BP version /
+  0, / flags /
+  0, / CRC type /
+  [1, '//dst/'], / destination /
+  [1, '//src/'], / source /
+  [1, '//src/'], / report-to /
+  [0, 40], / timestamp /
+  1000000 / lifetime /
+]
+          </artwork>
+        </figure>
+        <figure anchor="fig-ex-sign-target" title="Target block CBOR diagnostic">
+          <artwork type="cbor">
+[
+  7, / type code - bundle age /
+  2, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'19012c' / type-specific-data:
+    300 \ age \
+  /
+]
+          </artwork>
+        </figure>
+        <t>
+The external_aad is the encoded primary block.
+The payload is the encoded target block.
+        </t>
+        <figure anchor="fig-ex-sign-struct" title="Sig_structure CBOR diagnostic">
+          <artwork type="cbor">
+[
+  'Signature1', / context /
+  h'a1013824', / protected /
+  h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018
+    281a000f4240', / external_aad /
+  h'85070200004319012c' / payload /
+]
+          </artwork>
+        </figure>
+        <figure anchor="fig-ex-sign-asb" title="Abstract Security Block CBOR diagnostic">
+          <artwork type="cbor">
+[
+  [2], / targets /
+  0, / security context TBD /
+  0, / flags /
+  [
+    [ / target block #2 /
+      [ / result /
+        18, / COSE_Sign1 tag /
+        [
+          h'a1013824' / protected {
+             \ alg \ 1:-37 \ PS256 \
+           } / ,
+          { / unprotected /
+            / kid / 4:'mykey'
+          },
+          null, / payload /
+          h'1a35746072396c74275fd7b443a0d7391a0f92012a53e0accc543daa51ae
+            6faae551a4843a0bc7c3bf808e3638ddc381355b54cc60f4ca9dea15923b
+            5986e758' / signature /
+        ]
+      ]
+    ]
+  ]
+]
+          </artwork>
+        </figure>
+      </section>
+      <section title="Symmetric Key COSE_Encrypt0">
+        <t>
+This is an example of an encryption with implied recipient (and its direct content encryption key).
 The provided figures are CBOR diagnostic notation <xref target="RFC7049" /> of the target block being encrypted, the Abstract Security Block (which will itself be enveloped within a BCB), and the resulting target block.
         </t>
         <t>
-The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'.
+This example uses a single shared content encryption key, which is not recommended for normal use.
+The 256-bit key used is shown below.
+A random IV is generated for this operation and is indicated in a standard way in the unprotected header.
         </t>
+        <figure title="Symmetric Keys">
+          <artwork type="cbor">
+/ content encryption key /
+h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999dbae4ce45c'
+          </artwork>
+        </figure>
         <figure anchor="fig-ex-encrypt-primary" title="Primary block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -364,9 +578,6 @@ The 256-bit key used is h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999
 ]
           </artwork>
         </figure>
-        <t>
-The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f8201462f2f7372632f820018281a000f4240'.
-        </t>
         <figure anchor="fig-ex-encrypt-init" title="Initial Target block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -381,9 +592,18 @@ The primary block encodes to h'880700008201462f2f6473742f8201462f2f7372632f82014
           </artwork>
         </figure>
         <t>
-The target plaintext is h'19012c' with AAD concatenated from the primary encoded and h'850702000040'.
-A random IV is generated for this operation and is indicated in a standard way.
+The external_aad is a concatenation of the encoded primary block and the encoded augmented target block (its block data removed).
         </t>
+        <figure anchor="fig-ex-encrypt-struct" title="Enc_structure CBOR diagnostic">
+          <artwork type="cbor">
+[
+  'Encrypt0', / context /
+  h'a10103', / protected /
+  h'880700008201662f2f6473742f8201662f2f7372632f8201662f2f7372632f820018
+    281a000f4240850702000040' / external_aad /
+]
+          </artwork>
+        </figure>
         <figure anchor="fig-ex-encrypt-asb" title="Abstract Security Block CBOR diagnostic">
           <artwork type="cbor">
 [
@@ -399,6 +619,7 @@ A random IV is generated for this operation and is indicated in a standard way.
              \ alg \ 1:3 \ A256GCM \
            } /
           { / unprotected /
+            / kid / 4:'mykey',
             / iv / 5: h'6f3093eba5d85143c3dc484a'
           },
           null / payload /
@@ -416,7 +637,7 @@ A random IV is generated for this operation and is indicated in a standard way.
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb16e3f7440706835f460dabc29e9dfc4284' / ciphertext /
+  h'63bb16685ef432a0e6f1d404da71959081a715' / ciphertext /
 ]
           </artwork>
         </figure>

@@ -54,6 +54,10 @@ add_custom_command(
         ${ASPELL} --mode=sgml --lang=EN_US --extra-dicts=./dictionary.cwl list | 
         sort | uniq > "${MISSPELLING_TXT}"
 )
+add_custom_target(
+    specs ALL
+    DEPENDS "${DRAFT_NAME_TXT}" "${DRAFT_NAME_HTML}" "${MISSPELLING_TXT}"
+)
 
 find_program(CBORVERIFY diag2pretty.rb)
 if(CBORVERIFY)
@@ -61,7 +65,7 @@ if(CBORVERIFY)
     add_custom_command(
         OUTPUT "${CBORERRORS_TXT}"
         DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
-        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//artwork[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}"
+        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//artwork[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}" 1>&2
     )
     add_custom_target(
         cborerrors ALL
@@ -69,7 +73,3 @@ if(CBORVERIFY)
     )
 endif()
 
-add_custom_target(
-    specs ALL
-    DEPENDS "${DRAFT_NAME_TXT}" "${DRAFT_NAME_HTML}" "${MISSPELLING_TXT}"
-)
