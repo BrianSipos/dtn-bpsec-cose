@@ -21,9 +21,9 @@ prim_dec = [
     7,
     0,
     0,
-    [1, '//dst/'],
-    [1, '//src/'],
-    [1, '//src/'],
+    [1, '//dst/svc'],
+    [1, '//src/bp'],
+    [1, '//src/bp'],
     [0, 40],
     1000000
 ]
@@ -48,20 +48,22 @@ protected_dec = {
     1: 5  # alg: HMAC 256/256
 }
 unprotected_dec = {
-    4: b'mykey'  # kid: 'mykey'
 }
 protected_enc = encode_protected(protected_dec)
 print('Protected: {}'.format(protected_dec))
 print('Encoded: {}'.format(binascii.hexlify(protected_enc)))
 
+ext_aad = prim_enc
+print('Encoded External AAD: {}'.format(binascii.hexlify(ext_aad)))
+
 # MAC_structure Section 6.3
 mac_struct_dec = list()
-mac_struct_dec.append(b'MAC0')
+mac_struct_dec.append('MAC0')
 mac_struct_dec.append(protected_enc)
-mac_struct_dec.append(prim_enc)
+mac_struct_dec.append(ext_aad)
 mac_struct_dec.append(target_enc)
 mac_struct_enc = cbor2.dumps(mac_struct_dec)
-print('MAC_structure (hex): {}'.format(map(binascii.hexlify, mac_struct_dec)))
+print('MAC_structure: {}'.format(mac_struct_dec))
 print('Encoded: {}'.format(binascii.hexlify(mac_struct_enc)))
 
 hasher = hmac.HMAC(privkey, hashes.SHA256(), backend=default_backend())

@@ -5,6 +5,7 @@ import hashlib
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from  jwcrypto import jwk
 
 
 def encode_protected(map):
@@ -14,7 +15,7 @@ def encode_protected(map):
 
 
 # 2048-bit key
-privkey_pem = '''\
+privkey_pem = b'''\
 -----BEGIN RSA PRIVATE KEY-----
 MIIBOwIBAAJBAN21GdS0faAYgacepRmbr7TAT0wEuahjrBfAO0Dg1M5d37O9Tx9H
 vZw2OEcLq2WTvf0Kja1JWpqdoJm17LghhPkCAwEAAQJBAMgkJo9n6EhQFyrgdTZq
@@ -26,16 +27,17 @@ Pb6Alvha8vF2iQIgbC7WK2dJBNKv9uCOHlxIItSzxtIYfjFGNYYD8i7Wo5ECIQDp
 -----END RSA PRIVATE KEY-----
 '''
 privkey = serialization.load_pem_private_key(privkey_pem, None, default_backend())
-print('Key: {}'.format(privkey))
+print('Private Key: {}'.format(jwk.JWK.from_pem(privkey_pem).export()))
+print('Public Key: {}'.format(jwk.JWK.from_pem(privkey_pem).export_public()))
 
 # Primary block
 prim_dec = [
     7,
     0,
     0,
-    [1, '//dst/'],
-    [1, '//src/'],
-    [1, '//src/'],
+    [1, '//dst/svc'],
+    [1, '//src/bp'],
+    [1, '//src/bp'],
     [0, 40],
     1000000
 ]
@@ -60,20 +62,22 @@ protected_dec = {
     1:-37,  # alg: PS256
 }
 unprotected_dec = {
-    4: b'mykey'  # kid: 'mykey'
 }
 protected_enc = encode_protected(protected_dec)
 print('Protected: {}'.format(protected_dec))
 print('Encoded: {}'.format(binascii.hexlify(protected_enc)))
 
+ext_aad = prim_enc
+print('Encoded External AAD: {}'.format(binascii.hexlify(ext_aad)))
+
 # Sig_structure Section 4.4
 sig_struct_dec = list()
-sig_struct_dec.append(b'Signature1')
+sig_struct_dec.append('Signature1')
 sig_struct_dec.append(protected_enc)
-sig_struct_dec.append(prim_enc)
+sig_struct_dec.append(ext_aad)
 sig_struct_dec.append(target_enc)
 sig_struct_enc = cbor2.dumps(sig_struct_dec)
-print('Sig_structure (hex): {}'.format(map(binascii.hexlify, sig_struct_dec)))
+print('Sig_structure: {}'.format(sig_struct_dec))
 print('Encoded: {}'.format(binascii.hexlify(sig_struct_enc)))
 
 sig = privkey.sign(
