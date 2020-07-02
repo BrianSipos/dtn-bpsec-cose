@@ -152,10 +152,14 @@ The canonically serialized augmented target block, which has its block-type-spec
 This section contains requirements which apply to the use of COSE within BPSec across any security context use.
       </t>
       <t>
+When generating a BPSec result, security sources SHALL use encode COSE labels with a uint value.
+When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
+      </t>
+      <t>
 When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the lower (content) layers.
-A BPSec security operation always occurs within the context of the immutable primary block and its parameters.
-When available and not implied by the bundle source, a COSE message SHOULD contain a key identifier in the highest layer.
+When available and not implied by the bundle source, a COSE message SHOULD contain a key identifier in the highest (recipient) layer.
 When a key identifier is not available, BPSec acceptors SHOULD use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
+A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
       </t>
       <t>
 The algorithms required by this profile focuses on networks using shared symmetric-keys, with recommended algorithms for Elliptic Curve (EC) keypairs and RSA keypairs.
@@ -198,7 +202,7 @@ Implementations capable of doing so SHOULD support the asymmetric keyed and key-
           <c>A256GCM</c>
           <c>3</c>
           <c>Required</c>
-          <c>Confidentiality</c>
+          <c>Integrity or Confidentiality</c>
           <c>2</c>
           <c>A256KW</c>
           <c>-5</c>
@@ -747,7 +751,8 @@ The CEK and content plaintext are the same here as in <xref target="fig-ex-encry
                 / alg / 1:-5, / A256KW /
                 / kid / 4:'ExampleKEK'
               },
-              h'63bb160aa1804f936570b982bf7c396694e574', / key-wrapped /
+              h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d403
+                a6331159e3d691a708e9984d', / key-wrapped /
               [] / no more layers /
             ]
           ]
