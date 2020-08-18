@@ -26,7 +26,7 @@
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
       <t>
-This document defines an integrity security context and a confidentiality security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) blocks.
+This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
 A profile of COSE is also defined for BPSec interoperation.
       </t>
     </abstract>
@@ -38,43 +38,39 @@ The Bundle Protocol Security (BPSec) Specification <xref target="I-D.ietf-dtn-bp
 The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC8152" /> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
       </t>
       <t>
-This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-contexts" />.
+This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context" />.
 A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-cose-profile" />.
       </t>
       <t>
 This document does not address how those COSE algorithms are intended to be used within a larger security context.
+Examples of specific uses are provided in <xref target="sec-examples" /> to aid in implementation support of the interoperability algorithms.
       </t>
     </section>
     <section title="Requirements Language">
       <t>
-      The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, 
-      &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, 
-      &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;,
-      &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as
-      described in BCP 14 <xref target="RFC2119" /> <xref target="RFC8174" />
-      when, and only when, they appear in all capitals, as shown here.
+The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 <xref target="RFC2119" /> <xref target="RFC8174" /> when, and only when, they appear in all capitals, as shown here.
       </t>
     </section>
-    <section anchor="sec-bpsec-contexts" title="BPSec Security Contexts">
+    <section anchor="sec-bpsec-context" title="BPSec Security Context">
       <t>
-Rather than defining a single security context for both integrity and confidentiality blocks, this document specifies two separate security contexts which are analogous to the two BPSec block types.
-Each security context allows a specific set of BPSec Result IDs.
+This document specifies a single security context for use in both BPSec integrity and confidentiality blocks.
+This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable COSE messages which can be present and each COSE message is type-tagged to indicate its purpose and contents.
       </t>
       <t>
-The existing COSE message-marking tags in Section 2 of <xref target="RFC8152" /> SHALL be used as BPSec Result ID values for all COSE security contexts (see <xref target="tab-BIB-results" /> and <xref target="tab-BCB-results" />).
+The COSE security context shall have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx" />.
+      </t>
+      <t>
+The existing COSE message-marking tags in Section 2 of <xref target="RFC8152" /> SHALL be used as BPSec Result ID values for all uses of the COSE security context (see <xref target="tab-BIB-results" /> and <xref target="tab-BCB-results" />).
 This avoids the need for value-mapping between code points of the two registries.
       </t>
       <t>
 When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
-The Result ID values already provide the same information as the COSE tags.
+The Result ID values already provide the same information as the COSE tags (using the same code points).
       </t>
-      <section title="COSE Integrity Context">
+      <section title="COSE Integrity">
         <t>
-The COSE Integrity Context has a Security Context ID of TBD-CI.
-        </t>
-        <t>
-The integrity context SHALL allow only the Result IDs from <xref target="tab-BIB-results" />.
-Each integrity context result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results" /> in its decoded form.
+When used within a Block Integrity Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results" />.
+Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results" /> in its decoded form.
         </t>
         <texttable anchor="tab-BIB-results" title="COSE Integrity Results">
           <ttcol>Result ID</ttcol>
@@ -107,13 +103,10 @@ The canonically serialized primary block of the bundle.
           </list>
         </t>
       </section>
-      <section title="COSE Confidentiality Context">
+      <section title="COSE Confidentiality">
         <t>
-The COSE Confidentiality Context has a Security Context ID of TBD-CC.
-        </t>
-        <t>
-The confidentiality context SHALL allow only the Result IDs from <xref target="tab-BCB-results" />.
-Each confidentiality context result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results" /> in its decoded form.
+When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results" />.
+Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results" /> in its decoded form.
         </t>
         <texttable anchor="tab-BCB-results" title="COSE Confidentiality Results">
           <ttcol>Result ID</ttcol>
@@ -191,6 +184,11 @@ Implementations capable of doing so SHOULD support the asymmetric keyed and key-
           <c>1</c>
           <c>ES256</c>
           <c>-7</c>
+          <c>Recommended</c>
+          <c>Integrity</c>
+          <c>1</c>
+          <c>EdDSA</c>
+          <c>-8</c>
           <c>Recommended</c>
           <c>Integrity</c>
           <c>1</c>
@@ -316,11 +314,8 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE" />, the followi
           <ttcol>Value</ttcol>
           <ttcol>Description</ttcol>
           <ttcol>Reference</ttcol>
-          <c>TBD-CI</c>
-          <c>COSE Integrity</c>
-          <c>This specification.</c>
-          <c>TBD-CC</c>
-          <c>COSE Confidentiality</c>
+          <c>TBD-COSE</c>
+          <c>COSE</c>
           <c>This specification.</c>
         </texttable>
       </section>
@@ -375,7 +370,7 @@ The interoperability minimum algorithms and parameters are based on the draft <x
         </front>
       </reference>
     </references>
-    <section title="Examples">
+    <section anchor="sec-examples" title="Examples">
       <section title="Symmetric Key COSE_Mac0">
         <t>
 This is an example of a MAC with implied recipient (and its key material).
