@@ -1,11 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?rfc toc="yes"?>
-<rfc ipr="trust200902" category="std" docName="draft-bsipos-dtn-bpsec-cose-02">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-bsipos-dtn-bpsec-cose-02" ipr="trust200902" tocInclude="true" version="3">
+  <!-- xml2rfc v2v3 conversion 2.47.0 -->
   <front>
     <title abbrev="DTN BPSec COSE">
       DTN Bundle Protocol Security COSE Security Contexts
     </title>
-    <author initials="B." surname="Sipos" fullname="Brian Sipos">
+    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-02"/>
+    <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="RKF Engineering">
         RKF Engineering Solutions, LLC
       </organization>
@@ -21,7 +23,7 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date year="2020" month="July" day="1" />
+    <date day="1" month="July" year="2020"/>
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
@@ -32,90 +34,204 @@ A profile of COSE is also defined for BPSec interoperation.
     </abstract>
   </front>
   <middle>
-    <section anchor="sec-intro" title="Introduction">
+    <section anchor="sec-intro">
+      <name>Introduction</name>
       <t>
-The Bundle Protocol Security (BPSec) Specification <xref target="I-D.ietf-dtn-bpsec" /> defines structure and encoding for Block Integrity Block (BIB) and Block Confidentiality Block (BCB) types but does not specify any security contexts to be used by either of the security block types.
-The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC8152" /> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
+The Bundle Protocol Security (BPSec) Specification <xref target="I-D.ietf-dtn-bpsec"/> defines structure and encoding for Block Integrity Block (BIB) and Block Confidentiality Block (BCB) types but does not specify any security contexts to be used by either of the security block types.
+The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC8152"/> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
       </t>
       <t>
-This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context" />.
-A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-cose-profile" />.
+This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context"/>.
+A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-cose-profile"/>.
       </t>
       <t>
 This document does not address how those COSE algorithms are intended to be used within a larger security context.
-Examples of specific uses are provided in <xref target="sec-examples" /> to aid in implementation support of the interoperability algorithms.
+Examples of specific uses are provided in <xref target="sec-examples"/> to aid in implementation support of the interoperability algorithms.
       </t>
     </section>
-    <section title="Requirements Language">
+    <section>
+      <name>Requirements Language</name>
       <t>
-The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 <xref target="RFC2119" /> <xref target="RFC8174" /> when, and only when, they appear in all capitals, as shown here.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
       </t>
     </section>
-    <section anchor="sec-bpsec-context" title="BPSec Security Context">
+    <section anchor="sec-bpsec-context">
+      <name>BPSec Security Context</name>
       <t>
 This document specifies a single security context for use in both BPSec integrity and confidentiality blocks.
 This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable COSE messages which can be present and each COSE message is type-tagged to indicate its purpose and contents.
       </t>
       <t>
-The COSE security context shall have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx" />.
+The COSE security context shall have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
       </t>
       <t>
-The existing COSE message-marking tags in Section 2 of <xref target="RFC8152" /> SHALL be used as BPSec Result ID values for all uses of the COSE security context (see <xref target="tab-BIB-results" /> and <xref target="tab-BCB-results" />).
+The existing CoAP Content-Format ID values in the CoRE registry <xref target="IANA-CORE"/> SHALL be used as BPSec Parameter ID and Result ID values within COSE security context (see tables within <xref target="sec-BIB-COSE"/> and <xref target="sec-BCB-COSE"/>).
+For Result ID values used to identify COSE messages, these code points are also identical to the  existing COSE message-marking tags in Section 2 of <xref target="RFC8152"/>.
 This avoids the need for value-mapping between code points of the two registries.
       </t>
       <t>
 When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
 The Result ID values already provide the same information as the COSE tags (using the same code points).
       </t>
-      <section title="COSE Integrity">
+      <section anchor="sec-BIB-COSE">
+        <name>COSE Integrity</name>
         <t>
-When used within a Block Integrity Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results" />.
-Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results" /> in its decoded form.
+When used within a Block Integrity Block, COSE context SHALL allow only the Parameter IDs from <xref target="tab-BIB-parameters"/>.
+Each integrity parameter value SHALL consist of the COSE structure indicated by <xref target="tab-BIB-parameters"/> in its decoded form.
         </t>
-        <texttable anchor="tab-BIB-results" title="COSE Integrity Results">
-          <ttcol>Result ID</ttcol>
-          <ttcol>Result Message</ttcol>
-          <c>97</c>
-          <c>COSE_Mac</c>
-          <c>17</c>
-          <c>COSE_Mac0</c>
-          <c>98</c>
-          <c>COSE_Sign</c>
-          <c>18</c>
-          <c>COSE_Sign1</c>
-        </texttable>
+        <table anchor="tab-BIB-parameters">
+          <name>COSE Integrity Parameters</name>
+          <thead>
+            <tr>
+              <th>Parameter ID</th>
+              <th>Parameter Structure</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>101</td>
+              <td>COSE_Key</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>102</td>
+              <td>COSE_KeySet</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <t>
+When used within a Block Integrity Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
+Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its decoded form.
+        </t>
+        <table anchor="tab-BIB-results">
+          <name>COSE Integrity Results</name>
+          <thead>
+            <tr>
+              <th>Result ID</th>
+              <th>Result Structure</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>97</td>
+              <td>COSE_Mac</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td>COSE_Mac0</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>98</td>
+              <td>COSE_Sign</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td>COSE_Sign1</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <t>
 Each integrity result SHALL use the "detached" payload form with nil payload value.
-The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in Section 6.3 of <xref target="RFC8152" />.
-The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in Section 4.4 of <xref target="RFC8152" />.
+The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in Section 6.3 of <xref target="RFC8152"/>.
+The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in Section 4.4 of <xref target="RFC8152"/>.
         </t>
         <t>
 [NOTE: This differs from base BPSec in that the entire block and the bundle primary is signed]
 The COSE "payload" used to generate a signature or MAC result SHALL be the canonically serialized target block, including the canonical block array structure.
 The COSE "protected attributes from the application" used to generate a signature or MAC result SHALL be either:
-          <list style="hanging">
-            <t hangText="For a primary block target:">
+        </t>
+        <dl newline="false" spacing="normal">
+          <dt>For a primary block target:</dt>
+          <dd>
 An empty byte string.
-            </t>
-            <t hangText="For a canonical block target:">
+            </dd>
+          <dt>For a canonical block target:</dt>
+          <dd>
 The canonically serialized primary block of the bundle.
-            </t>
-          </list>
-        </t>
+            </dd>
+        </dl>
       </section>
-      <section title="COSE Confidentiality">
+      <section anchor="sec-BCB-COSE">
+        <name>COSE Confidentiality</name>
         <t>
-When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results" />.
-Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results" /> in its decoded form.
+When used within a Block Confidentiality Block, COSE context SHALL allow only the Parameter IDs from <xref target="tab-BCB-parameters"/>.
+Each integrity parameter value SHALL consist of the COSE structure indicated by <xref target="tab-BCB-parameters"/> in its decoded form.
         </t>
-        <texttable anchor="tab-BCB-results" title="COSE Confidentiality Results">
-          <ttcol>Result ID</ttcol>
-          <ttcol>Result Message</ttcol>
-          <c>96</c>
-          <c>COSE_Encrypt</c>
-          <c>16</c>
-          <c>COSE_Encrypt0</c>
-        </texttable>
+        <table anchor="tab-BCB-parameters">
+          <name>COSE Integrity Parameters</name>
+          <thead>
+            <tr>
+              <th>Parameter ID</th>
+              <th>Parameter Structure</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>101</td>
+              <td>COSE_Key</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>102</td>
+              <td>COSE_KeySet</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <t>
+When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results"/>.
+Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its decoded form.
+        </t>
+        <table anchor="tab-BCB-results">
+          <name>COSE Confidentiality Results</name>
+          <thead>
+            <tr>
+              <th>Result ID</th>
+              <th>Result Structure</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>96</td>
+              <td>COSE_Encrypt</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td>COSE_Encrypt0</td>
+              <td>
+                <xref target="RFC8152"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <t>
 Only algorithms which support Authenticated Encryption with Authenticated Data (AEAD) SHALL be usable in the first (content) layer of a confidentiality result.
 Because COSE encryption with AEAD appends the authentication tag with the ciphertext, the size of the block-type-specific-data will grow after an encryption operation.
@@ -123,139 +239,181 @@ Because COSE encryption with AEAD appends the authentication tag with the cipher
         <t>
 Each confidentiality result SHALL use the "detached" payload form with nil payload value.
 The COSE plaintext and ciphertext correspond exactly with the target block-type-specific-data.
-The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in Section 5.3 of <xref target="RFC8152" />.
+The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in Section 5.3 of <xref target="RFC8152"/>.
         </t>
         <t>
 [NOTE: This differs from base BPSec in that AAD from the block and the bundle primary is used]
 The COSE "plaintext" used to generate an encrypt result SHALL be the block-type-specific-data of the target block, the decoded byte string itself (not including the encoded CBOR item header).
 The COSE "protected attributes from the application" used to generate an encrypt result SHALL be the concatenation of the following:
-          <list style="numbers">
-            <t>
-The canonically serialized primary block of the bundle.
-            </t>
-            <t>
-The canonically serialized augmented target block, which has its block-type-specific-data substituted with an empty byte string.
-            </t>
-          </list>
         </t>
+        <ol spacing="normal" type="1">
+          <li>
+The canonically serialized primary block of the bundle.
+            </li>
+          <li>
+The canonically serialized augmented target block, which has its block-type-specific-data substituted with an empty byte string.
+            </li>
+        </ol>
       </section>
     </section>
-    <section anchor="sec-cose-profile" title="COSE Profile for BPSec">
+    <section anchor="sec-cose-profile">
+      <name>COSE Profile for BPSec</name>
       <t>
 This section contains requirements which apply to the use of COSE within BPSec across any security context use.
       </t>
-      <t>
+      <section anchor="sec-cose-parameters">
+        <name>COSE Security Parameters</name>
+        <t>
+When necessary to support public key infrastructure (PKI) within BPSec, a BIB or BCB with a COSE context MAY contain one or more public keys or key identifiers.
+Because each context contains a single set of parameters which apply to all results in the same context, security acceptors SHALL treat all COSE keys as being related to the security source itself and potentially applying to every result.
+        </t>
+      </section>
+      <section anchor="sec-cose-results">
+        <name>COSE Security Results</name>
+        <t>
 When generating a BPSec result, security sources SHALL use encode COSE labels with a uint value.
 When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
-      </t>
-      <t>
+        </t>
+        <t>
 When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the lower (content) layers.
 When available and not implied by the bundle source, a COSE message SHOULD contain a key identifier in the highest (recipient) layer.
 When a key identifier is not available, BPSec acceptors SHOULD use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
 A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
-      </t>
-      <t>
+        </t>
+        <t>
 The algorithms required by this profile focuses on networks using shared symmetric-keys, with recommended algorithms for Elliptic Curve (EC) keypairs and RSA keypairs.
 The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
-      </t>
-      <section anchor="sec-interop-alg" title="Interoperability Algorithms">
+        </t>
+      </section>
+      <section anchor="sec-interop-alg">
+        <name>Interoperability Algorithms</name>
         <t>
-[NOTE: The required list is identical to the <xref target="I-D.ietf-dtn-bpsec-interop-sc" /> list.]
+[NOTE: The required list is identical to the <xref target="I-D.ietf-dtn-bpsec-interop-sc"/> list.]
 The set of integrity algorithms needed for interoperability is listed here.
-The full set of COSE algorithms available is managed at <xref target="IANA-COSE" />.
+The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
-Implementations conforming to this specification SHALL support the symmetric keyed algorithms of <xref target="tab-interop" />.
-Implementations capable of doing so SHOULD support the asymmetric keyed and key-encryption algorithms of <xref target="tab-interop" />.
+Implementations conforming to this specification SHALL support the symmetric keyed algorithms of <xref target="tab-interop"/>.
+Implementations capable of doing so SHOULD support the asymmetric keyed and key-encryption algorithms of <xref target="tab-interop"/>.
         </t>
-        <texttable anchor="tab-interop" title="Interoperability Algorithms">
-          <ttcol>BPSec Block</ttcol>
-          <ttcol>COSE Layer</ttcol>
-          <ttcol>Name</ttcol>
-          <ttcol>Code</ttcol>
-          <ttcol>Implementation Requirements</ttcol>
-          <c>Integrity</c>
-          <c>1</c>
-          <c>HMAC 256/256</c>
-          <c>5</c>
-          <c>Required</c>
-          <c>Integrity</c>
-          <c>1</c>
-          <c>ES256</c>
-          <c>-7</c>
-          <c>Recommended</c>
-          <c>Integrity</c>
-          <c>1</c>
-          <c>EdDSA</c>
-          <c>-8</c>
-          <c>Recommended</c>
-          <c>Integrity</c>
-          <c>1</c>
-          <c>PS256</c>
-          <c>-37</c>
-          <c>Recommended</c>
-          <c>Confidentiality</c>
-          <c>1</c>
-          <c>A256GCM</c>
-          <c>3</c>
-          <c>Required</c>
-          <c>Integrity or Confidentiality</c>
-          <c>2</c>
-          <c>A256KW</c>
-          <c>-5</c>
-          <c>Recommended</c>
-          <c>Integrity or Confidentiality</c>
-          <c>2</c>
-          <c>ECDH-ES + A256KW</c>
-          <c>-31</c>
-          <c>Recommended</c>
-          <c>Integrity or Confidentiality</c>
-          <c>2</c>
-          <c>RSAES-OAEP w/ SHA-256</c>
-          <c>-41</c>
-          <c>Recommended</c>
-        </texttable>
+        <table anchor="tab-interop">
+          <name>Interoperability Algorithms</name>
+          <thead>
+            <tr>
+              <th>BPSec Block</th>
+              <th>COSE Layer</th>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Implementation Requirements</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Integrity</td>
+              <td>1</td>
+              <td>HMAC 256/256</td>
+              <td>5</td>
+              <td>Required</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>1</td>
+              <td>ES256</td>
+              <td>-7</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>1</td>
+              <td>EdDSA</td>
+              <td>-8</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>1</td>
+              <td>PS256</td>
+              <td>-37</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>A256GCM</td>
+              <td>3</td>
+              <td>Required</td>
+            </tr>
+            <tr>
+              <td>Integrity or Confidentiality</td>
+              <td>2</td>
+              <td>A256KW</td>
+              <td>-5</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Integrity or Confidentiality</td>
+              <td>2</td>
+              <td>ECDH-ES + A256KW</td>
+              <td>-31</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Integrity or Confidentiality</td>
+              <td>2</td>
+              <td>RSAES-OAEP w/ SHA-256</td>
+              <td>-41</td>
+              <td>Recommended</td>
+            </tr>
+          </tbody>
+        </table>
         <t>
 The following are recommended key and recipient uses within COSE/BPSec:
-          <list style="hanging">
-            <t hangText="Symmetric Key Integrity:">
+        </t>
+        <dl newline="false" spacing="normal">
+          <dt>Symmetric Key Integrity:</dt>
+          <dd>
 When generating a BIB result from a symmetric key, implementations SHOULD use either a COSE_Mac0 or a COSE_Mac using the private key directly.
 When a COSE_Mac is used with a direct key, the recipient layer SHOULD include a key identifier.
-            </t>
-            <t hangText="EC Keypair Integrity:">
+            </dd>
+          <dt>EC Keypair Integrity:</dt>
+          <dd>
 When generating a BIB result from an EC keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 encryption of the symmetric key.
 When a COSE_Sign or COSE_Mac is used with EC keypair, the recipient layer SHOULD include a public key identifier.
-            </t>
-            <t hangText="RSA Keypair Integrity:">
+            </dd>
+          <dt>RSA Keypair Integrity:</dt>
+          <dd>
 When generating a BIB result from an RSA keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 key-wrap of the symmetric key.
 When a COSE_Sign or COSE_Mac is used with RSA keypair, the recipient layer SHOULD include a public key identifier.
-When a COSE_Sign or COSE_Sign1 is used with RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230" />.
-            </t>
-            <t hangText="Symmetric Key Confidentiality:">
+When a COSE_Sign or COSE_Sign1 is used with RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230"/>.
+            </dd>
+          <dt>Symmetric Key Confidentiality:</dt>
+          <dd>
 When generating a BCB result from an symmetric key, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When generating a BCB result from a symmetric key, implementations SHOULD NOT use COSE_Encrypt0 or COSE_Encrypt with direct content encryption key (CEK).
 Doing so risks key overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
-            </t>
-            <t hangText="EC Keypair Confidentiality:">
+            </dd>
+          <dt>EC Keypair Confidentiality:</dt>
+          <dd>
 When generating a BCB result from an EC keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
-            </t>
-            <t hangText="RSA Keypair Confidentiality:">
+            </dd>
+          <dt>RSA Keypair Confidentiality:</dt>
+          <dd>
 When generating a BCB result from an RSA keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
-            </t>
-          </list>
-        </t>
+            </dd>
+        </dl>
       </section>
     </section>
-    <section title="Implementation Status">
+    <section>
+      <name>Implementation Status</name>
       <t>
-[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942" /> and <xref target="github-dtn-bpsec-cose" />.]
+[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/> and <xref target="github-dtn-bpsec-cose"/>.]
       </t>
       <t>
 This section records the status of known implementations of the
 protocol defined by this specification at the time of posting of
 this Internet-Draft, and is based on a proposal described in
-<xref target="RFC7942" />.
+<xref target="RFC7942"/>.
 The description of implementations in this section is
 intended to assist the IETF in its decision processes in progressing
 drafts to RFCs. Please note that the listing of any individual
@@ -267,20 +425,22 @@ implementations or their features. Readers are advised to note that
 other implementations can exist.
       </t>
       <t>
-An example implementation of COSE over Blocks has been created as a GitHub project <xref target="github-dtn-bpsec-cose" /> and is intended to use as a proof-of-concept and as a possible source of interoperability testing.
+An example implementation of COSE over Blocks has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a possible source of interoperability testing.
 This example implementation only handles CBOR encoding/decoding and cryptographic functions, it does not construct actual BIB or BCB and does not integrate with a BP Agent.
       </t>
     </section>
-    <section anchor="sec-security" title="Security Considerations">
+    <section anchor="sec-security">
+      <name>Security Considerations</name>
       <t>
-This section separates security considerations into threat categories based on guidance of BCP 72 <xref target="RFC3552" />.
+This section separates security considerations into threat categories based on guidance of BCP 72 <xref target="RFC3552"/>.
       </t>
       <t>
-All of the security considerations of the underlying BPSec <xref target="I-D.ietf-dtn-bpsec" /> apply to these new security contexts.
+All of the security considerations of the underlying BPSec <xref target="I-D.ietf-dtn-bpsec"/> apply to these new security contexts.
       </t>
-      <section title="Threat: BPSec Block Replay">
+      <section>
+        <name>Threat: BPSec Block Replay</name>
         <t>
-The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see Section 4.2.2 of <xref target="I-D.ietf-dtn-bpbis" />).
+The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see Section 4.2.2 of <xref target="I-D.ietf-dtn-bpbis"/>).
 These same fields are used to correlate Administrative Records with the bundles for which the records were generated.
 Including the primary block in the AAD for BPSec integrity and confidentiality binds the verification of the secured block to its parent bundle and disallows replay of any block with its BIB or BCB.
         </t>
@@ -289,97 +449,127 @@ This profile of COSE limits the encryption algorithms to only AEAD in order to i
 If an agent mistakenly allows the use of non-AEAD encryption when decrypting and verifying a BCB, the possibility of block replay attack is present.
         </t>
       </section>
-      <section title="Threat: Unidentifiable Key">
+      <section>
+        <name>Threat: Unidentifiable Key</name>
         <t>
-The profile in <xref target="sec-interop-alg" /> recommends key identifiers when possible.
+The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-cose-parameters"/> allow encoding public keys where available.
 If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), the security acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
 This leads to a situation, identified in BPSec Security Considerations, where a signature is verified to be valid but not from the expected Security Source.
         </t>
       </section>
-      <section title="Threat: Algorithm Vulnerabilities">
+      <section>
+        <name>Threat: Algorithm Vulnerabilities</name>
         <t>
-Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as recommended in the IANA registry <xref target="IANA-COSE" />.
+Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as recommended in the IANA registry <xref target="IANA-COSE"/>.
         </t>
       </section>
     </section>
-    <section anchor="sec-iana" title="IANA Considerations">
+    <section anchor="sec-iana">
+      <name>IANA Considerations</name>
       <t>
-Registration procedures referred to in this section are defined in <xref target="RFC8126" />.
+Registration procedures referred to in this section are defined in <xref target="RFC8126"/>.
       </t>
-      <section anchor="sec-iana-bpsec-ctx" title="BPSec Security Contexts">
+      <section anchor="sec-iana-bpsec-ctx">
+        <name>BPSec Security Contexts</name>
         <t>
-Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE" />, the following entry has been added to the "BPSec Security Context Identifiers" sub-registry.
+Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the following entry has been added to the "BPSec Security Context Identifiers" sub-registry.
         </t>
-        <texttable>
-          <ttcol>Value</ttcol>
-          <ttcol>Description</ttcol>
-          <ttcol>Reference</ttcol>
-          <c>TBD-COSE</c>
-          <c>COSE</c>
-          <c>This specification.</c>
-        </texttable>
+        <table>
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Description</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TBD-COSE</td>
+              <td>COSE</td>
+              <td>This specification.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </section>
-    <section anchor="sec-doc-ack" title="Acknowledgments">
+    <section anchor="sec-doc-ack">
+      <name>Acknowledgments</name>
       <t>
-The interoperability minimum algorithms and parameters are based on the draft <xref target="I-D.ietf-dtn-bpsec-interop-sc" />.
+The interoperability minimum algorithms and parameters are based on the draft <xref target="I-D.ietf-dtn-bpsec-interop-sc"/>.
       </t>
     </section>
   </middle>
   <back>
-    <references title="Normative References">
-      <reference anchor="IANA-BUNDLE" target="https://www.iana.org/assignments/bundle/">
-        <front>
-          <title>Bundle Protocol</title>
-          <author>
-            <organization>IANA</organization>
-          </author>
-          <date/>
-        </front>
-      </reference>
-      <reference anchor="IANA-COSE" target="https://www.iana.org/assignments/cose/">
-        <front>
-          <title>CBOR Object Signing and Encryption (COSE)</title>
-          <author>
-            <organization>IANA</organization>
-          </author>
-          <date/>
-        </front>
-      </reference>
-      <?rfc include="reference.RFC.2119.xml"?>
-      <?rfc include="reference.RFC.8126.xml"?>
-      <?rfc include="reference.RFC.8152.xml"?>
-      <?rfc include="reference.RFC.8174.xml"?>
-      <?rfc include="reference.RFC.8230.xml"?>
-      <?rfc include="reference.RFC.8610.xml"?>
-      <?rfc include="reference.I-D.ietf-dtn-bpsec.xml"?>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Normative References</name>
+        <reference anchor="IANA-BUNDLE" target="https://www.iana.org/assignments/bundle/">
+          <front>
+            <title>Bundle Protocol</title>
+            <author>
+              <organization>IANA</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
+        <reference anchor="IANA-CORE" target="https://www.iana.org/assignments/core-parameters/">
+          <front>
+            <title>Constrained RESTful Environments (CoRE) Parameters</title>
+            <author>
+              <organization>IANA</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
+        <reference anchor="IANA-COSE" target="https://www.iana.org/assignments/cose/">
+          <front>
+            <title>CBOR Object Signing and Encryption (COSE)</title>
+            <author>
+              <organization>IANA</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8152.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8230.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-22.xml"/>
+      </references>
+      <references>
+        <name>Informative References</name>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7049.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpbis-26.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-interop-sc-01.xml"/>
+        <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BSipos-RKF/dtn-bpsec-cose/">
+          <front>
+            <title>DTN Bundle Protocol Security COSE Security Contexts</title>
+            <author fullname="Brian Sipos" initials="B." surname="Sipos">
+              <organization abbrev="RKF Engineering">RKF Engineering Solutions, LLC</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
+      </references>
     </references>
-    <references title="Informative References">
-      <?rfc include="reference.RFC.3552.xml"?>
-      <?rfc include="reference.RFC.7049.xml"?>
-      <?rfc include="reference.RFC.7942.xml"?>
-      <?rfc include="reference.I-D.ietf-dtn-bpbis.xml"?>
-      <?rfc include="reference.I-D.ietf-dtn-bpsec-interop-sc.xml"?>
-      <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BSipos-RKF/dtn-bpsec-cose/">
-        <front>
-          <title>DTN Bundle Protocol Security COSE Security Contexts</title>
-          <author initials="B." surname="Sipos" fullname="Brian Sipos">
-            <organization abbrev="RKF Engineering">RKF Engineering Solutions, LLC</organization>
-          </author>
-          <date />
-        </front>
-      </reference>
-    </references>
-    <section anchor="sec-examples" title="Examples">
-      <section title="Symmetric Key COSE_Mac0">
+    <section anchor="sec-examples">
+      <name>Examples</name>
+      <section>
+        <name>Symmetric Key COSE_Mac0</name>
         <t>
 This is an example of a MAC with implied recipient (and its key material).
-The provided figures are extended diagnostic notation <xref target="RFC8610" />.
+The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
         </t>
         <t>
 The 256-bit key used is shown below.
         </t>
-        <figure title="Symmetric Key">
+        <figure>
+          <name>Symmetric Key</name>
           <artwork type="cbor">
 [
   {
@@ -391,7 +581,8 @@ The 256-bit key used is shown below.
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-mac-primary" title="Primary block CBOR diagnostic">
+        <figure anchor="fig-ex-mac-primary">
+          <name>Primary block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / BP version /
@@ -405,7 +596,8 @@ The 256-bit key used is shown below.
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-mac-target" title="Target block CBOR diagnostic">
+        <figure anchor="fig-ex-mac-target">
+          <name>Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
@@ -420,7 +612,8 @@ The 256-bit key used is shown below.
 The external_aad is the encoded primary block.
 The payload is the encoded target block.
         </t>
-        <figure anchor="fig-ex-mac-struct" title="MAC_structure CBOR diagnostic">
+        <figure anchor="fig-ex-mac-struct">
+          <name>MAC_structure CBOR diagnostic</name>
           <artwork type="cbor">
 [
   "MAC0", / context /
@@ -431,7 +624,8 @@ The payload is the encoded target block.
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-mac-asb" title="Abstract Security Block CBOR diagnostic">
+        <figure anchor="fig-ex-mac-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   [2], / targets /
@@ -459,16 +653,18 @@ The payload is the encoded target block.
           </artwork>
         </figure>
       </section>
-      <section title="RSA Keypair COSE_Sign1">
+      <section>
+        <name>RSA Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with implied recipient (and its key material).
-The provided figures are extended diagnostic notation <xref target="RFC8610" />.
+The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
         </t>
         <t>
 The 512-bit private key used is below. It is not supposed to be a secure configuration, only intended to explain the procedure.
-This signature uses zero-length salt for deterministic output, which differs from the parameter specified by <xref target="RFC8230" /> and is not recommended for normal use.
+This signature uses zero-length salt for deterministic output, which differs from the parameter specified by <xref target="RFC8230"/> and is not recommended for normal use.
         </t>
-        <figure title="Private Keys">
+        <figure>
+          <name>Private Keys</name>
           <artwork type="cbor">
 [
   { / signing private key /
@@ -486,7 +682,8 @@ This signature uses zero-length salt for deterministic output, which differs fro
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-sign-primary" title="Primary block CBOR diagnostic">
+        <figure anchor="fig-ex-sign-primary">
+          <name>Primary block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / BP version /
@@ -500,7 +697,8 @@ This signature uses zero-length salt for deterministic output, which differs fro
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-sign-target" title="Target block CBOR diagnostic">
+        <figure anchor="fig-ex-sign-target">
+          <name>Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
@@ -515,7 +713,8 @@ This signature uses zero-length salt for deterministic output, which differs fro
 The external_aad is the encoded primary block.
 The payload is the encoded target block.
         </t>
-        <figure anchor="fig-ex-sign-struct" title="Sig_structure CBOR diagnostic">
+        <figure anchor="fig-ex-sign-struct">
+          <name>Sig_structure CBOR diagnostic</name>
           <artwork type="cbor">
 [
   "Signature1", / context /
@@ -526,7 +725,8 @@ The payload is the encoded target block.
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-sign-asb" title="Abstract Security Block CBOR diagnostic">
+        <figure anchor="fig-ex-sign-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   [2], / targets /
@@ -555,17 +755,19 @@ The payload is the encoded target block.
           </artwork>
         </figure>
       </section>
-      <section title="Symmetric Key COSE_Encrypt0">
+      <section>
+        <name>Symmetric Key COSE_Encrypt0</name>
         <t>
 This is an example of an encryption with implied recipient (and its direct content encryption key).
-The provided figures are extended diagnostic notation <xref target="RFC8610" />.
+The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
         </t>
         <t>
 This example uses a single shared content encryption key, which is not recommended for normal use.
 The 256-bit key used is shown below.
 A random IV is generated for this operation and is indicated in a standard way in the unprotected header.
         </t>
-        <figure title="Symmetric Keys">
+        <figure>
+          <name>Symmetric Keys</name>
           <artwork type="cbor">
 [
   {
@@ -577,7 +779,8 @@ A random IV is generated for this operation and is indicated in a standard way i
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt0-primary" title="Primary block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt0-primary">
+          <name>Primary block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / BP version /
@@ -591,7 +794,8 @@ A random IV is generated for this operation and is indicated in a standard way i
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt0-init" title="Initial Target block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt0-init">
+          <name>Initial Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
@@ -605,7 +809,8 @@ A random IV is generated for this operation and is indicated in a standard way i
         <t>
 The external_aad is a concatenation of the encoded primary block and the encoded augmented target block (its block data removed).
         </t>
-        <figure anchor="fig-ex-encrypt0-struct" title="Enc_structure CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt0-struct">
+          <name>Enc_structure CBOR diagnostic</name>
           <artwork type="cbor">
 [
   "Encrypt0", / context /
@@ -615,7 +820,8 @@ The external_aad is a concatenation of the encoded primary block and the encoded
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt0-asb" title="Abstract Security Block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt0-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   [2], / targets /
@@ -641,7 +847,8 @@ The external_aad is a concatenation of the encoded primary block and the encoded
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt0-final" title="Encrypted Target block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt0-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
@@ -653,16 +860,18 @@ The external_aad is a concatenation of the encoded primary block and the encoded
           </artwork>
         </figure>
       </section>
-      <section title="Symmetric KEK COSE_Encrypt">
+      <section>
+        <name>Symmetric KEK COSE_Encrypt</name>
         <t>
 This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a Key ID.
-The provided figures are extended diagnostic notation <xref target="RFC8610" />.
+The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
         </t>
         <t>
-The keys used are shown in <xref target="fig-ex-encrypt-keys" />.
-A random IV is generated for this operation and is indicated in a standard way in the unprotected header of <xref target="fig-ex-encrypt-asb" />.
+The keys used are shown in <xref target="fig-ex-encrypt-keys"/>.
+A random IV is generated for this operation and is indicated in a standard way in the unprotected header of <xref target="fig-ex-encrypt-asb"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-keys" title="Symmetric Keys">
+        <figure anchor="fig-ex-encrypt-keys">
+          <name>Symmetric Keys</name>
           <artwork type="cbor">
 [
   {
@@ -680,7 +889,8 @@ A random IV is generated for this operation and is indicated in a standard way i
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt-primary" title="Primary block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt-primary">
+          <name>Primary block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / BP version /
@@ -694,7 +904,8 @@ A random IV is generated for this operation and is indicated in a standard way i
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt-init" title="Initial Target block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt-init">
+          <name>Initial Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
@@ -709,9 +920,10 @@ A random IV is generated for this operation and is indicated in a standard way i
 The external_aad is a concatenation of the encoded primary block and the encoded augmented target block (its block data removed).
         </t>
         <t>
-The CEK and content plaintext are the same here as in <xref target="fig-ex-encrypt0-struct" /> but the context text is different.
+The CEK and content plaintext are the same here as in <xref target="fig-ex-encrypt0-struct"/> but the context text is different.
         </t>
-        <figure anchor="fig-ex-encrypt-struct" title="Enc_structure CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt-struct">
+          <name>Enc_structure CBOR diagnostic</name>
           <artwork type="cbor">
 [
   "Encrypt", / context /
@@ -721,7 +933,8 @@ The CEK and content plaintext are the same here as in <xref target="fig-ex-encry
 ]
           </artwork>
         </figure>
-        <figure anchor="fig-ex-encrypt-asb" title="Abstract Security Block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   [2], / targets /
@@ -759,9 +972,10 @@ The CEK and content plaintext are the same here as in <xref target="fig-ex-encry
           </artwork>
         </figure>
         <t>
-Although the same CEK is used in this example as the Encrypt0 example, the block ciphertext is different than <xref target="fig-ex-encrypt0-final" /> because the Enc_structure (used as AAD) is different.
+Although the same CEK is used in this example as the Encrypt0 example, the block ciphertext is different than <xref target="fig-ex-encrypt0-final"/> because the Enc_structure (used as AAD) is different.
         </t>
-        <figure anchor="fig-ex-encrypt-final" title="Encrypted Target block CBOR diagnostic">
+        <figure anchor="fig-ex-encrypt-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
           <artwork type="cbor">
 [
   7, / type code - bundle age /
