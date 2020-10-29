@@ -27,6 +27,7 @@ setup(
     install_requires=[
         'cbor2 >=4.1,<4.2',
         'cryptography',
+        'jwcrypto',
         'six',
     ],
     extras_require={},
