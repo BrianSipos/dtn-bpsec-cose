@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?rfc toc="yes"?>
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" docName="draft-bsipos-dtn-bpsec-cose-02" ipr="trust200902" tocInclude="true" version="3">
-  <!-- xml2rfc v2v3 conversion 2.47.0 -->
   <front>
     <title abbrev="DTN BPSec COSE">
       DTN Bundle Protocol Security COSE Security Contexts
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-02"/>
+    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-03"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="RKF Engineering">
         RKF Engineering Solutions, LLC
@@ -23,7 +22,7 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date day="1" month="July" year="2020"/>
+    <date day="28" month="October" year="2020"/>
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
