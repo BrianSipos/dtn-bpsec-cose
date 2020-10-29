@@ -21,13 +21,13 @@ setup(
 
     # Packages and depencies
     package_dir={
-        '': 'src',
+        '': '.',
     },
     packages=find_packages(where='src'),
     install_requires=[
-        'scapy >=2.4',
         'cbor2 >=4.1,<4.2',
-        'PyGObject >=3.34', # glib integration
+        'cryptography',
+        'six',
     ],
     extras_require={},
 
