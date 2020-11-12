@@ -65,7 +65,7 @@ if(CBORVERIFY)
     add_custom_command(
         OUTPUT "${CBORERRORS_TXT}"
         DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
-        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//artwork[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}" 1>&2
+        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}" 1>&2
     )
     add_custom_target(
         cborerrors ALL
