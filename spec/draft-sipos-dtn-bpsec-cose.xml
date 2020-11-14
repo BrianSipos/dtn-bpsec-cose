@@ -21,7 +21,7 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date day="28" month="October" year="2020"/>
+    <date day="14" month="November" year="2020"/>
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
@@ -40,7 +40,7 @@ The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC815
       </t>
       <t>
 This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context"/>.
-A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-cose-profile"/>.
+A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-COSE-profile"/>.
 The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <xref target="sec-pkix-env"/>.
       </t>
       <t>
@@ -49,7 +49,7 @@ Examples of specific uses are provided in <xref target="sec-examples"/> to aid i
       <section>
         <name>Scope</name>
         <t>
-This document describes a profile of COSE which is tailored for use in BPSec.
+This document describes a profile of COSE which is tailored for use in BPSec and a method of including full COSE messages within BPSec security blocks.
 This document does not address:
         </t>
         <ul spacing="normal">
@@ -61,6 +61,7 @@ Uses of COSE beyond the profile defined in this document.
           </li>
           <li>
 How those COSE algorithms are intended to be used within a larger security context.
+Many header parameters used by COSE (e.g., key identifiers) depend on the network environment and security policy related to that environment.
           </li>
         </ul>
       </section>
@@ -88,10 +89,10 @@ This document specifies a single security context for use in both BPSec integrit
 This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable parameters and COSE messages which can be present.
       </t>
       <t>
-The COSE security context shall have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
+The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
       </t>
       <t>
-The existing CoAP Content-Format ID values in the CoRE registry <xref target="IANA-CORE"/> are used as BPSec Parameter ID and Result ID values within COSE security context (see tables within <xref target="sec-BIB-COSE"/> and <xref target="sec-BCB-COSE"/> for specific allowed values).
+The COSE security context has parameters to carry public key-related information, with code points are defined in <xref target="sec-COSE-parameters"/>, and results to carry COSE messages, with code points defined in <xref target="sec-BIB-COSE"/> and <xref target="sec-BCB-COSE"/>.
 For Result ID values used to identify COSE messages, these code points are also identical to the  existing COSE message-marking tags in Section 2 of <xref target="RFC8152"/>.
 This avoids the need for value-mapping between code points of the two registries.
       </t>
@@ -103,14 +104,20 @@ There is no use of embedded encoded CBOR (e.g. CBOR encoded as a byte string) in
 When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
 The Result ID values already provide the same information as the COSE tags (using the same code points).
       </t>
-      <section anchor="sec-BIB-COSE">
-        <name>COSE Integrity</name>
+      <section anchor="sec-COSE-parameters">
+        <name>COSE Security Parameters</name>
         <t>
-When used within a Block Integrity Block, COSE context SHALL allow only the Parameter IDs from <xref target="tab-BIB-parameters"/>.
-Each integrity parameter value SHALL consist of the COSE structure indicated by <xref target="tab-BIB-parameters"/> in its decoded form.
+Each COSE context parameter value SHALL consist of the COSE structure indicated by <xref target="tab-COSE-parameters"/> in its decoded (CBOR item) form.
+Each security block MAY contain any number of each parameter type.
+See <xref target="sec-asym-keys"/> for a definition of how the aggregate of all security parameters apply to each security result.
+      </t>
+      <t>
+Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling parameters of <xref target="tab-COSE-parameters"/>.
+COSE security parameters SHALL NOT contain any private key material.
+The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
         </t>
-        <table anchor="tab-BIB-parameters">
-          <name>COSE Integrity Parameters</name>
+        <table anchor="tab-COSE-parameters">
+          <name>COSE Security Parameters</name>
           <thead>
             <tr>
               <th>Parameter ID</th>
@@ -120,36 +127,40 @@ Each integrity parameter value SHALL consist of the COSE structure indicated by 
           </thead>
           <tbody>
             <tr>
-              <td>101</td>
+              <td>1</td>
               <td>COSE_Key</td>
               <td>
                 <xref target="RFC8152"/>
               </td>
             </tr>
             <tr>
-              <td>102</td>
+              <td>2</td>
               <td>COSE_KeySet</td>
               <td>
                 <xref target="RFC8152"/>
               </td>
             </tr>
             <tr>
-              <td>281</td>
-              <td>byte string containing encoded "application/pkcs7-mime; smime-type=certs-only"</td>
+              <td>3</td>
+              <td>COSE_X509 as x5chain</td>
               <td>
-                <xref target="RFC8551"/>
+                <xref target="I-D.ietf-cose-x509"/>
               </td>
             </tr>
             <tr>
-              <td>287</td>
-              <td>byte string containing encoded "application/pkix-cert"</td>
+              <td>4</td>
+              <td>COSE_X509 as x5bag</td>
               <td>
-                <xref target="RFC2585"/>
+                <xref target="I-D.ietf-cose-x509"/>
               </td>
             </tr>
           </tbody>
         </table>
+      </section>
+      <section anchor="sec-BIB-COSE">
+        <name>COSE Integrity</name>
         <t>
+When used within a Block Integrity Block, COSE context SHALL allow all Parameter IDs defined in <xref target="tab-COSE-parameters"/>.
 When used within a Block Integrity Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
 Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its decoded form.
         </t>
@@ -217,50 +228,7 @@ The canonically serialized primary block of the bundle.
       <section anchor="sec-BCB-COSE">
         <name>COSE Confidentiality</name>
         <t>
-When used within a Block Confidentiality Block, COSE context SHALL allow only the Parameter IDs from <xref target="tab-BCB-parameters"/>.
-Each integrity parameter value SHALL consist of the COSE structure indicated by <xref target="tab-BCB-parameters"/> in its decoded form.
-        </t>
-        <table anchor="tab-BCB-parameters">
-          <name>COSE Integrity Parameters</name>
-          <thead>
-            <tr>
-              <th>Parameter ID</th>
-              <th>Parameter Structure</th>
-              <th>Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>101</td>
-              <td>COSE_Key</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>102</td>
-              <td>COSE_KeySet</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>281</td>
-              <td>byte string containing encoded "application/pkcs7-mime; smime-type=certs-only"</td>
-              <td>
-                <xref target="RFC8551"/>
-              </td>
-            </tr>
-            <tr>
-              <td>287</td>
-              <td>byte string containing encoded "application/pkix-cert"</td>
-              <td>
-                <xref target="RFC2585"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <t>
+When used within a Block Confidentiality Block, COSE context SHALL allow all Parameter IDs defined in <xref target="tab-COSE-parameters"/>.
 When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results"/>.
 Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its decoded form.
         </t>
@@ -314,24 +282,13 @@ The canonically serialized augmented target block, which has its block-type-spec
         </ol>
       </section>
     </section>
-    <section anchor="sec-cose-profile">
+    <section anchor="sec-COSE-profile">
       <name>COSE Profile for BPSec</name>
       <t>
 This section contains requirements which apply to the use of COSE within BPSec across any security context use.
       </t>
-      <section anchor="sec-cose-parameters">
-        <name>COSE Security Parameters</name>
-        <t>
-When necessary to support PKI within BPSec, a BIB or BCB with a COSE context MAY contain one or more public keys (and related public data) as security parameters.
-Security sources SHALL NOT include non-public data within security parameters.
-        </t>
-        <t>
-See tables within <xref target="sec-BIB-COSE"/> and <xref target="sec-BCB-COSE"/> for specific parameter types allowed within BIB and BCB respectively.
-See <xref target="sec-asym-keys"/> for a description of how security sources and acceptors use these parameters.
-        </t>
-      </section>
-      <section anchor="sec-cose-results">
-        <name>COSE Security Results</name>
+      <section anchor="sec-COSE-results">
+        <name>COSE Messages</name>
         <t>
 When generating a BPSec result, security sources SHALL use encode COSE labels with a uint value.
 When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
@@ -563,7 +520,7 @@ Having a CA-validated certificate does not alone guarantee the identity of the s
       <section anchor="sec-threat-unident-key">
         <name>Threat: Unidentifiable Key</name>
         <t>
-The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-cose-parameters"/> allow encoding public keys where available.
+The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-COSE-parameters"/> allow encoding public keys where available.
 If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), the security acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
 This leads to a situation, identified in BPSec Security Considerations, where a signature is verified to be valid but not from the expected Security Source.
         </t>
@@ -587,7 +544,7 @@ This can cause the security acceptor to be able to verify a valid signature but 
       <section>
         <name>Threat: Passive Leak of Key Material</name>
         <t>
-It is important that the key requirements of <xref target="sec-cose-parameters"/> apply only to public keys and PKIX certificates.
+It is important that the key requirements of <xref target="sec-COSE-parameters"/> apply only to public keys and PKIX certificates.
 Including non-public key material in ASB parameters will expose that material in the bundle data and over the bundle convergence layer during transport.
         </t>
       </section>
@@ -647,15 +604,6 @@ The interoperability minimum algorithms and parameters are based on the draft <x
             <date/>
           </front>
         </reference>
-        <reference anchor="IANA-CORE" target="https://www.iana.org/assignments/core-parameters/">
-          <front>
-            <title>Constrained RESTful Environments (CoRE) Parameters</title>
-            <author>
-              <organization>IANA</organization>
-            </author>
-            <date/>
-          </front>
-        </reference>
         <reference anchor="IANA-COSE" target="https://www.iana.org/assignments/cose/">
           <front>
             <title>CBOR Object Signing and Encryption (COSE)</title>
@@ -666,7 +614,6 @@ The interoperability minimum algorithms and parameters are based on the draft <x
           </front>
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2585.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8152.xml"/>
@@ -697,6 +644,10 @@ The interoperability minimum algorithms and parameters are based on the draft <x
     </references>
     <section anchor="sec-examples">
       <name>Examples</name>
+      <t>
+These examples are intended to have the correct structure of COSE security blocks but in some cases use simplified algorithm parameters or smaller key sizes than are required by the actual COSE profile defined in this documents.
+Each example indicates how it differs from the actual profile if there is a meaningful difference.
+      </t>
       <section>
         <name>Symmetric Key COSE_Mac0</name>
         <t>
@@ -794,11 +745,16 @@ The payload is the encoded target block.
       <section>
         <name>RSA Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with implied recipient (and its key material).
+This is an example of a signature with an explicit signer key ID and signer public key itself (as a COSE_Key).
 The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
         </t>
         <t>
-The 512-bit private key used is below. It is not supposed to be a secure configuration, only intended to explain the procedure.
+The only differences between this example and a use of a PKIX public key certificate are: the parameters would have an x5chain parameter instead of a COSE_Key type, and the signature recipient would reference an "x5t" value instead of a "kid" value.
+Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature itself.
+        </t>
+        <t>
+The 512-bit private key used is below.
+It is not supposed to be a secure configuration, only intended to explain the procedure.
 This signature uses zero-length salt for deterministic output, which differs from the parameter specified by <xref target="RFC8230"/> and is not recommended for normal use.
         </t>
         <figure>
