@@ -72,8 +72,22 @@ This specification gives requirements about how to use PKIX certificates issued 
         </t>
         <t>
 To support the PKIX uses defined in this document, the CA(s) issuing certificates for BP nodes are aware of the end use of the certificate, have a mechanism for verifying ownership of a Node ID, and are issuing certificates directly for that Node ID.
-BPSec security acceptors authenticate the Node ID of security sources when verifying integrity using a public key provided by a PKIX certificate (see <xref target="sec-pkix-certs"/>).
+BPSec security acceptors authenticate the Node ID of security sources when verifying integrity (see <xref target="sec-context-auth"/>) using a public key provided by a PKIX certificate (see <xref target="sec-pkix-certs"/>) following the certificate profile of <xref target="sec-pkix-profile"/>.
         </t>
+      </section>
+      <section>
+        <name>Use of CDDL</name>
+        <t>
+This document defines CBOR structure using the Concise Data Definition Language (CDDL) of <xref target="RFC8610"/>.
+The entire CDDL structure can be extracted from the XML version of this document using the XPath expression:
+        </t>
+        <sourcecode>'//sourcecode[@type="cddl"]'</sourcecode>
+        <t>
+The following initial fragment defines the top-level symbols of this document's CDDL:
+        </t>
+        <sourcecode type="cddl">
+start = AAD-scope / AAD-value
+        </sourcecode>
       </section>
     </section>
     <section>
@@ -92,37 +106,52 @@ This is done to save code points allocated to this specification and to simplify
 The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
       </t>
       <t>
-The COSE security context has parameters to carry public key-related information, with code points are defined in <xref target="sec-COSE-parameters"/>, and results to carry COSE messages, with code points defined in <xref target="sec-BIB-COSE"/> and <xref target="sec-BCB-COSE"/>.
-For Result ID values used to identify COSE messages, these code points are also identical to the  existing COSE message-marking tags in <xref section="2" target="RFC8152"/>.
-This avoids the need for value-mapping between code points of the two registries.
+Both types of security block can use the same parameters, defined in <xref target="sec-ASB-parameters"/>, to carry public key-related information and each type of security block allows specific COSE message results, defined in <xref target="sec-ASB-results"/>.
       </t>
-      <t>
-When embedding COSE messages, the CBOR structure SHALL be directly included within the abstract security block (ASB) CBOR structure.
-There is no use of embedded encoded CBOR (e.g. CBOR encoded as a byte string) in this specification.
-      </t>
-      <t>
-When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
-The Result ID values already provide the same information as the COSE tags (using the same code points).
-      </t>
-      <section anchor="sec-COSE-parameters">
-        <name>COSE Security Parameters</name>
+      <section>
+        <name>Security Scope</name>
         <t>
-Each COSE context parameter value SHALL consist of the COSE structure indicated by <xref target="tab-COSE-parameters"/> in its decoded (CBOR item) form.
-Each security block MAY contain any number of each parameter type.
-See <xref target="sec-asym-keys"/> for a definition of how the aggregate of all security parameters apply to each security result.
-      </t>
-      <t>
-Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling parameters of <xref target="tab-COSE-parameters"/>.
-COSE security parameters SHALL NOT contain any private key material.
-The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
+The scope here refers to the set of information used by the security context to cryptographically bind with the plaintext data being integrity-protected or confididentiality-protected.
+This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same data.
         </t>
-        <table anchor="tab-COSE-parameters">
+        <t>
+The sources for AAD within the COSE context are described below, and controlled by the AAD Scope Flags parameter of <xref target="sec-ASB-parameters"/>.
+        </t>
+        <dl>
+          <dt>Bundle Primary Block</dt>
+          <dd>
+The primary block identifies a bundle and, once created, the contents of this block are immutable.
+Changes to the primary block associated with the security target indicate that the target is no longer in its original bundle.
+Including this data as part of AAD ensures that security target appears in the same bundle that the security source intended.
+          </dd>
+          <dt>Target Block Metadata</dt>
+          <dd>
+When the target block is a canonical block (i.e., not the primary block) it contains its block-type-specific data, which is the subject of the security operation, but also metadata identifying the block.
+This metadata explicitly excludes the CRC type and value fields because the CRC is derived from the block-type-specific data.   
+Including this data as part of AAD ensures that the target data appears in the same block that the security source intended.
+          </dd>
+          <dt>Security Block Metadata</dt>
+          <dd>
+The BPSec block containing the security result for which the AAD is assembled also has metadata identifying the block.
+Including this data as part of AAD ensures that the security result appears in the same block that the security source intended.
+          </dd>
+        </dl>
+      </section>
+      <section anchor="sec-ASB-parameters">
+        <name>Parameters</name>
+        <t>
+Each COSE context parameter value SHALL consist of the COSE structure indicated by <xref target="tab-ASB-parameters"/> in its decoded (CBOR item) form.
+Each security block MAY contain any number of each parameter type.
+When a parameter is not present, the security acceptor SHALL use the Default Value of <xref target="tab-ASB-parameters"/>.
+        </t>
+        <table anchor="tab-ASB-parameters">
           <name>COSE Security Parameters</name>
           <thead>
             <tr>
               <th>Parameter ID</th>
               <th>Parameter Structure</th>
               <th>Reference</th>
+              <th>Default Value</th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +161,7 @@ The security parameters are all stored in the bundle as plaintext and are visibl
               <td>
                 <xref target="RFC8152"/>
               </td>
+              <td>none</td>
             </tr>
             <tr>
               <td>2</td>
@@ -139,6 +169,7 @@ The security parameters are all stored in the bundle as plaintext and are visibl
               <td>
                 <xref target="RFC8152"/>
               </td>
+              <td>none</td>
             </tr>
             <tr>
               <td>3</td>
@@ -146,6 +177,7 @@ The security parameters are all stored in the bundle as plaintext and are visibl
               <td>
                 <xref target="I-D.ietf-cose-x509"/>
               </td>
+              <td>none</td>
             </tr>
             <tr>
               <td>4</td>
@@ -153,133 +185,313 @@ The security parameters are all stored in the bundle as plaintext and are visibl
               <td>
                 <xref target="I-D.ietf-cose-x509"/>
               </td>
+              <td>none</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>AAD_Scope</td>
+              <td><xref target="sec-ASB-param-AAD-scope"/> of this RFC</td>
+              <td>0x7 (all contexts)</td>
             </tr>
           </tbody>
         </table>
+        <section anchor="sec-ASB-param-keys">
+          <name>Key Containers</name>
+          <t>
+Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling parameters of <xref target="tab-ASB-parameters"/>.
+See <xref target="sec-asym-keys"/> for a definition of how the aggregate of all public keys and certificates in security parameters apply to each security result.
+          </t>
+          <t>
+COSE security parameters SHALL NOT contain any private key material.
+The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
+          </t>
+        </section>
+        <section anchor="sec-ASB-param-AAD-scope">
+          <name>AAD Scope</name>
+          <t>
+The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
+The AAD Scope parameter SHALL be encoded as a unit value with bit flags defined in <xref target="tab-AAD-scope-flags"/>.
+The default value for this parameter has all flags set which has the AAD include all available context.
+          </t>
+          <t>
+A CDDL representation of this definition is included in <xref target="fig-AAD-scope-cddl"/> for reference.
+          </t>
+          <table anchor="tab-AAD-scope-flags">
+            <name>AAD Scope Flags</name>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>has-primary-ctx</td>
+                <td>0x01</td>
+                <td>If bit is set, indicates that the primary block is included in AAD scope.</td>
+              </tr>
+              <tr>
+                <td>has-target-ctx</td>
+                <td>0x02</td>
+                <td>If bit is set, indicates that the target block metadata is included in AAD scope.</td>
+              </tr>
+              <tr>
+                <td>has-asb-ctx</td>
+                <td>0x04</td>
+                <td>If bit is set, indicates that the security block metadata is included in AAD scope.</td>
+              </tr>
+              <tr>
+                <td>Reserved</td>
+                <td>others</td>
+                <td/>
+              </tr>
+            </tbody>
+          </table>
+          <figure anchor="fig-AAD-scope-cddl">
+            <name>AAD Scope CDDL</name>
+            <sourcecode type="cddl">
+AAD-scope = uint .bits AAD-scope-flags
+AAD-scope-flags = &amp;(
+    has-primary-ctx: 0,
+    has-target-ctx: 1,
+    has-asb-ctx: 2,
+)
+            </sourcecode>
+          </figure>
+        </section>
       </section>
-      <section anchor="sec-BIB-COSE">
-        <name>COSE Integrity</name>
+      <section anchor="sec-ASB-results">
+        <name>Results</name>
         <t>
-When used within a Block Integrity Block, COSE context SHALL allow all Parameter IDs defined in <xref target="tab-COSE-parameters"/>.
-When used within a Block Integrity Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
+Although each COSE context result is a COSE message, the types of message allowed depend upon the security block type in which the result is present: only MAC or signature messages are allowed in a BIB and only encryption messages are allowed in a BCB.
+        </t>
+        <t>
+The code points for Result ID values are identical to the  existing COSE message-marking tags in <xref section="2" target="RFC8152"/>.
+This avoids the need for value-mapping between code points of the two registries.
+        </t>
+        <t>
+When embedding COSE messages, the CBOR structure SHALL be directly included within the abstract security block (ASB) CBOR structure.
+There is no use of embedded encoded CBOR (e.g. CBOR encoded as a byte string) in this specification.
+        </t>
+        <t>
+When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
+The Result ID values already provide the same information as the COSE tags (using the same code points).
+        </t>
+        <section anchor="sec-ASB-results-BIB">
+          <name>Integrity Messages</name>
+          <t>
+When used within a Block Integrity Block, the COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
 Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its decoded form.
         </t>
-        <table anchor="tab-BIB-results">
-          <name>COSE Integrity Results</name>
-          <thead>
-            <tr>
-              <th>Result ID</th>
-              <th>Result Structure</th>
-              <th>Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>97</td>
-              <td>COSE_Mac</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>17</td>
-              <td>COSE_Mac0</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>98</td>
-              <td>COSE_Sign</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>18</td>
-              <td>COSE_Sign1</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <t>
+          <table anchor="tab-BIB-results">
+            <name>COSE Integrity Results</name>
+            <thead>
+              <tr>
+                <th>Result ID</th>
+                <th>Result Structure</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>97</td>
+                <td>COSE_Mac</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>COSE_Mac0</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+              <tr>
+                <td>98</td>
+                <td>COSE_Sign</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td>COSE_Sign1</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
 Each integrity result SHALL use the "detached" payload form with nil payload value.
 The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <xref section="6.3" target="RFC8152"/>.
 The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <xref section="4.4" target="RFC8152"/>.
-        </t>
-        <t>
-[NOTE: This differs from base BPSec in that the entire block and the bundle primary is signed]
-The COSE "payload" used to generate a signature or MAC result SHALL be the canonically serialized target block, including the canonical block array structure.
-The COSE "protected attributes from the application" used to generate a signature or MAC result SHALL be either:
-        </t>
-        <dl newline="false" spacing="normal">
-          <dt>For a primary block target:</dt>
-          <dd>
-An empty byte string.
-            </dd>
-          <dt>For a canonical block target:</dt>
-          <dd>
-The canonically serialized primary block of the bundle.
-            </dd>
-        </dl>
-      </section>
-      <section anchor="sec-BCB-COSE">
-        <name>COSE Confidentiality</name>
-        <t>
-When used within a Block Confidentiality Block, COSE context SHALL allow all Parameter IDs defined in <xref target="tab-COSE-parameters"/>.
+          </t>
+          <t>
+The COSE "protected attributes from the application" used for a signature or MAC result SHALL be the encoded data defined in <xref target="sec-context-AAD"/>.
+The COSE payload used for a signature or MAC result SHALL be either the block-type-specific data of the target, if the target is not the primary block, or an empty byte string if the target is the primary block.
+          </t>
+        </section>
+        <section anchor="sec-ASB-results-BCB">
+          <name>Confidentiality Messages</name>
+          <t>
 When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results"/>.
 Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its decoded form.
-        </t>
-        <table anchor="tab-BCB-results">
-          <name>COSE Confidentiality Results</name>
-          <thead>
-            <tr>
-              <th>Result ID</th>
-              <th>Result Structure</th>
-              <th>Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>96</td>
-              <td>COSE_Encrypt</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-            <tr>
-              <td>16</td>
-              <td>COSE_Encrypt0</td>
-              <td>
-                <xref target="RFC8152"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <t>
+          </t>
+          <table anchor="tab-BCB-results">
+            <name>COSE Confidentiality Results</name>
+            <thead>
+              <tr>
+                <th>Result ID</th>
+                <th>Result Structure</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>96</td>
+                <td>COSE_Encrypt</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>COSE_Encrypt0</td>
+                <td>
+                  <xref target="RFC8152"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
 Only algorithms which support Authenticated Encryption with Authenticated Data (AEAD) SHALL be usable in the first (content) layer of a confidentiality result.
 Because COSE encryption with AEAD appends the authentication tag with the ciphertext, the size of the block-type-specific-data will grow after an encryption operation.
-        </t>
-        <t>
+Security acceptors MUST NOT assume that the size of the plaintext is the same as the size of the ciphertext.
+          </t>
+          <t>
 Each confidentiality result SHALL use the "detached" payload form with nil payload value.
-The COSE plaintext and ciphertext correspond exactly with the target block-type-specific-data.
 The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <xref section="5.3" target="RFC8152"/>.
+          </t>
+          <t>
+The COSE "protected attributes from the application" used for an encryption result SHALL be the encoded data defined in <xref target="sec-context-AAD"/>.
+The COSE payload used for an encryption result SHALL be the block-type-specific data of the target.
+Because confidentiality of the primary block is disallowed by BPSec, there is no logic here for handling a BCB with a target on the primary block.
+          </t>
+        </section>
+      </section>
+      <section>
+        <name>Key Considerations</name>
+        <t>
+This specification does not impose any additional key requirements beyond those already specified for each COSE algorithim required in <xref target="sec-COSE-profile"/>.
+        </t>
+      </section>
+      <section>
+        <name>Canonicalization Algorithms</name>
+        <t>
+Generating or processing COSE messages for the COSE context follows the profile defined in <xref target="sec-COSE-profile"/> with the "protected attributes from the application" (i.e., the "external_aad" item) generated as defined in <xref target="sec-context-AAD"/>.
+        </t>
+        <section anchor="sec-context-AAD">
+          <name>Generating AAD</name>
+          <t>
+The COSE  used for encrypt result SHALL be the canonically encoded form of a CBOR map containing the following:
+          </t>
+          <ol>
+            <li>
+If the AAD Scope has the has-primary-ctx flag set, the map SHALL contain the key of 0 having the value of the canonically serialized primary block of the bundle.
+            </li>
+            <li>
+If the AAD Scope has the has-target-ctx flag set, the map SHALL contain the key of 1 having the value of the canonically serialized array of the first three fields of the target block (i.e., the block type code, block number, and control flags).
+            </li>
+            <li>
+If the AAD Scope has the has-asb-ctx flag set, the map SHALL contain the key of 1 having the value of the canonically serialized array of the first three fields of the security block containing the result (i.e., the block type code, block number, and control flags).
+            </li>
+          </ol>
+          <t>
+A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"/>.
+          </t>
+          <figure anchor="fig-AAD-CDDL">
+            <name>COSE context AAD CDDL</name>
+            <sourcecode type="cddl">
+AAD-value = bstr .cbor AAD-structure
+AAD-structure = {
+    ? 0: bstr .cbor primary-block,  ; if has-primary-ctx flag is set
+    ? 1: bstr .cbor block-identity,  ; if has-target-ctx flag is set
+    ? 2: bstr .cbor block-identity  ; if has-asb-ctx flag is set
+}
+; The first three fields of BP "canonical-block-structure"
+block-identity = [
+    block-type-code: uint,
+    block-number: uint,
+    block-control-flags,
+]
+            </sourcecode>
+          </figure>
+        </section>
+        <section>
+          <name>Payload Data</name>
+          <t>
+When correlating between BPSec target block-type-specific-data and COSE plaintext or payload, any byte string SHALL be handled in its decoded (CBOR item) form.
+This means any CBOR header or tag in a source encoding are ignored for the purposes of security processing.
+This also means that if the source byte string was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size lengnth, the security processing always treats it in a canonically encoded CBOR form.
+        </t>
+        </section>
+      </section>
+      <section>
+        <name>Processing</name>
+        <t>
+This section describes block-level requirements for handling COSE security data.
         </t>
         <t>
-[NOTE: This differs from base BPSec in that AAD from the block and the bundle primary is used]
-The COSE "plaintext" used to generate an encrypt result SHALL be the block-type-specific-data of the target block, the decoded byte string itself (not including the encoded CBOR item header).
-The COSE "protected attributes from the application" used to generate an encrypt result SHALL be the concatenation of the following:
+Security results generated for BIB or BCB results SHALL conform to the COSE profile of <xref target="sec-COSE-profile"/>.
+Security acceptors SHOULD 
         </t>
-        <ol spacing="normal" type="1">
-          <li>
-The canonically serialized primary block of the bundle.
-            </li>
-          <li>
-The canonically serialized augmented target block, which has its block-type-specific-data substituted with an empty byte string.
-            </li>
-        </ol>
+        <section anchor="sec-context-auth">
+          <name>Security Source Authentication</name>
+          <t>
+This section explains how the certificate profile of <xref target="sec-pkix-profile"/> is used by a security acceptor to both validate an end-entity certificate and to use that certificate to authenticate the security source for the COSE security context.
+          </t>
+          <t>
+Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with mulitple certificates, and any or all of those certificates can be present as security parameters (see <xref target="sec-ASB-param-keys"/>).
+When present, a security acceptor SHALL use an "x5t" identifier from a COSE recipient to identify an end-entity certificate to use for result processing.
+Security acceptors SHALL NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient.
+          </t>
+          <section anchor="sec-context-auth-valid-cert">
+            <name>Certificate Path and Purpose Validation</name>
+            <t>
+For each end-entity certificate referenced by a COSE context result, the security acceptor SHALL perform the certification path validation of <xref target="RFC5280"/> up to one of the acceptor's trusted CA certificates.
+If enabled by local policy, the entity SHALL perform an OCSP check of each certificate providing OCSP authoritiy information in accordance with <xref target="RFC6960"/>.
+If certificate validation fails or if security policy disallows a certificate for any reason, the acceptor SHALL treat the associated security result as failed.
+Leaving out part of the certification chain can cause the entity to fail to validate a certificate if the left-out certificates are unknown to the entity (see <xref target="sec-threat-untrust-cert"/>).
+          </t>
+            <t>
+For each end-entity certificate referenced by a COSE context result, the security acceptor SHALL apply security policy to the Key Usage extension (if present) and Extended Key Usage extension (if present) in accordance with <xref section="4.2.1.12" target="RFC5280"/> and the profile in <xref target="sec-pkix-profile"/>.
+          </t>
+          </section>
+          <section anchor="sec-context-auth-valid-nodeid">
+            <name>Node ID Authentication</name>
+            <t>
+If required by security policy, for each end-entity certificate referenced by a COSE context result the security acceptor SHALL validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from either the Security Source (if present) or the Bundle Source (as the implied security source).
+If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, the security acceptor SHALL treat the result as failed.
+            </t>
+          </section>
+        </section>
+        <section anchor="sec-context-auth-policy-rec">
+          <name>Policy Recommendations</name>
+          <t>
+A RECOMMENDED security policy is to enable the use of OCSP checking when internet connectivity is present.
+A RECOMMENDED security policy is that if an Extended Key Usage is present that it needs to contain "id-kp-bundleSecurity" to be usable as an end-entity certificate for with COSE security results.
+A RECOMMENDED security policy is to require a validated Node ID (of <xref target="sec-context-auth-valid-nodeid"/>) and to ignore any other identifiers in the end-entity certificate.
+          </t>
+          <t>
+This policy relies on and informs the certificate requirements in <xref target="sec-pkix-certs"/>.
+This policy assumes that a DTN-aware CA (see <xref target="sec-pkix-env"/>) will only issue a certificate for a Node ID when it has verified that the private key holder actually controls the DTN node; this is needed to avoid the threat identified in <xref target="sec-threat-node-impersonation"/>.
+This policy requires that a certificate contain a NODE-ID and allows the certificate to also contain network-level identifiers.
+A tailored policy on a more controlled network could relax the requirement on Node ID validation and/or Extended Key Usage presence.
+          </t>
+        </section>
       </section>
     </section>
     <section anchor="sec-COSE-profile">
@@ -287,7 +499,7 @@ The canonically serialized augmented target block, which has its block-type-spec
       <t>
 This section contains requirements which apply to the use of COSE within BPSec across any security context use.
       </t>
-      <section anchor="sec-COSE-results">
+      <section anchor="sec-COSE-messages">
         <name>COSE Messages</name>
         <t>
 When generating a BPSec result, security sources SHALL use encode COSE labels with a uint value.
@@ -400,27 +612,30 @@ When a COSE_Mac is used with a direct key, the recipient layer SHALL include a k
           <dt>EC Keypair Integrity:</dt>
           <dd>
 When generating a BIB result from an EC keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 encryption of the symmetric key.
-When a COSE_Sign or COSE_Mac is used with EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Sign or COSE_Mac is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
           <dt>RSA Keypair Integrity:</dt>
           <dd>
 When generating a BIB result from an RSA keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 key-wrap of the symmetric key.
-When a COSE_Sign or COSE_Mac is used with RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE_Sign or COSE_Sign1 is used with RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230"/>.
+When a COSE_Sign or COSE_Mac is used with an RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230"/>.
             </dd>
           <dt>Symmetric Key Confidentiality:</dt>
           <dd>
 When generating a BCB result from an symmetric key, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When generating a BCB result from a symmetric key, implementations SHOULD NOT use COSE_Encrypt0 or COSE_Encrypt with direct content encryption key (CEK).
 Doing so risks key overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipient layer SHALL include a key identifier for the KEK.
             </dd>
           <dt>EC Keypair Confidentiality:</dt>
           <dd>
 When generating a BCB result from an EC keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+When a COSE_Encrypt is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
           <dd>
 When generating a BCB result from an RSA keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
         </dl>
       </section>
@@ -454,15 +669,65 @@ When PKIX certificates are used by security acceptors and the end-entity certifi
 Leaving out part of the certification chain can cause the security acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
           </t>
           <t>
-When a PKIX certificate is referenced by a BIB result, security acceptors SHALL authenticate either the Security Source (if present) or the Bundle Source (as the implied security source) against any NODE-ID contained in the referenced certificate as defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
-If the Security Source authentication result is Failure or if the result is Absent and security policy requires an authenticated Node ID, the acceptor SHALL treat the security result as invalid.
-          </t>
-          <t>
-All certificates used by COSE security SHALL include a key usage extension in accordance with <xref target="RFC5280"/>.
-The key usage extension is required to be supported by CAs conforming to the profile of <xref target="RFC5280"/>.
-A security acceptor SHALL limit the use of PKIX certificates based on the key usage extension.
+The end entity certificate associated with a BPSec security source SHALL adhere to the profile of <xref target="sec-pkix-profile"/>.
           </t>
         </section>
+      </section>
+    </section>
+    <section anchor="sec-pkix-profile">
+      <name>PKIX Certificate Profile</name>
+      <t>
+All end-entity certificates used for BPSec SHALL conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
+      </t>
+      <t>
+This profile requires Version 3 certificates due to the extensions used by this profile.
+Security acceptors SHALL reject as invalid Version 1 and Version 2 end-entity certificates.
+      </t>
+      <t>
+Security acceptors SHALL accept certificates that contain an empty Subject field or contain a Subject without a Common Name.
+Identity information in end-entity certificates is contained entirely in the subjectAltName extension as a NODE-ID, as defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
+      </t>
+      <t>
+All end-entity and CA certificates used for BPSec SHOULD contain both a Subject Key Identifier and an Authority Key Identifier extension in accordance with <xref target="RFC5280"/>.
+Security acceptors SHOULD NOT rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
+Including key identifiers simplifies the work of an entity needing to assemble a certification chain.
+      </t>
+      <t>
+A BPSec end-entity certificate SHALL contain a NODE-ID which authenticates the Node ID of the security source.
+The identifier type NODE-ID is defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
+      </t>
+      <t>
+When allowed by CA policy, a BPSec end-entity certificate SHOULD contain a PKIX Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
+When the PKIX Extended Key Usage extension is present, it SHALL contain a key purpose "id-kp-bundleSecurity" as defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
+The "id-kp-bundleSecurity" purpose MAY be combined with other purposes in the same certificate.
+      </t>
+      <t>
+When allowed by CA policy, a BPSec end-entity certificate SHALL contain a PKIX Key Usage extension in accordance with <xref section="4.2.1.3" target="RFC5280"/>.
+The PKIX Key Usage bits which are consistent with COSE security are: digitalSignature, nonRepudiation, keyEncipherment, and keyAgreement.
+The specific algorithms used by COSE messages in security results determine which of those key uses are exercised.
+See <xref target="sec-pkix-multiple-certs"/> for discussion of key use policies across multiple certificates.
+      </t>
+      <t>
+A BPSec end-entity certificate MAY contain an Online Certificate Status Protocol (OCSP) URI within an Authority Information Access extension in accordance with <xref section="4.2.2.1" target="RFC5280"/>.
+Security acceptors are not expected to have continuous internet connectivity sufficient to perform OCSP verification.
+      </t>
+      <section anchor="sec-pkix-multiple-certs">
+        <name>Multiple-Certificate Uses</name>
+        <t>
+A RECOMMENDED security policy is to limit asymmetric keys (and thus public key certificates) to single uses among the following:
+        </t>
+        <dl>
+          <dt>Bundle transport:</dt>
+          <dd>With key uses as defined in the convergence layer specification(s).</dd>
+          <dt>Block signing:</dt>
+          <dd>With key use digitalSignature and/or nonRepudiation</dd>
+          <dt>Block encryption:</dt>
+          <dd>With key use keyEncipherment and/or keyAgreement</dd>
+        </dl>
+        <t>
+This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="NIST-SP800-57"/> more generally.
+Effectively this means that a BP node uses separate certificates for transport (e.g., as a TCPCL entity), BIB signing (as a security source), and BCB encryption (as a security acceptor).
+        </t>
       </section>
     </section>
     <section>
@@ -503,11 +768,31 @@ All of the security considerations of the underlying BPSec <xref target="I-D.iet
         <t>
 The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see <xref section="4.2.2" target="I-D.ietf-dtn-bpbis"/>).
 These same fields are used to correlate Administrative Records with the bundles for which the records were generated.
-Including the primary block in the additional authenticated data (AAD) for BPSec integrity and confidentiality binds the verification of the secured block to its parent bundle and disallows replay of any block with its BIB or BCB.
+Including the primary block in the AAD for BPSec integrity and confidentiality binds the verification of the secured block to its parent bundle and disallows replay of any block with its BIB or BCB.
         </t>
         <t>
 This profile of COSE limits the encryption algorithms to only AEAD in order to include the context of the encrypted data as AAD.
 If an agent mistakenly allows the use of non-AEAD encryption when decrypting and verifying a BCB, the possibility of block replay attack is present.
+        </t>
+      </section>
+      <section anchor="sec-threat-untrust-cert">
+        <name>Threat: Untrusted End-Entity Certificate</name>
+        <t>
+The profile in <xref target="sec-context-auth"/> uses end-entity certificates chained up to a trusted root CA.
+A security source can include a certificate set which does not contain the full chain, possibly excluding intermediate or root CAs.
+In an environment where security acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs, but this has a risk of an acceptor not actually having one of the needed CAs.
+        </t>
+      </section>
+      <section>
+        <name>Threat: Certificate Validation Vulnerabilities</name>
+        <t>
+Even when a security acceptor is operating properly an attacker can attempt to exploit vulnerabilities within certificate check algorithms or configuration to authenticate using an invalid certificate.
+An invalid certificate exploit could lead to higher-level security issues and/or denial of service to the Node ID being impersonated.
+        </t>
+        <t>
+There are many reasons, described in <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its valid time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
+Validating a certificate is a complex task and can require network connectivity outside of the primary BP convergence layer network path(s) if a mechanism such as OCSP <xref target="RFC6960"/> is used by the CA.
+The configuration and use of particular certificate validation methods are outside of the scope of this document.
         </t>
       </section>
       <section anchor="sec-threat-node-impersonation">
@@ -520,7 +805,7 @@ Having a CA-validated certificate does not alone guarantee the identity of the s
       <section anchor="sec-threat-unident-key">
         <name>Threat: Unidentifiable Key</name>
         <t>
-The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-COSE-parameters"/> allow encoding public keys where available.
+The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-ASB-parameters"/> allow encoding public keys where available.
 If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), the security acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
 This leads to a situation, identified in BPSec Security Considerations, where a signature is verified to be valid but not from the expected Security Source.
         </t>
@@ -544,7 +829,7 @@ This can cause the security acceptor to be able to verify a valid signature but 
       <section>
         <name>Threat: Passive Leak of Key Material</name>
         <t>
-It is important that the key requirements of <xref target="sec-COSE-parameters"/> apply only to public keys and PKIX certificates.
+It is important that the key requirements of <xref target="sec-ASB-parameters"/> apply only to public keys and PKIX certificates.
 Including non-public key material in ASB parameters will expose that material in the bundle data and over the bundle convergence layer during transport.
         </t>
       </section>
@@ -615,6 +900,8 @@ The interoperability minimum algorithms and parameters are based on the draft <x
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6125.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6960.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8152.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
@@ -627,6 +914,16 @@ The interoperability minimum algorithms and parameters are based on the draft <x
       </references>
       <references>
         <name>Informative References</name>
+        <reference anchor="NIST-SP800-57" target="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">
+          <front>
+            <title>Recommendation for Key Management - Part 1: General</title>
+            <author>
+              <organization>National Institute of Standards and Technology</organization>
+            </author>
+            <date month="May" year="2020"/>
+          </front>
+          <refcontent>NIST Special Publication 800-57 Revision 4, DOI 10.6028/NIST.SP.800-57pt1r5</refcontent>
+        </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpbis-26.xml"/>

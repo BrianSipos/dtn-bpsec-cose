@@ -59,6 +59,7 @@ add_custom_target(
     DEPENDS "${DRAFT_NAME_TXT}" "${DRAFT_NAME_HTML}" "${MISSPELLING_TXT}"
 )
 
+# Process each CBOR fragment independently
 find_program(CBORVERIFY diag2pretty.rb)
 if(CBORVERIFY)
     set(CBORERRORS_TXT "cborerrors.txt")
@@ -70,6 +71,23 @@ if(CBORVERIFY)
     add_custom_target(
         cborerrors ALL
         DEPENDS "${CBORERRORS_TXT}"
+    )
+endif()
+
+# Process all CDDL concatenated together
+find_program(CDDLTOOL cddl)
+if(CDDLTOOL)
+    set(CDDLVERIFY "${CMAKE_CURRENT_SOURCE_DIR}/cddl_verify.sh")
+    set(CDDLERRORS_TXT "cddlerrors.txt")
+    add_custom_command(
+        OUTPUT "${CDDLERRORS_TXT}"
+        DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CDDLVERIFY}"
+        COMMAND ${XMLSTARLET} sel --text -t -v '//sourcecode[@type="cddl"]' "${DRAFT_NAME_XML}" | 
+            sh ${CDDLVERIFY} 2>"${CDDLERRORS_TXT}" 1>&2
+    )
+    add_custom_target(
+        cddlerrors ALL
+        DEPENDS "${CDDLERRORS_TXT}"
     )
 endif()
 

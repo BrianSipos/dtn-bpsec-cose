@@ -1,0 +1,21 @@
+; This relies on the defintions of BPv7 "bpv7.cddl"
+
+$extension-block-structure /= extension-block-use<TBD, embedded-cbor<ext-data-asb>>
+
+ext-data-asb = [
+  targets: [1* target-block-num],
+  context-id: int,
+  flags: uint .bits asb-flag-bits,
+  ? source: eid,
+  ? parameters: asb-id-val-pair,
+  target-results: [1* asb-id-val-pair]
+]
+target-block-num = uint
+asb-flag-bits = &(
+  sec-params-present: 1,
+  sec-source-present: 2
+)
+asb-id-val-pair = [
+  id: uint,
+  val: any
+]
