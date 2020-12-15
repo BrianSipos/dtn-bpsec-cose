@@ -21,8 +21,8 @@ jobs:
       run: |
         sudo apt install libgirepository1.0-dev
         python -m pip install --upgrade pip
-	# custom cose repo
-	pip install git+https://github.com/BSipos-RKF/pycose.git@develop
+        # custom cose repo
+        pip install git+https://github.com/BSipos-RKF/pycose.git@develop
         pip install -e src
     - name: Lint with flake8
       run: |
