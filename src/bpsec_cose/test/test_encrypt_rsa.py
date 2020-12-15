@@ -1,19 +1,19 @@
 import binascii
-import unittest
 import cbor2
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.ciphers import aead
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import serialization, hashes
-from  jwcrypto import jwk
-from ..util import encode_protected, encode_diagnostic
+from cryptography.hazmat.primitives import serialization
+from cose import SymmetricKey, EncMessage, CoseHeaderKeys, CoseAlgorithms, RSA
+import cose.keys.cosekey as cosekey
+from cose.messages.recipient import CoseRecipient, RcptParams
+from ..util import encode_diagnostic
+from .base import BaseTest
 
 
-class TestExample(unittest.TestCase):
+class TestExample(BaseTest):
 
     def test(self):
         print()
-        # 512-bit key
+        # 1024-bit key
         privkey_pem = b'''\
 -----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQCwtf2F9SyRhEAHRDyfk3GYACX3bVH8nGdoEjHaYQyykbpjfOgT
@@ -31,126 +31,113 @@ QIAuu/JxrXC4kFujr5ECQAe1phcziWJwpr0rsWVBlMVOK8DgYbVDpO2fpzxLx5yH
 FIqpKkUcSrgmK2N3qce5f4aRYMpvXYU+5LZfT5KGXKM=
 -----END RSA PRIVATE KEY-----
 '''
-        privkey = serialization.load_pem_private_key(privkey_pem, None, default_backend())
-        pubkey = privkey.public_key()
-        print('Private Key: {}'.format(jwk.JWK.from_pem(privkey_pem).export()))
-        print('Public Key: {}'.format(pubkey))
-
+        ext_key = serialization.load_pem_private_key(privkey_pem, None, default_backend())
+        private_key = RSA.from_cryptograpy_key_obj(ext_key)
+        private_key.kid = b'ExampleRSA'
+        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e', 'd', 'p', 'q', 'dP', 'dQ', 'qInv'), bstr_as='base64')))
+        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e'), bstr_as='base64')))
         # 256-bit content encryption key
-        cek = binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
-        print('CEK: {}'.format(binascii.hexlify(cek)))
+        cek = SymmetricKey(
+            kid=b'ExampleCEK',
+            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+        )
+        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'), bstr_as='base64')))
         # session IV
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
 
         # Primary block
-        prim_dec = [
-            7,
-            0,
-            0,
-            [1, '//dst/svc'],
-            [1, '//src/bp'],
-            [1, '//src/bp'],
-            [0, 40],
-            1000000
-        ]
+        prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
-        print('Primary: {}'.format(encode_diagnostic(prim_dec)))
+        print('Primary Block: {}'.format(encode_diagnostic(prim_dec)))
         print('Encoded: {}'.format(encode_diagnostic(prim_enc)))
 
-        # Block-to-encrypt
-        target_dec = [
-            7,  # bundle age
-            2,
-            0,
-            0,
-            cbor2.dumps(300)
-        ]
+        # Security target block
+        target_dec = self._get_target_item()
         content_plaintext = target_dec[4]
-        print('Block: {}'.format(encode_diagnostic(target_dec)))
+        print('Target Block: {}'.format(encode_diagnostic(target_dec)))
         print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
 
-        # Augmented block
-        aug_dec = target_dec[:-1] + [bytes()]
-        aug_enc = cbor2.dumps(aug_dec)
-        print('Augmented block: {}'.format(encode_diagnostic(aug_dec)))
-        print('Encoded: {}'.format(encode_diagnostic(aug_enc)))
+        # Combined AAD
+        ext_aad_dec = self._get_aad_item()
+        ext_aad_enc = cbor2.dumps(ext_aad_dec)
+        print('External AAD: {}'.format(encode_diagnostic(ext_aad_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(ext_aad_enc)))
 
-        # COSE Headers
-        protected_dec = {
-            1: 3  # alg: A256GCM
-        }
-        unprotected_dec = {
-            5: iv  # iv
-        }
-        protected_enc = encode_protected(protected_dec)
-        print('Layer-1 Protected: {}'.format(encode_diagnostic(protected_dec)))
-        print('Layer-1 Encoded: {}'.format(encode_diagnostic(protected_enc)))
-
-        recip_protected_dec = {
-        }
-        recip_unprotected_dec = {
-            1:-41,  # alg: RSAES-OAEP SHA-256
-            4: 'ExampleRSA',  # kid
-        }
-        recip_protected_enc = encode_protected(recip_protected_dec)
-        print('Layer-2 Protected: {}'.format(encode_diagnostic(recip_protected_dec)))
-        print('Layer-2 Encoded: {}'.format(encode_diagnostic(recip_protected_enc)))
-
-        ext_aad = prim_enc + aug_enc
-        print('Encoded External AAD: {}'.format(encode_diagnostic(ext_aad)))
-
-        # Enc_structure Section 5.3
-        enc_struct_dec = list()
-        enc_struct_dec.append('Encrypt')
-        enc_struct_dec.append(protected_enc)
-        enc_struct_dec.append(ext_aad)
-        enc_struct_enc = cbor2.dumps(enc_struct_dec)
-        print('Enc_structure: {}'.format(encode_diagnostic(enc_struct_dec)))
-        print('Encoded: {}'.format(encode_diagnostic(enc_struct_enc)))
-
-        # Encrypt original block data
-        content_cipher = aead.AESGCM(cek)
-        content_ciphertext = content_cipher.encrypt(iv, content_plaintext, enc_struct_enc)
-        print('Content Ciphertext: {}'.format(encode_diagnostic(content_ciphertext)))
-
-        cek_ciphertext = pubkey.encrypt(
-            cek,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
+        private_key.key_ops = cosekey.KeyOps.WRAP
+        cek.key_ops = cosekey.KeyOps.ENCRYPT
+        msg_obj = EncMessage(
+            phdr={
+                CoseHeaderKeys.ALG: CoseAlgorithms.A256GCM,
+            },
+            uhdr={
+                CoseHeaderKeys.IV: iv,
+            },
+            payload=content_plaintext,
+            recipients=[
+                CoseRecipient(
+                    uhdr={
+                        CoseHeaderKeys.ALG: CoseAlgorithms.RSAES_OAEP_SHA_256,
+                        CoseHeaderKeys.KID: private_key.kid,
+                    },
+                    payload=cek.k,
+                ),
+            ],
+            # Non-encoded parameters
+            external_aad=ext_aad_enc,
         )
-        print('CEK Ciphertext: {}'.format(encode_diagnostic(cek_ciphertext)))
 
-        # COSE_Encrypt0 structure
-        message_dec = [
-            protected_enc,
-            unprotected_dec,
-            None,  # ciphertext
-            [  # recipients
-                recip_protected_dec,
-                recip_unprotected_dec,
-                cek_ciphertext,
-                []  # no more ops
-            ]
-        ]
+        # COSE internal structure
+        cose_struct_enc = msg_obj._enc_structure
+        cose_struct_dec = cbor2.loads(cose_struct_enc)
+        print('COSE Structure: {}'.format(encode_diagnostic(cose_struct_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(cose_struct_enc)))
 
-        # BIB structure
-        asb_dec = [
-            [2],  # Targets
-            0,  # TBD-CI
-            0,  # Flags
-            [
-                # Target num 2
-                [
-                    [
-                        97,  # COSE_Encrypt
-                        message_dec
-                    ]
-                ]
-            ]
-        ]
+        # Encoded message
+        message_enc = msg_obj.encode(
+            key=cek,
+            nonce=msg_obj.uhdr[CoseHeaderKeys.IV],
+            alg=msg_obj.phdr[CoseHeaderKeys.ALG],
+            enc_params=[
+                RcptParams(
+                    key=private_key,
+                    alg=msg_obj.recipients[0].uhdr[CoseHeaderKeys.ALG],
+                ),
+            ],
+            tagged=False
+        )
+        message_dec = cbor2.loads(message_enc)
+        # Detach the payload
+        content_ciphertext = message_dec[2]
+        message_dec[2] = None
+        self._print_message(message_dec, recipient_idx=3)
 
+        # ASB structure
+        asb_dec = self._get_asb_item([
+            msg_obj.cbor_tag,
+            message_dec
+        ])
+        asb_enc = cbor2.dumps(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
+
+        bpsec_dec = self._get_bpsec_item(
+            block_type=99,  # FIXME: not real
+            asb_dec=asb_dec,
+        )
+        bpsec_enc = cbor2.dumps(bpsec_dec)
+        print('BPSec block: {}'.format(encode_diagnostic(bpsec_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(bpsec_enc)))
+
+        # Change from detached payload
+        message_dec[2] = content_ciphertext
+        decode_obj: EncMessage = EncMessage.decode(cbor2.dumps(cbor2.CBORTag(EncMessage.cbor_tag, message_dec)))
+        decode_obj.external_aad = ext_aad_enc
+        cek.key_ops = cosekey.KeyOps.DECRYPT
+        decode_plaintext = decode_obj.decrypt(key=cek, nonce=decode_obj.uhdr[CoseHeaderKeys.IV])
+        print('Loopback plaintext:', encode_diagnostic(decode_plaintext))
+        self.assertEqual(content_plaintext, decode_plaintext)
+        private_key.key_ops = cosekey.KeyOps.UNWRAP
+        decode_cek = private_key.key_unwrap(decode_obj.recipients[0].payload)
+        print('Loopback CEK:', encode_diagnostic(decode_cek, bstr_as='base64'))
+        self.assertEqual(cek.k, decode_cek)

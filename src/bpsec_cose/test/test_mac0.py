@@ -1,96 +1,93 @@
 import binascii
-import unittest
 import cbor2
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, hmac
-from ..util import encode_protected, encode_diagnostic
+from cose import Mac0Message, CoseHeaderKeys, CoseAlgorithms, SymmetricKey
+import cose.keys.cosekey as cosekey
+from ..util import encode_diagnostic
+from .base import BaseTest
 
 
-class TestExample(unittest.TestCase):
+class TestExample(BaseTest):
 
     def test(self):
         print()
         # 256-bit key
-        privkey = binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
-        print('Key: {}'.format(binascii.hexlify(privkey)))
+        key = SymmetricKey(
+            kid=b'ExampleKey',
+            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
+        )
+        print('Key: {}'.format(encode_diagnostic(key.encode('_kid', 'k'), bstr_as='base64')))
 
         # Primary block
-        prim_dec = [
-            7,
-            0,
-            0,
-            [1, '//dst/svc'],
-            [1, '//src/bp'],
-            [1, '//src/bp'],
-            [0, 40],
-            1000000
-        ]
+        prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
-        print('Primary: {}'.format(encode_diagnostic(prim_dec)))
+        print('Primary Block: {}'.format(encode_diagnostic(prim_dec)))
         print('Encoded: {}'.format(encode_diagnostic(prim_enc)))
 
         # Block-to-MAC
-        target_dec = [
-            7,  # bundle age
-            2,
-            0,
-            0,
-            cbor2.dumps(300)
-        ]
-        target_enc = cbor2.dumps(target_dec)
-        print('Block: {}'.format(encode_diagnostic(target_dec)))
-        print('Encoded: {}'.format(encode_diagnostic(target_enc)))
+        target_dec = self._get_target_item()
+        content_plaintext = target_dec[4]
+        print('Target Block: {}'.format(encode_diagnostic(target_dec)))
+        print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
 
-        # COSE Headers
-        protected_dec = {
-            1: 5  # alg: HMAC 256/256
-        }
-        unprotected_dec = {
-        }
-        protected_enc = encode_protected(protected_dec)
-        print('Layer-1 Protected: {}'.format(encode_diagnostic(protected_dec)))
-        print('Layer-1 Encoded: {}'.format(encode_diagnostic(protected_enc)))
+        # Combined AAD
+        ext_aad_dec = self._get_aad_item()
+        ext_aad_enc = cbor2.dumps(ext_aad_dec)
+        print('External AAD: {}'.format(encode_diagnostic(ext_aad_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(ext_aad_enc)))
 
-        ext_aad = prim_enc
-        print('Encoded External AAD: {}'.format(encode_diagnostic(ext_aad)))
+        key.key_ops = cosekey.KeyOps.MAC_CREATE
+        msg_obj = Mac0Message(
+            phdr={
+                CoseHeaderKeys.ALG: CoseAlgorithms.HMAC_256_256,
+            },
+            uhdr={
+                CoseHeaderKeys.KID: key.kid,
+            },
+            payload=content_plaintext,
+            # Non-encoded parameters
+            external_aad=ext_aad_enc,
+        )
 
-        # MAC_structure Section 6.3
-        mac_struct_dec = list()
-        mac_struct_dec.append('MAC0')
-        mac_struct_dec.append(protected_enc)
-        mac_struct_dec.append(ext_aad)
-        mac_struct_dec.append(target_enc)
-        mac_struct_enc = cbor2.dumps(mac_struct_dec)
-        print('MAC_structure: {}'.format(encode_diagnostic(mac_struct_dec)))
-        print('Encoded: {}'.format(encode_diagnostic(mac_struct_enc)))
+        # COSE internal structure
+        cose_struct_enc = msg_obj._mac_structure
+        cose_struct_dec = cbor2.loads(cose_struct_enc)
+        print('COSE Structure: {}'.format(encode_diagnostic(cose_struct_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(cose_struct_enc)))
 
-        hasher = hmac.HMAC(privkey, hashes.SHA256(), backend=default_backend())
-        hasher.update(mac_struct_enc)
-        tag = hasher.finalize()
-        print('Tag: {}'.format(encode_diagnostic(tag)))
+        # Encoded message
+        message_enc = msg_obj.encode(
+            key=key,
+            alg=msg_obj.phdr[CoseHeaderKeys.ALG],
+            tagged=False
+        )
+        message_dec = cbor2.loads(message_enc)
+        # Detach the payload
+        content_signature = message_dec[2]
+        message_dec[2] = None
+        self._print_message(message_dec, recipient_idx=4)
 
-        # COSE_MAC0 structure
-        message_dec = [
-            protected_enc,
-            unprotected_dec,
-            None,
-            tag
-        ]
-
-        # BIB structure
-        asb_dec = [
-            [2],  # Targets
-            0,  # TBD-CI
-            0,  # Flags
-            [
-                # Target num 2
-                [
-                    [
-                        17,  # COSE_MAC0
-                        message_dec
-                    ]
-                ]
-            ]
-        ]
-
+        # ASB structure
+        asb_dec = self._get_asb_item([
+            msg_obj.cbor_tag,
+            message_dec
+        ])
+        asb_enc = cbor2.dumps(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
+
+        bpsec_dec = self._get_bpsec_item(
+            block_type=98,  # FIXME: not real
+            asb_dec=asb_dec,
+        )
+        bpsec_enc = cbor2.dumps(bpsec_dec)
+        print('BPSec block: {}'.format(encode_diagnostic(bpsec_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(bpsec_enc)))
+
+        # Change from detached payload
+        message_dec[2] = content_signature
+        decode_obj: Mac0Message = Mac0Message.decode(cbor2.dumps(cbor2.CBORTag(Mac0Message.cbor_tag, message_dec)))
+        decode_obj.external_aad = ext_aad_enc
+        key.key_ops = cosekey.KeyOps.MAC_VERIFY
+        verify_valid = decode_obj.verify_tag(key=key)
+        self.assertTrue(verify_valid)
+        print('Loopback verify:', verify_valid)
