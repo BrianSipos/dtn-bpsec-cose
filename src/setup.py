@@ -26,8 +26,8 @@ setup(
     packages=find_packages(where='src'),
     install_requires=[
         'cbor2 >=4.1,<4.2',
+        'cose',
         'cryptography',
-        'jwcrypto',
         'six',
     ],
     extras_require={},
