@@ -1,21 +1,26 @@
 ; This relies on the defintions of BPv7 "bpv7.cddl"
 
-$extension-block-structure /= extension-block-use<TBD, embedded-cbor<ext-data-asb>>
-
+; The block-type-specific data for BIB and BCB
 ext-data-asb = [
   targets: [1* target-block-num],
   context-id: int,
-  flags: uint .bits asb-flag-bits,
-  ? source: eid,
-  ? parameters: asb-id-val-pair,
-  target-results: [1* asb-id-val-pair]
+  flags: uint .bits asb-flag-bits, ; if the sec-params-present is set
+  ? security-source: eid, ; if the sec-source-present is set
+  ? parameters: asb-id-val-pair-list,
+  target-results: [1* asb-id-val-pair-list]
 ]
 target-block-num = uint
 asb-flag-bits = &(
   sec-params-present: 1,
   sec-source-present: 2
 )
+asb-id-val-pair-list = [1* asb-id-val-pair]
+; Interpretation of the pair depends on the context-id and whether
+; it is a parameter or a result.
 asb-id-val-pair = [
   id: uint,
   val: any
 ]
+
+$extension-block-structure /= extension-block-use<98, embedded-cbor<ext-data-asb>>
+$extension-block-structure /= extension-block-use<99, embedded-cbor<ext-data-asb>>
