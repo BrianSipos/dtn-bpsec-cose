@@ -4,9 +4,15 @@ set -e
 SELFDIR=$(readlink -f $(dirname "${BASH_SOURCE[0]}"))
 
 TMPFILE=$(mktemp --tmpdir XXXXXXXX.cddl)
+echo "; From stdin:" >>${TMPFILE}
 cat /dev/stdin >>${TMPFILE}
 echo >>${TMPFILE}
-cat "${SELFDIR}/../bpv7.cddl" "${SELFDIR}/../bpsec.cddl" >>${TMPFILE}
+
+for FILEPATH in "$@"; do
+    echo "; From ${FILEPATH}:" >>${TMPFILE}
+    cat "${FILEPATH}" >>${TMPFILE}
+    echo >>${TMPFILE}
+done
 
 cat "${TMPFILE}"
 echo

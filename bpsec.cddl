@@ -6,20 +6,24 @@ ext-data-asb = [
   context-id: int,
   flags: uint .bits asb-flag-bits, ; if the sec-params-present is set
   ? security-source: eid, ; if the sec-source-present is set
-  ? parameters: asb-id-val-pair-list,
-  target-results: [1* asb-id-val-pair-list]
+  ? parameters: param-list,
+  target-results: [1* result-list]
 ]
 target-block-num = uint
 asb-flag-bits = &(
   sec-params-present: 1,
   sec-source-present: 2
 )
-asb-id-val-pair-list = [1* asb-id-val-pair]
+
+; Alternatives can be added to the sockets for each context ID
+param-list = [1* $bpsec-param-pair .within asb-id-value-structure]
+result-list = [1* $bpsec-result-pair .within asb-id-value-structure]
+
 ; Interpretation of the pair depends on the context-id and whether
 ; it is a parameter or a result.
-asb-id-val-pair = [
+asb-id-value-structure = [
   id: uint,
-  val: any
+  value: any
 ]
 
 $extension-block-structure /= extension-block-use<98, embedded-cbor<ext-data-asb>>

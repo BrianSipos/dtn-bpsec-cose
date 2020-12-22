@@ -83,10 +83,10 @@ The entire CDDL structure can be extracted from the XML version of this document
         </t>
         <sourcecode>'//sourcecode[@type="cddl"]'</sourcecode>
         <t>
-The following initial fragment defines the top-level symbols of this document's CDDL:
+The following initial fragment defines the top-level symbols of this document's CDDL, including the ASB data structure with its parameter/result sockets.
         </t>
         <sourcecode type="cddl">
-start = AAD-scope / AAD-value
+start = AAD-value / ext-data-asb
         </sourcecode>
       </section>
     </section>
@@ -115,7 +115,7 @@ The scope here refers to the set of information used by the security context to 
 This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same data.
         </t>
         <t>
-The sources for AAD within the COSE context are described below, and controlled by the AAD Scope Flags parameter of <xref target="sec-ASB-parameters"/>.
+The sources for AAD within the COSE context are described below, controlled by the AAD Scope Flags parameter of <xref target="sec-ASB-param-AAD-scope"/>, and implemented as defined in <xref target="sec-context-AAD"/>.
         </t>
         <dl>
           <dt>Bundle Primary Block</dt>
@@ -195,6 +195,16 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
             </tr>
           </tbody>
         </table>
+        <figure anchor="fig-params-CDDL">
+          <name>COSE context parameters CDDL</name>
+          <sourcecode type="cddl">
+$bpsec-param-pair /= [1, COSE_Key]
+$bpsec-param-pair /= [2, COSE_KeySet]
+$bpsec-param-pair /= [3, x5chain: COSE_X509]
+$bpsec-param-pair /= [4, x5bag: COSE_X509]
+$bpsec-param-pair /= [5, AAD-scope]
+          </sourcecode>
+        </figure>
         <section anchor="sec-ASB-param-keys">
           <name>Key Containers</name>
           <t>
@@ -237,7 +247,7 @@ A CDDL representation of this definition is included in <xref target="fig-AAD-sc
                 <td>If bit is set, indicates that the target block metadata is included in AAD scope.</td>
               </tr>
               <tr>
-                <td>has-asb-ctx</td>
+                <td>has-security-ctx</td>
                 <td>0x04</td>
                 <td>If bit is set, indicates that the security block metadata is included in AAD scope.</td>
               </tr>
@@ -255,7 +265,7 @@ AAD-scope = uint .bits AAD-scope-flags
 AAD-scope-flags = &amp;(
     has-primary-ctx: 0,
     has-target-ctx: 1,
-    has-asb-ctx: 2,
+    has-security-ctx: 2,
 )
             </sourcecode>
           </figure>
@@ -273,11 +283,23 @@ This avoids the need for value-mapping between code points of the two registries
         <t>
 When embedding COSE messages, the CBOR structure SHALL be directly included within the abstract security block (ASB) CBOR structure.
 There is no use of embedded encoded CBOR (e.g. CBOR encoded as a byte string) in this specification.
-        </t>
-        <t>
 When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
 The Result ID values already provide the same information as the COSE tags (using the same code points).
         </t>
+        <t>
+These generic requirements are formalized in the CDDL fragment of <xref target="fig-results-CDDL"/>.
+        </t>
+        <figure anchor="fig-results-CDDL">
+          <name>COSE context results CDDL</name>
+          <sourcecode type="cddl">
+$bpsec-result-pair /= [16, COSE_Encrypt0]
+$bpsec-result-pair /= [17, COSE_Mac0]
+$bpsec-result-pair /= [18, COSE_Sign1]
+$bpsec-result-pair /= [96, COSE_Encrypt]
+$bpsec-result-pair /= [97, COSE_Mac]
+$bpsec-result-pair /= [98, COSE_Sign]
+          </sourcecode>
+        </figure>
         <section anchor="sec-ASB-results-BIB">
           <name>Integrity Messages</name>
           <t>
@@ -396,17 +418,17 @@ Generating or processing COSE messages for the COSE context follows the profile 
         <section anchor="sec-context-AAD">
           <name>Generating AAD</name>
           <t>
-The COSE  used for encrypt result SHALL be the canonically encoded form of a CBOR map containing the following:
+The AAD used for both integrity and confidentiality messages SHALL be the determistically encoded form of a CBOR array containing the following:
           </t>
           <ol>
             <li>
-If the AAD Scope has the has-primary-ctx flag set, the map SHALL contain the key of 0 having the value of the canonically serialized primary block of the bundle.
+The first item SHALL be either: the CBOR array (unencoded) form of the primary block of the bundle if the AAD Scope has the has-primary-ctx flag set, otherwise the null value.
             </li>
             <li>
-If the AAD Scope has the has-target-ctx flag set, the map SHALL contain the key of 1 having the value of the canonically serialized array of the first three fields of the target block (i.e., the block type code, block number, and control flags).
+The second item SHALL be either: a CBOR array containing the first three fields of the target block (i.e., the block type code, block number, and control flags) if the AAD Scope has the has-target-ctx flag set, otherwise the null value.
             </li>
             <li>
-If the AAD Scope has the has-asb-ctx flag set, the map SHALL contain the key of 1 having the value of the canonically serialized array of the first three fields of the security block containing the result (i.e., the block type code, block number, and control flags).
+The third item SHALL be either: a CBOR array containing the first three fields of the security block containing the result (i.e., the block type code, block number, and control flags) if the AAD Scope has the has-security-ctx flag set, otherwise the null value.
             </li>
           </ol>
           <t>
@@ -416,13 +438,13 @@ A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"
             <name>COSE context AAD CDDL</name>
             <sourcecode type="cddl">
 AAD-value = bstr .cbor AAD-structure
-AAD-structure = {
-    ? 0: bstr .cbor primary-block,  ; if has-primary-ctx flag is set
-    ? 1: bstr .cbor block-identity,  ; if has-target-ctx flag is set
-    ? 2: bstr .cbor block-identity  ; if has-asb-ctx flag is set
-}
+AAD-structure = [
+    primary-ctx:  null / primary-block,  ; if has-primary-ctx flag is set
+    target-ctx:   null / block-metadata, ; if has-target-ctx flag is set
+    security-ctx: null / block-metadata  ; if has-security-ctx flag is set
+]
 ; The first three fields of BP "canonical-block-structure"
-block-identity = [
+block-metadata = [
     block-type-code: uint,
     block-number: uint,
     block-control-flags,
@@ -435,7 +457,7 @@ block-identity = [
           <t>
 When correlating between BPSec target block-type-specific-data and COSE plaintext or payload, any byte string SHALL be handled in its decoded (CBOR item) form.
 This means any CBOR header or tag in a source encoding are ignored for the purposes of security processing.
-This also means that if the source byte string was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size lengnth, the security processing always treats it in a canonically encoded CBOR form.
+This also means that if the source byte string was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size lengnth, the security processing always treats it in a determistically encoded CBOR form.
         </t>
         </section>
       </section>
@@ -578,21 +600,21 @@ Implementations capable of doing so SHOULD support the asymmetric keyed and key-
               <td>Required</td>
             </tr>
             <tr>
-              <td>Integrity or Confidentiality</td>
+              <td>Confidentiality</td>
               <td>2</td>
               <td>A256KW</td>
               <td>-5</td>
               <td>Required</td>
             </tr>
             <tr>
-              <td>Integrity or Confidentiality</td>
+              <td>Confidentiality</td>
               <td>2</td>
               <td>ECDH-ES + A256KW</td>
               <td>-31</td>
               <td>Recommended</td>
             </tr>
             <tr>
-              <td>Integrity or Confidentiality</td>
+              <td>Confidentiality</td>
               <td>2</td>
               <td>RSAES-OAEP w/ SHA-256</td>
               <td>-41</td>
@@ -611,14 +633,14 @@ When a COSE_Mac is used with a direct key, the recipient layer SHALL include a k
             </dd>
           <dt>EC Keypair Integrity:</dt>
           <dd>
-When generating a BIB result from an EC keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 encryption of the symmetric key.
-When a COSE_Sign or COSE_Mac is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When generating a BIB result from an EC keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly.
+When a COSE_Sign is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
           <dt>RSA Keypair Integrity:</dt>
           <dd>
-When generating a BIB result from an RSA keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly or a COSE_Mac from a symmetric key with a layer-2 key-wrap of the symmetric key.
-When a COSE_Sign or COSE_Mac is used with an RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the signature uses a maximum-length PSS salt in accordance with <xref target="RFC8230"/>.
+When generating a BIB result from an RSA keypair, implementations SHOULD use either a COSE_Sign1 or a COSE_Sign using the private key directly.
+When a COSE_Sign is used with an RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
             </dd>
           <dt>Symmetric Key Confidentiality:</dt>
           <dd>
@@ -631,6 +653,8 @@ When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipi
           <dd>
 When generating a BCB result from an EC keypair, implementations SHOULD use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When a COSE_Encrypt is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Encrypt is used with an EC keypair, the security source SHALL generate an ephemeral EC keypair for each security operation.
+When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="11.2" target="RFC8152"/> even though the source is not required to provide any of those parameters.
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
           <dd>
@@ -908,9 +932,9 @@ The interoperability minimum algorithms and parameters are based on the draft <x
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8230.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8551.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-22.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-tcpclv4-22.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-cose-x509-07.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-25.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-tcpclv4-24.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-cose-x509-08.xml"/>
       </references>
       <references>
         <name>Informative References</name>
@@ -926,8 +950,8 @@ The interoperability minimum algorithms and parameters are based on the draft <x
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpbis-26.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-interop-sc-01.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpbis-30.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-interop-sc-02.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BSipos-RKF/dtn-bpsec-cose/">
           <front>
             <title>DTN Bundle Protocol Security COSE Security Contexts</title>

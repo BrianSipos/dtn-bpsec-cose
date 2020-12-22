@@ -12,14 +12,12 @@ class TestExample(BaseTest):
 
     def test(self):
         print()
-        private_key = EC2.decode({
-            1: cosekey.KTY.EC2,
-            2: b'ExampleEC2',
-            3: CoseAlgorithms.ES256,
-            -2: binascii.unhexlify('0cbc52712bbf1567b7c086e904901091afc10d2da912951d48aefb4b1d46f32b'),
-            -3: binascii.unhexlify('f0a76e7251588607542a02d322e2bc0896e7e147546a8ebade7f8c75c8aa7ecf'),
-            -4: binascii.unhexlify('57226c6f7082a7d5128d309975f5766ebf38fb797d2c9a7700f542c4b0e997d1'),
-        })
+        private_key = EC2(
+            kid=b'ExampleEC2',
+            x=binascii.unhexlify('0cbc52712bbf1567b7c086e904901091afc10d2da912951d48aefb4b1d46f32b'),
+            y=binascii.unhexlify('f0a76e7251588607542a02d322e2bc0896e7e147546a8ebade7f8c75c8aa7ecf'),
+            d=binascii.unhexlify('57226c6f7082a7d5128d309975f5766ebf38fb797d2c9a7700f542c4b0e997d1'),
+        )
         print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'x', 'y', 'd'), bstr_as='base64')))
         print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'x', 'y'), bstr_as='base64')))
 

@@ -6,6 +6,7 @@ from bpsec_cose.bp import EndpointId
 from bpsec_cose.bpsec import SecurityBlockData
 from bpsec_cose.util import decode_protected, encode_diagnostic
 
+
 class BaseTest(unittest.TestCase):
 
     def _get_primary_item(self):
@@ -29,11 +30,17 @@ class BaseTest(unittest.TestCase):
             cbor2.dumps(300)
         ]
 
+    def _block_identity(self, item):
+        ''' Block identity is the first three fields of canonical block array.
+        '''
+        return item[:3]
+
     def _get_aad_item(self):
-        return {
-            0: self._get_primary_item(),
-            1: self._get_target_item()[:3],
-        }
+        return [
+            self._get_primary_item(),  # primary-ctx
+            self._block_identity(self._get_target_item()),  # target-ctx
+            None,  # asb-ctx
+        ]
 
     def _get_asb_item(self, result):
         return SecurityBlockData(
@@ -43,7 +50,7 @@ class BaseTest(unittest.TestCase):
                 [5, 0x03],
             ],
             results=[
-                [ # target 2
+                [  # target 2
                     result,
                 ],
             ],

@@ -82,8 +82,17 @@ if(CDDLTOOL)
     add_custom_command(
         OUTPUT "${CDDLERRORS_TXT}"
         DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CDDLVERIFY}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
         COMMAND ${XMLSTARLET} sel --text -t -v '//sourcecode[@type="cddl"]' "${DRAFT_NAME_XML}" | 
-            sh ${CDDLVERIFY} 2>"${CDDLERRORS_TXT}" 1>&2
+            sh ${CDDLVERIFY} 
+                "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
+                "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
+                "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
+                "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
+                2>"${CDDLERRORS_TXT}" 1>&2 || true
     )
     add_custom_target(
         cddlerrors ALL
