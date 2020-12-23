@@ -15,8 +15,8 @@ class BaseTest(unittest.TestCase):
             0,
             0,
             EndpointId('dtn://dst/svc').encode_item(),
-            EndpointId('dtn://src').encode_item(),
-            EndpointId('dtn://src').encode_item(),
+            EndpointId('dtn://src/').encode_item(),
+            EndpointId('dtn://src/').encode_item(),
             [0, 40],
             1000000
         ]

@@ -15,23 +15,23 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print()
+        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         private_key = EC2(
             kid=b'ExampleEC2',
             key_ops=cosekey.KeyOps.DERIVE_KEY,
             crv=CoseEllipticCurves.P_256,
-            x=binascii.unhexlify('0cbc52712bbf1567b7c086e904901091afc10d2da912951d48aefb4b1d46f32b'),
-            y=binascii.unhexlify('f0a76e7251588607542a02d322e2bc0896e7e147546a8ebade7f8c75c8aa7ecf'),
-            d=binascii.unhexlify('57226c6f7082a7d5128d309975f5766ebf38fb797d2c9a7700f542c4b0e997d1'),
+            x=binascii.unhexlify('44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5e4fe0a1787a8'),
+            y=binascii.unhexlify('059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc1639960a0c7a'),
+            d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
         )
-        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', '_key_ops', 'crv', 'x', 'y', 'd'), bstr_as='base64')))
-        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', '_key_ops', 'crv', 'x', 'y'), bstr_as='base64')))
+        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', '_key_ops', 'crv', 'x', 'y', 'd'))))
+        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', '_key_ops', 'crv', 'x', 'y'))))
         # 256-bit content encryption key
         cek = SymmetricKey(
             kid=b'ExampleCEK',
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
         )
-        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'), bstr_as='base64')))
+        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'))))
         # session IV
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
@@ -44,7 +44,7 @@ class TestExample(BaseTest):
             y=binascii.unhexlify('ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d62'),
             d=binascii.unhexlify('a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c20880f9d9c3b122a'),
         )
-        print('Sender Private Key: {}'.format(encode_diagnostic(sender_key.encode('_kid', '_key_ops', 'crv', 'x', 'y', 'd'), bstr_as='base64')))
+        print('Sender Private Key: {}'.format(encode_diagnostic(sender_key.encode('_kid', '_key_ops', 'crv', 'x', 'y', 'd'))))
 
         # Primary block
         prim_dec = self._get_primary_item()
@@ -76,7 +76,7 @@ class TestExample(BaseTest):
             recipients=[
                 CoseRecipient(
                     uhdr={
-                        CoseHeaderKeys.ALG: CoseAlgorithms.ECDH_SS_A256KW,
+                        CoseHeaderKeys.ALG: CoseAlgorithms.ECDH_ES_A256KW,
                         CoseHeaderKeys.KID: private_key.kid,
                         CoseHeaderKeys.EPHEMERAL_KEY: sender_key.encode('crv', 'x', 'y'),
                         # Would be random nonce, but test constant
@@ -142,6 +142,7 @@ class TestExample(BaseTest):
         content_ciphertext = message_dec[2]
         message_dec[2] = None
         self._print_message(message_dec, recipient_idx=3)
+        print('Ciphertext: {}'.format(encode_diagnostic(content_ciphertext)))
 
         # ASB structure
         asb_dec = self._get_asb_item([
@@ -170,5 +171,5 @@ class TestExample(BaseTest):
         self.assertEqual(content_plaintext, decode_plaintext)
         kek.key_ops = cosekey.KeyOps.UNWRAP
         decode_cek = kek.key_unwrap(decode_obj.recipients[0].payload)
-        print('Loopback CEK:', encode_diagnostic(decode_cek, bstr_as='base64'))
+        print('Loopback CEK:', encode_diagnostic(decode_cek))
         self.assertEqual(cek.k, decode_cek)

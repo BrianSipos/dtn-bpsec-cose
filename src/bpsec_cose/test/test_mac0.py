@@ -9,13 +9,13 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print()
+        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key
         key = SymmetricKey(
             kid=b'ExampleKey',
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C')
         )
-        print('Key: {}'.format(encode_diagnostic(key.encode('_kid', 'k'), bstr_as='base64')))
+        print('Key: {}'.format(encode_diagnostic(key.encode('_kid', 'k'))))
 
         # Primary block
         prim_dec = self._get_primary_item()

@@ -13,19 +13,19 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print()
+        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key encryption key
         kek = SymmetricKey(
             kid=b'ExampleKEK',
             k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
         )
-        print('KEK: {}'.format(encode_diagnostic(kek.encode('_kid', 'k'), bstr_as='base64')))
+        print('KEK: {}'.format(encode_diagnostic(kek.encode('_kid', 'k'))))
         # 256-bit content encryption key
         cek = SymmetricKey(
             kid=b'ExampleCEK',
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
         )
-        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'), bstr_as='base64')))
+        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'))))
         # session IV
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
@@ -94,6 +94,7 @@ class TestExample(BaseTest):
         content_ciphertext = message_dec[2]
         message_dec[2] = None
         self._print_message(message_dec, recipient_idx=3)
+        print('Ciphertext: {}'.format(encode_diagnostic(content_ciphertext)))
 
         # ASB structure
         asb_dec = self._get_asb_item([
@@ -122,5 +123,5 @@ class TestExample(BaseTest):
         self.assertEqual(content_plaintext, decode_plaintext)
         kek.key_ops = cosekey.KeyOps.UNWRAP
         decode_cek = kek.key_unwrap(decode_obj.recipients[0].payload)
-        print('Loopback CEK:', encode_diagnostic(decode_cek, bstr_as='base64'))
+        print('Loopback CEK:', encode_diagnostic(decode_cek))
         self.assertEqual(cek.k, decode_cek)

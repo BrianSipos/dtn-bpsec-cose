@@ -1,9 +1,9 @@
 import unittest
 import binascii
 import cbor2
-from cose import Sign1Message, CoseHeaderKeys, CoseAlgorithms, EC2
+from cose import (Sign1Message, CoseHeaderKeys, CoseAlgorithms, EC2,
+                  CoseEllipticCurves)
 import cose.keys.cosekey as cosekey
-from cose.messages.recipient import CoseRecipient, RcptParams
 from ..util import encode_diagnostic
 from .base import BaseTest
 
@@ -11,15 +11,16 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print()
+        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         private_key = EC2(
             kid=b'ExampleEC2',
-            x=binascii.unhexlify('0cbc52712bbf1567b7c086e904901091afc10d2da912951d48aefb4b1d46f32b'),
-            y=binascii.unhexlify('f0a76e7251588607542a02d322e2bc0896e7e147546a8ebade7f8c75c8aa7ecf'),
-            d=binascii.unhexlify('57226c6f7082a7d5128d309975f5766ebf38fb797d2c9a7700f542c4b0e997d1'),
+            crv=CoseEllipticCurves.P_256,
+            x=binascii.unhexlify('44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5e4fe0a1787a8'),
+            y=binascii.unhexlify('059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc1639960a0c7a'),
+            d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
         )
-        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'x', 'y', 'd'), bstr_as='base64')))
-        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'x', 'y'), bstr_as='base64')))
+        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'crv', 'x', 'y', 'd'))))
+        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'crv', 'x', 'y'))))
 
         # Primary block
         prim_dec = self._get_primary_item()
@@ -62,6 +63,7 @@ class TestExample(BaseTest):
         message_enc = msg_obj.encode(
             private_key=private_key,
             alg=msg_obj.phdr[CoseHeaderKeys.ALG],
+            curve=private_key.crv,
             tagged=False
         )
         message_dec = cbor2.loads(message_enc)

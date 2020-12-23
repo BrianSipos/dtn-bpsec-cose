@@ -12,7 +12,7 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print()
+        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 1024-bit key
         privkey_pem = b'''\
 -----BEGIN RSA PRIVATE KEY-----
@@ -34,8 +34,8 @@ FIqpKkUcSrgmK2N3qce5f4aRYMpvXYU+5LZfT5KGXKM=
         ext_key = serialization.load_pem_private_key(privkey_pem, None, default_backend())
         private_key = RSA.from_cryptograpy_key_obj(ext_key)
         private_key.kid = b'ExampleRSA'
-        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e', 'd', 'p', 'q', 'dP', 'dQ', 'qInv'), bstr_as='base64')))
-        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e'), bstr_as='base64')))
+        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e', 'd', 'p', 'q', 'dP', 'dQ', 'qInv'))))
+        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'n', 'e'))))
 
         # Primary block
         prim_dec = self._get_primary_item()

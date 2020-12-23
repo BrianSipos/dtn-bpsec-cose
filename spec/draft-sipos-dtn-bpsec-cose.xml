@@ -21,7 +21,7 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date day="14" month="November" year="2020"/>
+    <date day="22" month="December" year="2020"/>
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
@@ -439,9 +439,9 @@ A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"
             <sourcecode type="cddl">
 AAD-value = bstr .cbor AAD-structure
 AAD-structure = [
-    primary-ctx:  null / primary-block,  ; if has-primary-ctx flag is set
-    target-ctx:   null / block-metadata, ; if has-target-ctx flag is set
-    security-ctx: null / block-metadata  ; if has-security-ctx flag is set
+    primary-ctx:  null / primary-block,  ; if has-primary-ctx is set
+    target-ctx:   null / block-metadata, ; if has-target-ctx is set
+    security-ctx: null / block-metadata  ; if has-security-ctx is set
 ]
 ; The first three fields of BP "canonical-block-structure"
 block-metadata = [
@@ -969,14 +969,61 @@ The interoperability minimum algorithms and parameters are based on the draft <x
 These examples are intended to have the correct structure of COSE security blocks but in some cases use simplified algorithm parameters or smaller key sizes than are required by the actual COSE profile defined in this documents.
 Each example indicates how it differs from the actual profile if there is a meaningful difference.
       </t>
+      <t>
+All of these examples operate within the context of the bundle primary block of <xref target="fig-ex-primary-block"/> with a security target block of <xref target="fig-ex-target-block"/>.
+All example figures use the extended diagnostic notation <xref target="RFC8610"/>.
+      </t>
+      <figure anchor="fig-ex-primary-block">
+        <name>Primary block CBOR diagnostic</name>
+        <sourcecode type="cbor">
+[
+  7, / BP version /
+  0, / flags /
+  0, / CRC type /
+  [1, "//dst/svc"], / destination /
+  [1, "//src/"], / source /
+  [1, "//src/"], / report-to /
+  [0, 40], / timestamp /
+  1000000 / lifetime /
+]
+        </sourcecode>
+      </figure>
+      <figure anchor="fig-ex-target-block">
+        <name>Target block CBOR diagnostic</name>
+        <sourcecode type="cbor">
+[
+  7, / type code - bundle age /
+  2, / block num /
+  0, / flags /
+  0, / CRC type /
+  &lt;&lt;300&gt;&gt; / type-specific-data: age /
+]
+        </sourcecode>
+      </figure>
+      <t>
+All of the examples also operate within a security block containing the AAD Scope parameter with only "has-primary-ctx" and "has-target-ctx" flags set.
+This results in a consistent AAD-value as shown in <xref target="fig-ex-AAD-value"/>, which is used as the bytestring for COSE external_aad in all of the examples.
+Note that the AAD-value is itself a bytestring which happens to contain encoded CBOR.
+      </t>
+      <figure anchor="fig-ex-AAD-value">
+        <name>Example scope AAD-value CBOR diagnostic</name>
+        <sourcecode type="cbor">
+&lt;&lt;[
+  [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ], 
+    [ 0, 40 ], 1000000 ], / primary-ctx /
+  [ 7, 2, 0 ], / target-ctx /
+  null / security-ctx /
+]&gt;&gt;
+        </sourcecode>
+      </figure>
+      <t>
+The only differences between these examples which use EC or RSA keypairs and a use of a PKIX public key certificate are: the parameters would have an x5chain parameter instead of a COSE_Key type, and the recipient would contain an "x5t" value instead of a "kid" value.
+Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
+      </t>
       <section>
         <name>Symmetric Key COSE_Mac0</name>
         <t>
-This is an example of a MAC with implied recipient (and its key material).
-The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
-        </t>
-        <t>
-The 256-bit key used is shown below.
+This is an example of a MAC with recipient having a 256-bit symmetric key identified by a "kid".
         </t>
         <figure>
           <name>Symmetric Key</name>
@@ -985,42 +1032,15 @@ The 256-bit key used is shown below.
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleMAC',
-    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999db
-                ae4ce45c'
+    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+99dbae4ce45c'
   }
 ]
           </sourcecode>
         </figure>
-        <figure anchor="fig-ex-mac-primary">
-          <name>Primary block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / BP version /
-  0, / flags /
-  0, / CRC type /
-  [1, "//dst/svc"], / destination /
-  [1, "//src/bp"], / source /
-  [1, "//src/bp"], / report-to /
-  [0, 40], / timestamp /
-  1000000 / lifetime /
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-mac-target">
-          <name>Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  &lt;&lt;300&gt;&gt; / type-specific-data: age /
-]
-          </sourcecode>
-        </figure>
         <t>
-The external_aad is the encoded primary block.
-The payload is the encoded target block.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
         <figure anchor="fig-ex-mac-struct">
           <name>MAC_structure CBOR diagnostic</name>
@@ -1028,9 +1048,9 @@ The payload is the encoded target block.
 [
   "MAC0", / context /
   h'a10105', / protected /
-  h'880700008201692f2f6473742f7376638201682f2f7372632f62708201682f2f7372
-    632f6270820018281a000f4240', / external_aad /
-  h'85070200004319012c' / payload /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6', / external_aad /
+  h'19012c' / payload /
 ]
           </sourcecode>
         </figure>
@@ -1040,7 +1060,13 @@ The payload is the encoded target block.
 [
   [2], / targets /
   0, / security context TBD /
-  0, / flags /
+  1, / flags: params-present /
+  [ / parameters /
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
+    ]
+  ],
   [
     [ / target block #2 /
       [ / result /
@@ -1053,8 +1079,96 @@ The payload is the encoded target block.
             / kid / 4:'ExampleMAC'
           },
           null, / payload /
-          h'1349a33b41b020e46669b714b53a1b79db458fdef0f0b7a0daebde6baf27
-            7472' / tag /
+          h'190264a1e6a9734990e552660df3c4641efb88fd6439aba866577c7b
+6d174b87' / tag /
+        ]
+      ]
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+      </section>
+      <section>
+        <name>EC Keypair COSE_Sign1</name>
+        <t>
+This is an example of a signature with a recipient having a P-256 curve EC keypair identified by a "kid".
+The associated public key is included as a security parameter.
+        </t>
+        <figure>
+          <name>Example Keys</name>
+          <sourcecode type="cbor">
+[
+  { / signing private key /
+    / kty / 1: 2, / EC2 /
+    / kid / 2: 'ExampleEC2',
+    / crv / -1: 1, / P-256 /
+    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
+e4fe0a1787a8',
+    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
+1639960a0c7a',
+    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
+89786ea63842'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+        </t>
+        <figure anchor="fig-ex-sign-ec2-struct">
+          <name>Sig_structure CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Signature1", / context /
+  h'a10126', / protected /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6', / external_aad /
+  h'19012c' / payload /
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-sign-ec2-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  [2], / targets /
+  0, / security context TBD /
+  1, / flags: params-present /
+  [ / parameters /
+    [
+      1, / COSE key /
+      { / public key /
+        / kty / 1: 2, / EC2 /
+        / kid / 2: 'ExampleEC2',
+        / crv / -1: 1, / P-256 /
+        / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbdd
+b8b5e4fe0a1787a8',
+        / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715f
+afbc1639960a0c7a'
+      }
+    ],
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
+    ]
+  ],
+  [
+    [ / target block #2 /
+      [ / result /
+        18, / COSE_Sign1 tag /
+        [
+          &lt;&lt;{ / protected /
+             / alg / 1:-7 / ES256 /
+          }&gt;&gt;,
+          { / unprotected /
+            / kid / 4:'ExampleEC2'
+          },
+          null, / payload /
+          h'eb085c162bac4ec45c974766b897ee227b189fa257a8fb195c830f04
+f6d6a90318b3e915938e4d32c1baace8aa0bf983f52efcbf1b127b296e72673f3d73
+3023' / signature /
         ]
       ]
     ]
@@ -1066,99 +1180,90 @@ The payload is the encoded target block.
       <section>
         <name>RSA Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with an explicit signer key ID and signer public key itself (as a COSE_Key).
-The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
+This is an example of a signature with a recipient having a 1024-bit RSA keypair identified by a "kid".
+The associated public key is included as a security parameter.
         </t>
         <t>
-The only differences between this example and a use of a PKIX public key certificate are: the parameters would have an x5chain parameter instead of a COSE_Key type, and the signature recipient would reference an "x5t" value instead of a "kid" value.
-Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature itself.
-        </t>
-        <t>
-The 512-bit private key used is below.
-It is not supposed to be a secure configuration, only intended to explain the procedure.
-This signature uses zero-length salt for deterministic output, which differs from the parameter specified by <xref target="RFC8230"/> and is not recommended for normal use.
+This key strength is not supposed to be a secure configuration, only intended to explain the procedure.
+This signature uses a random salt, so the full signature output is not deterministic.
         </t>
         <figure>
-          <name>Private Keys</name>
+          <name>Example Keys</name>
           <sourcecode type="cbor">
 [
   { / signing private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
-    / n / -1: b64'3bUZ1LR9oBiBpx6lGZuvtMBPTAS5qGOsF8A7QODUzl3fs71PH0e9nD
-                  Y4RwurZZO9_QqNrUlamp2gmbXsuCGE-Q',
-    / e / -2: b64'AQAB',
-    / d / -3: b64'yCQmj2foSFAXKuB1Nmre8RLyArP5TdO8lSxJ0UWllixmFRoso_2jHI
-                  jGXci8rmJLSgCxbSeojtoxwGg-bFmlAQ',
-    / p / -4: b64'7snebs70tMJ67A1qA4Yk5ujvjyaDEIsfch_fRwVIVik',
-    / q / -5: b64'7bAM_t782esDusNKAzr5EQaa3wjTQ2CUXBKEFSLgclE',
-    / dP / -6: b64'Iiay7kwhCV0rMWl1uQ1NZ8z2vhV29z2-gJb4WvLxdok',
-    / dQ / -7: b64'bC7WK2dJBNKv9uCOHlxIItSzxtIYfjFGNYYD8i7Wo5E',
-    / qInv / -8: b64'6efvn6dOADFQJxNLqjRJyE5E1m_dYQEvCI2mAqixshA'
+    / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
+31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
+20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
+d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb29
+25',
+    / e / -2: h'010001',
+    / d / -3: h'9b5d26ad6445ef1aab80b809e4f329684e9912d556c4166f041d
+1b1fb93c04b4037ffd0dbe6f8a8a86e70bab6e0f6344983a9ada27ed9ff7de816fde
+eb5e7be48e607ce5fda4581ca6338a9e019fb3689b28934192b6a190cdda910abb5a
+86a2f7b6f9cd5011049d8de52ddfef73aa06df401c55623ec196720f54920deb4f
+01',
+    / p / -4: h'db22d94e7784a27b568cbf985307ea8d6430ff6b88c18a7086fd
+4f57a326572f2250c39e48a6f8e2201661c2dfe12c7386835b649714d050aa36123e
+c3d00e75',
+    / q / -5: h'ce7016adc5f326b7520397c5978ee2f50e69279983d54c5d76f0
+5bcd61de0879d7056c923540dff9cbae95dcc0e5e86b52b3c902dc9669c8021c6955
+7effb9f1',
+    / dP / -6: h'6a6fcaccea106a3b2e16bf18e57b7ad9a2488a4758ed68a8af6
+86a194f0d585b7477760c738d6665aee0302bcf4237ad0530d83b4b86b887f5a4bdc
+7eea427e1',
+    / dQ / -7: h'28a4cae245b1dcb285142e027a1768b9c4af915b59285a93a04
+22c60e05edd9e57663afd023d169bd0ad3bd62da8563d231840802ebbf271ad70b89
+05ba3af91',
+    / qInv / -8: h'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4e
+d9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65
+f4f92865ca3'
   }
 ]
           </sourcecode>
         </figure>
-        <figure anchor="fig-ex-sign-primary">
-          <name>Primary block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / BP version /
-  0, / flags /
-  0, / CRC type /
-  [1, "//dst/svc"], / destination /
-  [1, "//src/bp"], / source /
-  [1, "//src/bp"], / report-to /
-  [0, 40], / timestamp /
-  1000000 / lifetime /
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-sign-target">
-          <name>Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  &lt;&lt;300&gt;&gt; / type-specific-data: age /
-]
-          </sourcecode>
-        </figure>
         <t>
-The external_aad is the encoded primary block.
-The payload is the encoded target block.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
-        <figure anchor="fig-ex-sign-struct">
+        <figure anchor="fig-ex-sign-rsa-struct">
           <name>Sig_structure CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
   "Signature1", / context /
   h'a1013824', / protected /
-  h'880700008201692f2f6473742f7376638201682f2f7372632f62708201682f2f7372
-    632f6270820018281a000f4240', / external_aad /
-  h'85070200004319012c' / payload /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6', / external_aad /
+  h'19012c' / payload /
 ]
           </sourcecode>
         </figure>
-        <figure anchor="fig-ex-sign-asb">
+        <figure anchor="fig-ex-sign-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
   [2], / targets /
   0, / security context TBD /
-  1, / flags /
+  1, / flags: params-present /
   [ / parameters /
     [
-      101, / COSE key /
+      1, / COSE key /
       { / public key /
         / kty / 1: 3, / RSA /
         / kid / 2: 'ExampleRSA',
-        / n / -1: b64'3bUZ1LR9oBiBpx6lGZuvtMBPTAS5qGOsF8A7QODUzl3fs71PH0
-                      e9nDY4RwurZZO9_QqNrUlamp2gmbXsuCGE-Q',
-        / e / -2: b64'AQAB',
+        / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c67
+681231da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded6774
+4ed620707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d78
+35d2d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb
+2925',
+        / e / -2: h'010001'
       }
+    ],
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
     ]
   ],
   [
@@ -1173,118 +1278,15 @@ The payload is the encoded target block.
             / kid / 4:'ExampleRSA'
           },
           null, / payload /
-          h'53d983df0590f529456b661d36f217d722aa88497f04779385a9a786693d
-            518778a23b912e02e272ea120adf0c1ddf2e08fb5efc54c1f6d36a95054b
-            745fa47e' / signature /
+          h'2229cec7cd4e77e55b7ef39e0305931527e3075e7cad4969ecf1bdc5
+cb8662435128718c7ba465d2251a770a6c48ddc62f515fca43482ae137fffa67c86b
+c60b3b838875621b276235bdc4269f45fd0c08fdd607650d03ae75b86364f7f5f2cc
+442d60e72bff7939478deba7e3492ea96f8ac1f953583df897138f66c16bc2
+07' / signature /
         ]
       ]
     ]
   ]
-]
-          </sourcecode>
-        </figure>
-      </section>
-      <section>
-        <name>Symmetric Key COSE_Encrypt0</name>
-        <t>
-This is an example of an encryption with implied recipient (and its direct content encryption key).
-The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
-        </t>
-        <t>
-This example uses a single shared content encryption key, which is not recommended for normal use.
-The 256-bit key used is shown below.
-A random IV is generated for this operation and is indicated in a standard way in the unprotected header.
-        </t>
-        <figure>
-          <name>Symmetric Keys</name>
-          <sourcecode type="cbor">
-[
-  {
-    / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleCEK',
-    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999db
-                ae4ce45c'
-  }
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt0-primary">
-          <name>Primary block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / BP version /
-  0, / flags /
-  0, / CRC type /
-  [1, "//dst/svc"], / destination /
-  [1, "//src/bp"], / source /
-  [1, "//src/bp"], / report-to /
-  [0, 40], / timestamp /
-  1000000 / lifetime /
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt0-init">
-          <name>Initial Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  &lt;&lt;300&gt;&gt; / type-specific-data: age /
-]
-          </sourcecode>
-        </figure>
-        <t>
-The external_aad is a concatenation of the encoded primary block and the encoded augmented target block (its block data removed).
-        </t>
-        <figure anchor="fig-ex-encrypt0-struct">
-          <name>Enc_structure CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  "Encrypt0", / context /
-  h'a10103', / protected /
-  h'880700008201692f2f6473742f7376638201682f2f7372632f62708201682f2f7372
-    632f6270820018281a000f4240850702000040' / external_aad /
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt0-asb">
-          <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD /
-  0, / flags /
-  [
-    [ / target block #2 /
-      [ / result /
-        16, / COSE_Encrypt0 tag /
-        [
-          &lt;&lt;{ / protected /
-             / alg / 1:3 / A256GCM /
-          }&gt;&gt;,
-          { / unprotected /
-            / kid / 4:'ExampleCEK',
-            / iv / 5: h'6f3093eba5d85143c3dc484a'
-          },
-          null / payload /
-        ]
-      ]
-    ]
-  ]
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt0-final">
-          <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  h'63bb1617fc5076cec266907a7143d28587f04e' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -1292,83 +1294,56 @@ The external_aad is a concatenation of the encoded primary block and the encoded
       <section>
         <name>Symmetric KEK COSE_Encrypt</name>
         <t>
-This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a Key ID.
-The provided figures are extended diagnostic notation <xref target="RFC8610"/>.
+This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a "kid".
+The keys used are shown in <xref target="fig-ex-encrypt-symm-keys"/>.
         </t>
-        <t>
-The keys used are shown in <xref target="fig-ex-encrypt-keys"/>.
-A random IV is generated for this operation and is indicated in a standard way in the unprotected header of <xref target="fig-ex-encrypt-asb"/>.
-        </t>
-        <figure anchor="fig-ex-encrypt-keys">
-          <name>Symmetric Keys</name>
+        <figure anchor="fig-ex-encrypt-symm-keys">
+          <name>Example Keys</name>
           <sourcecode type="cbor">
 [
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleKEK',
-    / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cfae38
-                ad7a972e'
+    / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
+ae38ad7a972e'
   },
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleCEK',
-    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e3999db
-                ae4ce45c'
+    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+99dbae4ce45c'
   }
 ]
           </sourcecode>
         </figure>
-        <figure anchor="fig-ex-encrypt-primary">
-          <name>Primary block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / BP version /
-  0, / flags /
-  0, / CRC type /
-  [1, "//dst/svc"], / destination /
-  [1, "//src/bp"], / source /
-  [1, "//src/bp"], / report-to /
-  [0, 40], / timestamp /
-  1000000 / lifetime /
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt-init">
-          <name>Initial Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  &lt;&lt;300&gt;&gt; / type-specific-data: age /
-]
-          </sourcecode>
-        </figure>
         <t>
-The external_aad is a concatenation of the encoded primary block and the encoded augmented target block (its block data removed).
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
-        <t>
-The CEK and content plaintext are the same here as in <xref target="fig-ex-encrypt0-struct"/> but the context text is different.
-        </t>
-        <figure anchor="fig-ex-encrypt-struct">
+        <figure anchor="fig-ex-encrypt-symm-struct">
           <name>Enc_structure CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'880700008201692f2f6473742f7376638201682f2f7372632f62708201682f2f7372
-    632f6270820018281a000f4240850702000040' / external_aad /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6' / external_aad /
 ]
           </sourcecode>
         </figure>
-        <figure anchor="fig-ex-encrypt-asb">
+        <figure anchor="fig-ex-encrypt-symm-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
   [2], / targets /
   0, / security context TBD /
-  0, / flags /
+  1, / flags: params-present /
+  [ / parameters /
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
+    ]
+  ],
   [
     [ / target block #2 /
       [ / result /
@@ -1388,9 +1363,8 @@ The CEK and content plaintext are the same here as in <xref target="fig-ex-encry
                 / alg / 1:-5, / A256KW /
                 / kid / 4:'ExampleKEK'
               },
-              h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d403
-                a6331159e3d691a708e9984d', / key-wrapped /
-              [] / no more layers /
+              h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26
+d403a6331159e3d691a708e9984d' / key-wrapped /
             ]
           ]
         ]
@@ -1400,10 +1374,7 @@ The CEK and content plaintext are the same here as in <xref target="fig-ex-encry
 ]
           </sourcecode>
         </figure>
-        <t>
-Although the same CEK is used in this example as the Encrypt0 example, the block ciphertext is different than <xref target="fig-ex-encrypt0-final"/> because the Enc_structure (used as AAD) is different.
-        </t>
-        <figure anchor="fig-ex-encrypt-final">
+        <figure anchor="fig-ex-encrypt-symm-final">
           <name>Encrypted Target block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
@@ -1411,7 +1382,280 @@ Although the same CEK is used in this example as the Encrypt0 example, the block
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb160aa1804f936570b982bf7c396694e574' / ciphertext /
+  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
+]
+          </sourcecode>
+        </figure>
+      </section>
+      <section>
+        <name>EC Keypair COSE_Encrypt</name>
+        <t>
+This is an example of an encryption with an P-256 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
+The keys used are shown in <xref target="fig-ex-encrypt-ec2-keys"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-ec2-keys">
+          <name>Example Keys</name>
+          <sourcecode type="cbor">
+[
+  { / sender ephemeral private key /
+    / kty / 1: 2, / EC2 /
+    / crv / -1: 1, / P-256 /
+    / x / -2: h'fedaba748882050d1bef8ba992911898f554450952070aeb4788
+ca57d1df6bcc',
+    / y / -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c
+9c0670f28d62',
+    / d / -4: h'a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c2088
+0f9d9c3b122a'
+  },
+  { / recipient private key /
+    / kty / 1: 2, / EC2 /
+    / kid / 2: 'ExampleEC2',
+    / crv / -1: 1, / P-256 /
+    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
+e4fe0a1787a8',
+    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
+1639960a0c7a',
+    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
+89786ea63842'
+  },
+  {
+    / kty / 1: 4, / symmetric /
+    / kid / 2: 'ExampleCEK',
+    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+99dbae4ce45c'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-ec2-struct">
+          <name>Enc_structure CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6' / external_aad /
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-ec2-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  [2], / targets /
+  0, / security context TBD /
+  1, / flags: params-present /
+  [ / parameters /
+    [
+      1, / COSE key /
+      { / public key /
+        / kty / 1: 2, / EC2 /
+        / kid / 2: 'ExampleEC2',
+        / crv / -1: 1, / P-256 /
+        / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbdd
+b8b5e4fe0a1787a8',
+        / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715f
+afbc1639960a0c7a'
+      }
+    ],
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
+    ]
+  ],
+  [
+    [ / target block #2 /
+      [ / result /
+        96, / COSE_Encrypt tag /
+        [
+          &lt;&lt;{ / protected /
+             / alg / 1:3 / A256GCM /
+          }&gt;&gt;,
+          { / unprotected /
+            / iv / 5: h'6f3093eba5d85143c3dc484a'
+          },
+          null, / payload /
+          [
+            [ / recipient /
+              h'', / protected /
+              { / unprotected /
+                / alg / 1:-31, / ECDH-ES + A256KW /
+                / kid / 4:'ExampleEC2',
+                / ephemeral key / -1:{
+                  1:2,
+                  -1:1,
+                  -2:h'fedaba748882050d1bef8ba992911898f554450952070
+aeb4788ca57d1df6bcc',
+                  -3:h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2
+f493c1c9c0670f28d62'
+                },
+                / PartyU nonce / -22:h'e6bd83a5a06841c2ea1dd4eebaaa
+f252'
+              },
+              h'e20b6fd9b46cdaae9e67ccf4893706802a7acb0c3b3a792b3fcb
+a110f2f27d7972934f4e6497ac89' / key-wrapped /
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-ec2-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  7, / type code - bundle age /
+  2, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
+]
+          </sourcecode>
+        </figure>
+      </section>
+      <section>
+        <name>RSA Keypair COSE_Encrypt</name>
+        <t>
+This is an example of an encrypion with a recipient having a 1024-bit RSA keypair identified by a "kid".
+The associated public key is included as a security parameter.
+        </t>
+        <t>
+This key strength is not supposed to be a secure configuration, only intended to explain the procedure.
+This padding scheme uses a random salt, so the full layer-2 ciphertext output is not deterministic.
+        </t>
+        <figure anchor="fig-ex-encrypt-rsa-keys">
+          <name>Example Keys</name>
+          <sourcecode type="cbor">
+[
+  { / recipient private key /
+    / kty / 1: 3, / RSA /
+    / kid / 2: 'ExampleRSA',
+    / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
+31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
+20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
+d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb29
+25',
+    / e / -2: h'010001',
+    / d / -3: h'9b5d26ad6445ef1aab80b809e4f329684e9912d556c4166f041d
+1b1fb93c04b4037ffd0dbe6f8a8a86e70bab6e0f6344983a9ada27ed9ff7de816fde
+eb5e7be48e607ce5fda4581ca6338a9e019fb3689b28934192b6a190cdda910abb5a
+86a2f7b6f9cd5011049d8de52ddfef73aa06df401c55623ec196720f54920deb4f
+01',
+    / p / -4: h'db22d94e7784a27b568cbf985307ea8d6430ff6b88c18a7086fd
+4f57a326572f2250c39e48a6f8e2201661c2dfe12c7386835b649714d050aa36123e
+c3d00e75',
+    / q / -5: h'ce7016adc5f326b7520397c5978ee2f50e69279983d54c5d76f0
+5bcd61de0879d7056c923540dff9cbae95dcc0e5e86b52b3c902dc9669c8021c6955
+7effb9f1',
+    / dP / -6: h'6a6fcaccea106a3b2e16bf18e57b7ad9a2488a4758ed68a8af6
+86a194f0d585b7477760c738d6665aee0302bcf4237ad0530d83b4b86b887f5a4bdc
+7eea427e1',
+    / dQ / -7: h'28a4cae245b1dcb285142e027a1768b9c4af915b59285a93a04
+22c60e05edd9e57663afd023d169bd0ad3bd62da8563d231840802ebbf271ad70b89
+05ba3af91',
+    / qInv / -8: h'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4e
+d9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65
+f4f92865ca3'
+  },
+  {
+    / kty / 1: 4, / symmetric /
+    / kid / 2: 'ExampleCEK',
+    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+99dbae4ce45c'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-rsa-struct">
+          <name>Enc_structure CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f6' / external_aad /
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-rsa-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  [2], / targets /
+  0, / security context TBD /
+  1, / flags: params-present /
+  [ / parameters /
+    [
+      1, / COSE key /
+      { / public key /
+        / kty / 1: 3, / RSA /
+        / kid / 2: 'ExampleRSA',
+        / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c67
+681231da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded6774
+4ed620707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d78
+35d2d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb
+2925',
+        / e / -2: h'010001'
+      }
+    ],
+    [
+      5, / AAD-scope /
+      0x03 / has-primary-ctx | has-target-ctx /
+    ]
+  ],
+  [
+    [ / target block #2 /
+      [ / result /
+        96, / COSE_Encrypt tag /
+        [
+          &lt;&lt;{ / protected /
+             / alg / 1:3 / A256GCM /
+          }&gt;&gt;,
+          { / unprotected /
+            / iv / 5: h'6f3093eba5d85143c3dc484a'
+          },
+          null, / payload /
+          [
+            [ / recipient /
+              h'', / protected /
+              { / unprotected /
+                / alg / 1:-41, / RSAES-OAEP w SHA-256 /
+                / kid / 4:'ExampleRSA'
+              },
+              h'69e76a39b908090f55b1048c95bd1683d9ce702fd9ed4a149650
+72fd411936ade41a36a9f62921635d14406eb0e1fa3c02ca0d957a4a44006aa3c03e
+326867964b166f8731ebcb20d413fd8f26c57c337689dc42235bfd2b928619b0d4f2
+7ec118c608ad9d18c881bc5124833483ded5f5fb079805f3e299fa45f756ecc4c3
+e6' / key-wrapped /
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-rsa-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  7, / type code - bundle age /
+  2, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
 ]
           </sourcecode>
         </figure>

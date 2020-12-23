@@ -61,7 +61,9 @@ add_custom_target(
 
 # Process each CBOR fragment independently
 find_program(CBORVERIFY diag2pretty.rb)
-if(CBORVERIFY)
+if(NOT CBORVERIFY)
+    message(WARNING "No `diag2pretty.rb` found")
+else()
     set(CBORERRORS_TXT "cborerrors.txt")
     add_custom_command(
         OUTPUT "${CBORERRORS_TXT}"
@@ -76,7 +78,9 @@ endif()
 
 # Process all CDDL concatenated together
 find_program(CDDLTOOL cddl)
-if(CDDLTOOL)
+if(NOT CDDLTOOL)
+    message(WARNING "No `cddl` found")
+else()
     set(CDDLVERIFY "${CMAKE_CURRENT_SOURCE_DIR}/cddl_verify.sh")
     set(CDDLERRORS_TXT "cddlerrors.txt")
     add_custom_command(
