@@ -2,7 +2,7 @@
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-bsipos-dtn-bpsec-cose-04" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="DTN BPSec COSE">
-      DTN Bundle Protocol Security COSE Security Contexts
+      DTN Bundle Protocol Security COSE Security Context
     </title>
     <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-04"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
@@ -27,7 +27,7 @@
     <abstract>
       <t>
 This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
-A profile of COSE is also defined for BPSec interoperation.
+A profile of COSE and for PKIX certificates are also defined for BPSec interoperation.
       </t>
     </abstract>
   </front>
@@ -86,7 +86,7 @@ The entire CDDL structure can be extracted from the XML version of this document
 The following initial fragment defines the top-level symbols of this document's CDDL, including the ASB data structure with its parameter/result sockets.
         </t>
         <sourcecode type="cddl">
-start = AAD-value / ext-data-asb
+start = AAD-structure / ext-data-asb
         </sourcecode>
       </section>
     </section>
@@ -191,7 +191,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>5</td>
               <td>AAD_Scope</td>
               <td><xref target="sec-ASB-param-AAD-scope"/> of this RFC</td>
-              <td>0x7 (all contexts)</td>
+              <td>0x7 (all AAD contexts)</td>
             </tr>
           </tbody>
         </table>
@@ -220,8 +220,10 @@ The security parameters are all stored in the bundle as plaintext and are visibl
           <name>AAD Scope</name>
           <t>
 The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
-The AAD Scope parameter SHALL be encoded as a unit value with bit flags defined in <xref target="tab-AAD-scope-flags"/>.
-The default value for this parameter has all flags set which has the AAD include all available context.
+The AAD Scope parameter SHALL be encoded as a uint value with bit flags defined in <xref target="tab-AAD-scope-flags"/>.
+All reserved bits SHALL be set to zero (which will be elided by CBOR encoding) by security sources.
+All reserved bits SHALL be ignored by security acceptors.
+The default value for this parameter has all flags set, meaning the AAD includes all available context.
           </t>
           <t>
 A CDDL representation of this definition is included in <xref target="fig-AAD-scope-cddl"/> for reference.
@@ -281,8 +283,8 @@ The code points for Result ID values are identical to the  existing COSE message
 This avoids the need for value-mapping between code points of the two registries.
         </t>
         <t>
-When embedding COSE messages, the CBOR structure SHALL be directly included within the abstract security block (ASB) CBOR structure.
-There is no use of embedded encoded CBOR (e.g. CBOR encoded as a byte string) in this specification.
+When embedding COSE messages, the message CBOR structure SHALL be encoded as a byte string used as the result value.
+This allows a security acceptor to skip over unwanted results without needing to decode the result structure.
 When embedding COSE messages, the CBOR-tagged form SHALL NOT be used.
 The Result ID values already provide the same information as the COSE tags (using the same code points).
         </t>
@@ -292,12 +294,12 @@ These generic requirements are formalized in the CDDL fragment of <xref target="
         <figure anchor="fig-results-CDDL">
           <name>COSE context results CDDL</name>
           <sourcecode type="cddl">
-$bpsec-result-pair /= [16, COSE_Encrypt0]
-$bpsec-result-pair /= [17, COSE_Mac0]
-$bpsec-result-pair /= [18, COSE_Sign1]
-$bpsec-result-pair /= [96, COSE_Encrypt]
-$bpsec-result-pair /= [97, COSE_Mac]
-$bpsec-result-pair /= [98, COSE_Sign]
+$bpsec-result-pair /= [16, bstr .cbor COSE_Encrypt0]
+$bpsec-result-pair /= [17, bstr .cbor COSE_Mac0]
+$bpsec-result-pair /= [18, bstr .cbor COSE_Sign1]
+$bpsec-result-pair /= [96, bstr .cbor COSE_Encrypt]
+$bpsec-result-pair /= [97, bstr .cbor COSE_Mac]
+$bpsec-result-pair /= [98, bstr .cbor COSE_Sign]
           </sourcecode>
         </figure>
         <section anchor="sec-ASB-results-BIB">
@@ -437,7 +439,6 @@ A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"
           <figure anchor="fig-AAD-CDDL">
             <name>COSE context AAD CDDL</name>
             <sourcecode type="cddl">
-AAD-value = bstr .cbor AAD-structure
 AAD-structure = [
     primary-ctx:  null / primary-block,  ; if has-primary-ctx is set
     target-ctx:   null / block-metadata, ; if has-target-ctx is set
@@ -471,31 +472,41 @@ Security results generated for BIB or BCB results SHALL conform to the COSE prof
 Security acceptors SHOULD 
         </t>
         <section anchor="sec-context-auth">
-          <name>Security Source Authentication</name>
+          <name>Node Authentication</name>
           <t>
-This section explains how the certificate profile of <xref target="sec-pkix-profile"/> is used by a security acceptor to both validate an end-entity certificate and to use that certificate to authenticate the security source for the COSE security context.
+This section explains how the certificate profile of <xref target="sec-pkix-profile"/> is used by a security acceptor to both validate an end-entity certificate and to use that certificate to authenticate the security source for an integrity result.
+For a confidentiality result, some of the requirements in this section are implicit in an implementation using a private key associated with a certificate used by a result recipient.
+It is an implementation matter to ensure that a BP agent is configured to generate or receive results associated with valid certificates.
           </t>
           <t>
+A security source MAY prohibit generating a result (either integrity or confidentiality) for an end-entity certificate which is not considered valid according to <xref target="sec-context-auth-valid-cert"/>.
+Generating a result which is likely to be discarded is wasteful of bundle size and transport resources.
+          </t>
+          <section>
+            <name>Certificate Identification</name>
+            <t>
 Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with mulitple certificates, and any or all of those certificates can be present as security parameters (see <xref target="sec-ASB-param-keys"/>).
 When present, a security acceptor SHALL use an "x5t" identifier from a COSE recipient to identify an end-entity certificate to use for result processing.
 Security acceptors SHALL NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient.
-          </t>
+            </t>
+          </section>
           <section anchor="sec-context-auth-valid-cert">
-            <name>Certificate Path and Purpose Validation</name>
+            <name>Certificate Validation</name>
             <t>
-For each end-entity certificate referenced by a COSE context result, the security acceptor SHALL perform the certification path validation of <xref target="RFC5280"/> up to one of the acceptor's trusted CA certificates.
+For each end-entity certificate referenced by a COSE context result, the security acceptor SHALL perform the certification path validation of <xref section="6" target="RFC5280"/> up to one of the acceptor's trusted CA certificates.
+When evaluating a certificate Validity period, the security acceptor SHALL use the bundle Creation Timestamp time (if not unknown) as the reference instead of the curent time.
 If enabled by local policy, the entity SHALL perform an OCSP check of each certificate providing OCSP authoritiy information in accordance with <xref target="RFC6960"/>.
 If certificate validation fails or if security policy disallows a certificate for any reason, the acceptor SHALL treat the associated security result as failed.
 Leaving out part of the certification chain can cause the entity to fail to validate a certificate if the left-out certificates are unknown to the entity (see <xref target="sec-threat-untrust-cert"/>).
-          </t>
+            </t>
             <t>
 For each end-entity certificate referenced by a COSE context result, the security acceptor SHALL apply security policy to the Key Usage extension (if present) and Extended Key Usage extension (if present) in accordance with <xref section="4.2.1.12" target="RFC5280"/> and the profile in <xref target="sec-pkix-profile"/>.
-          </t>
+            </t>
           </section>
           <section anchor="sec-context-auth-valid-nodeid">
             <name>Node ID Authentication</name>
             <t>
-If required by security policy, for each end-entity certificate referenced by a COSE context result the security acceptor SHALL validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from either the Security Source (if present) or the Bundle Source (as the implied security source).
+If required by security policy, for each end-entity certificate referenced by a COSE context integrity result the security acceptor SHALL validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from either the Security Source (if present) or the Bundle Source (as the implied security source).
 If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, the security acceptor SHALL treat the result as failed.
             </t>
           </section>
@@ -712,12 +723,12 @@ Security acceptors SHALL accept certificates that contain an empty Subject field
 Identity information in end-entity certificates is contained entirely in the subjectAltName extension as a NODE-ID, as defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
       </t>
       <t>
-All end-entity and CA certificates used for BPSec SHOULD contain both a Subject Key Identifier and an Authority Key Identifier extension in accordance with <xref target="RFC5280"/>.
+All end-entity and CA certificates used for BPSec SHOULD contain both a Subject Key Identifier extension in accordance with <xref section="4.2.1.2" target="RFC5280"/> and an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
 Security acceptors SHOULD NOT rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
 Including key identifiers simplifies the work of an entity needing to assemble a certification chain.
       </t>
       <t>
-A BPSec end-entity certificate SHALL contain a NODE-ID which authenticates the Node ID of the security source.
+A BPSec end-entity certificate SHALL contain a NODE-ID which authenticates the Node ID of the security source (for integrity) or the security acceptor (for confidentiality).
 The identifier type NODE-ID is defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
       </t>
       <t>
@@ -744,9 +755,9 @@ A RECOMMENDED security policy is to limit asymmetric keys (and thus public key c
           <dt>Bundle transport:</dt>
           <dd>With key uses as defined in the convergence layer specification(s).</dd>
           <dt>Block signing:</dt>
-          <dd>With key use digitalSignature and/or nonRepudiation</dd>
+          <dd>With key use digitalSignature and/or nonRepudiation.</dd>
           <dt>Block encryption:</dt>
-          <dd>With key use keyEncipherment and/or keyAgreement</dd>
+          <dd>With key use keyEncipherment and/or keyAgreement.</dd>
         </dl>
         <t>
 This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="NIST-SP800-57"/> more generally.
@@ -954,7 +965,7 @@ The interoperability minimum algorithms and parameters are based on the draft <x
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dtn-bpsec-interop-sc-02.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BSipos-RKF/dtn-bpsec-cose/">
           <front>
-            <title>DTN Bundle Protocol Security COSE Security Contexts</title>
+            <title>DTN Bundle Protocol Security COSE Security Context</title>
             <author fullname="Brian Sipos" initials="B." surname="Sipos">
               <organization abbrev="RKF Engineering">RKF Engineering Solutions, LLC</organization>
             </author>
@@ -1002,24 +1013,39 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
       </figure>
       <t>
 All of the examples also operate within a security block containing the AAD Scope parameter with only "has-primary-ctx" and "has-target-ctx" flags set.
-This results in a consistent AAD-value as shown in <xref target="fig-ex-AAD-value"/>, which is used as the bytestring for COSE external_aad in all of the examples.
-Note that the AAD-value is itself a bytestring which happens to contain encoded CBOR.
+This results in a consistent AAD-structure as shown in <xref target="fig-ex-AAD-structure"/>, which is encoded as the byte string for COSE external_aad in all of the examples.
       </t>
-      <figure anchor="fig-ex-AAD-value">
-        <name>Example scope AAD-value CBOR diagnostic</name>
+      <figure anchor="fig-ex-AAD-structure">
+        <name>Example scope AAD-structure CBOR diagnostic</name>
         <sourcecode type="cbor">
-&lt;&lt;[
+[
   [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ], 
     [ 0, 40 ], 1000000 ], / primary-ctx /
   [ 7, 2, 0 ], / target-ctx /
   null / security-ctx /
-]&gt;&gt;
+]
         </sourcecode>
       </figure>
       <t>
 The only differences between these examples which use EC or RSA keypairs and a use of a PKIX public key certificate are: the parameters would have an x5chain parameter instead of a COSE_Key type, and the recipient would contain an "x5t" value instead of a "kid" value.
 Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
+      <t>
+Because each of the encryption examples use the same CEK within the same AAD, the target ciphertext is also identical.
+The target block after application of the encryption is shown in <xref target="fig-ex-encrypt-target-final"/>.
+      </t>
+      <figure anchor="fig-ex-encrypt-target-final">
+        <name>Encrypted Target block CBOR diagnostic</name>
+        <sourcecode type="cbor">
+[
+  7, / type code - bundle age /
+  2, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
+]
+        </sourcecode>
+      </figure>
       <section>
         <name>Symmetric Key COSE_Mac0</name>
         <t>
@@ -1039,7 +1065,7 @@ This is an example of a MAC with recipient having a 256-bit symmetric key identi
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
         <figure anchor="fig-ex-mac-struct">
@@ -1071,7 +1097,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
     [ / target block #2 /
       [ / result /
         17, / COSE_Mac0 tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:5 / HMAC 256//256 /
           }&gt;&gt;,
@@ -1081,7 +1107,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           null, / payload /
           h'190264a1e6a9734990e552660df3c4641efb88fd6439aba866577c7b
 6d174b87' / tag /
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
@@ -1114,7 +1140,7 @@ e4fe0a1787a8',
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
         <figure anchor="fig-ex-sign-ec2-struct">
@@ -1158,7 +1184,7 @@ afbc1639960a0c7a'
     [ / target block #2 /
       [ / result /
         18, / COSE_Sign1 tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:-7 / ES256 /
           }&gt;&gt;,
@@ -1169,7 +1195,7 @@ afbc1639960a0c7a'
           h'eb085c162bac4ec45c974766b897ee227b189fa257a8fb195c830f04
 f6d6a90318b3e915938e4d32c1baace8aa0bf983f52efcbf1b127b296e72673f3d73
 3023' / signature /
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
@@ -1225,7 +1251,7 @@ f4f92865ca3'
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
         </t>
         <figure anchor="fig-ex-sign-rsa-struct">
@@ -1270,7 +1296,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
     [ / target block #2 /
       [ / result /
         18, / COSE_Sign1 tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:-37 / PS256 /
           }&gt;&gt;,
@@ -1283,7 +1309,7 @@ cb8662435128718c7ba465d2251a770a6c48ddc62f515fca43482ae137fffa67c86b
 c60b3b838875621b276235bdc4269f45fd0c08fdd607650d03ae75b86364f7f5f2cc
 442d60e72bff7939478deba7e3492ea96f8ac1f953583df897138f66c16bc2
 07' / signature /
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
@@ -1317,8 +1343,7 @@ ae38ad7a972e'
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
-The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
         </t>
         <figure anchor="fig-ex-encrypt-symm-struct">
           <name>Enc_structure CBOR diagnostic</name>
@@ -1331,6 +1356,9 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 ]
           </sourcecode>
         </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-symm-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+        </t>
         <figure anchor="fig-ex-encrypt-symm-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
@@ -1348,7 +1376,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
     [ / target block #2 /
       [ / result /
         96, / COSE_Encrypt tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:3 / A256GCM /
           }&gt;&gt;,
@@ -1367,22 +1395,10 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 d403a6331159e3d691a708e9984d' / key-wrapped /
             ]
           ]
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt-symm-final">
-          <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -1428,8 +1444,7 @@ e4fe0a1787a8',
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
-The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
         </t>
         <figure anchor="fig-ex-encrypt-ec2-struct">
           <name>Enc_structure CBOR diagnostic</name>
@@ -1442,6 +1457,9 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 ]
           </sourcecode>
         </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-ec2-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+        </t>
         <figure anchor="fig-ex-encrypt-ec2-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
@@ -1471,7 +1489,7 @@ afbc1639960a0c7a'
     [ / target block #2 /
       [ / result /
         96, / COSE_Encrypt tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:3 / A256GCM /
           }&gt;&gt;,
@@ -1500,22 +1518,10 @@ f252'
 a110f2f27d7972934f4e6497ac89' / key-wrapped /
             ]
           ]
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt-ec2-final">
-          <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -1574,8 +1580,7 @@ f4f92865ca3'
           </sourcecode>
         </figure>
         <t>
-The external_aad is the encoded data from <xref target="fig-ex-AAD-value"/>.
-The payload is the encoded target block-type-specific data from <xref target="fig-ex-target-block"/>.
+The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
         </t>
         <figure anchor="fig-ex-encrypt-rsa-struct">
           <name>Enc_structure CBOR diagnostic</name>
@@ -1588,6 +1593,9 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 ]
           </sourcecode>
         </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-rsa-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+        </t>
         <figure anchor="fig-ex-encrypt-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
@@ -1618,7 +1626,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
     [ / target block #2 /
       [ / result /
         96, / COSE_Encrypt tag /
-        [
+        &lt;&lt;[
           &lt;&lt;{ / protected /
              / alg / 1:3 / A256GCM /
           }&gt;&gt;,
@@ -1640,22 +1648,10 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 e6' / key-wrapped /
             ]
           ]
-        ]
+        ]&gt;&gt;
       ]
     ]
   ]
-]
-          </sourcecode>
-        </figure>
-        <figure anchor="fig-ex-encrypt-rsa-final">
-          <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
-[
-  7, / type code - bundle age /
-  2, / block num /
-  0, / flags /
-  0, / CRC type /
-  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
 ]
           </sourcecode>
         </figure>

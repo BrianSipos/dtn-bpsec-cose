@@ -1,10 +1,10 @@
-import unittest
 import binascii
 import cbor2
 from cose import (Sign1Message, CoseHeaderKeys, CoseAlgorithms, EC2,
                   CoseEllipticCurves)
 import cose.keys.cosekey as cosekey
 from ..util import encode_diagnostic
+from ..bpsec import BlockType
 from .base import BaseTest
 
 
@@ -71,18 +71,19 @@ class TestExample(BaseTest):
         content_signature = message_dec[2]
         message_dec[2] = None
         self._print_message(message_dec, recipient_idx=4)
+        message_enc = cbor2.dumps(message_dec)
 
         # ASB structure
         asb_dec = self._get_asb_item([
             msg_obj.cbor_tag,
-            message_dec
+            message_enc
         ])
         asb_enc = cbor2.dumps(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
         print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
 
         bpsec_dec = self._get_bpsec_item(
-            block_type=98,  # FIXME: not real
+            block_type=BlockType.BIB,
             asb_dec=asb_dec,
         )
         bpsec_enc = cbor2.dumps(bpsec_dec)

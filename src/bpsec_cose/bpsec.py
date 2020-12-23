@@ -3,10 +3,16 @@
 from dataclasses import dataclass, field
 import enum
 import re
-from typing import List, Union, Dict, Optional, Any
-import urllib.parse
-import cbor2
+from typing import List, Optional, Any
 from .bp import EndpointId
+
+
+@enum.unique
+class BlockType(enum.IntEnum):
+    ''' BPSec block type codepoints.
+    '''
+    BIB = 99  # TBD
+    BCB = 98  # TBD
 
 
 @dataclass

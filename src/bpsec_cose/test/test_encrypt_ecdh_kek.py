@@ -1,14 +1,13 @@
 import binascii
 import cbor2
 import os
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 from cose import (SymmetricKey, EncMessage, CoseHeaderKeys, CoseAlgorithms,
                   EC2, CoseEllipticCurves)
 import cose.keys.cosekey as cosekey
 from cose.attributes.context import (CoseKDFContext, PartyInfo, SuppPubInfo)
 from cose.messages.recipient import CoseRecipient, RcptParams
 from ..util import encode_diagnostic
+from ..bpsec import BlockType
 from .base import BaseTest
 
 
@@ -143,18 +142,19 @@ class TestExample(BaseTest):
         message_dec[2] = None
         self._print_message(message_dec, recipient_idx=3)
         print('Ciphertext: {}'.format(encode_diagnostic(content_ciphertext)))
+        message_enc = cbor2.dumps(message_dec)
 
         # ASB structure
         asb_dec = self._get_asb_item([
             msg_obj.cbor_tag,
-            message_dec
+            message_enc
         ])
         asb_enc = cbor2.dumps(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
         print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
 
         bpsec_dec = self._get_bpsec_item(
-            block_type=99,  # FIXME: not real
+            block_type=BlockType.BCB,
             asb_dec=asb_dec,
         )
         bpsec_enc = cbor2.dumps(bpsec_dec)
