@@ -100,11 +100,12 @@ blockflagbits = &(
   block-must-be-replicated-in-every-fragment: 0
 )
 block-type-specific-data = bstr / #6.24(bstr)
-; Actual CBOR data embedded in a bytestring, with optional tag to indicate so
-embedded-cbor<Item> = (bstr .cbor Item) / #6.24(bstr .cbor Item)
+; Actual CBOR data embedded in a bytestring, with optional tag to indicate so.
+; Additional plain bstr allows ciphertext data.
+embedded-cbor<Item> = (bstr .cbor Item) / #6.24(bstr .cbor Item) / bstr
 
 ; Extension block type, which does not specialize other than the code/number
-extension-block = $extension-block-structure .within canonical-block-structure
+extension-block = $extension-block .within canonical-block-structure
 ; Generic shared structure of all non-primary blocks
 extension-block-use<CodeValue, BlockData> = [
   block-type-code: CodeValue,
@@ -162,18 +163,18 @@ status-info-content = [
 
 
 ; Previous Node extension block
-$extension-block-structure /=
-  extension-block-use<7, embedded-cbor<ext-data-previous-node>>
+$extension-block /=
+  extension-block-use<6, embedded-cbor<ext-data-previous-node>>
 ext-data-previous-node = eid
 
 ; Bundle Age extension block
-$extension-block-structure /= 
-  extension-block-use<8, embedded-cbor<ext-data-bundle-age>>
+$extension-block /= 
+  extension-block-use<7, embedded-cbor<ext-data-bundle-age>>
 ext-data-bundle-age = uint
 
 ; Hop Count extension block
-$extension-block-structure /=
-  extension-block-use<9, embedded-cbor<ext-data-hop-count>>
+$extension-block /=
+  extension-block-use<10, embedded-cbor<ext-data-hop-count>>
 ext-data-hop-count = [
   hop-limit: uint,
   hop-count: uint

@@ -81,26 +81,48 @@ find_program(CDDLTOOL cddl)
 if(NOT CDDLTOOL)
     message(WARNING "No `cddl` found")
 else()
-    set(CDDLVERIFY "${CMAKE_CURRENT_SOURCE_DIR}/cddl_verify.sh")
-    set(CDDLERRORS_TXT "cddlerrors.txt")
+    set(CDDLCOMBINE "${CMAKE_CURRENT_SOURCE_DIR}/cddl_combine.sh")
+    set(COMBINED_CDDL "combined.cddl")
     add_custom_command(
-        OUTPUT "${CDDLERRORS_TXT}"
-        DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CDDLVERIFY}"
+        OUTPUT "${COMBINED_CDDL}"
+        DEPENDS "${DRAFT_NAME_XML}" "${CDDLCOMBINE}"
             "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
             "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
             "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
             "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
         COMMAND ${XMLSTARLET} sel --text -t -v '//sourcecode[@type="cddl"]' "${DRAFT_NAME_XML}" | 
-            sh ${CDDLVERIFY} 
+            cat
+                -
                 "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
                 "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
                 "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
                 "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
-                2>"${CDDLERRORS_TXT}" 1>&2 || true
+                >"${COMBINED_CDDL}"
+    )
+
+    set(CDDLERRORS_TXT "cddlerrors.txt")
+    add_custom_command(
+        OUTPUT "${CDDLERRORS_TXT}"
+        DEPENDS "${COMBINED_CDDL}"
+        COMMAND ${CDDLTOOL} "${COMBINED_CDDL}" generate 2>"${CDDLERRORS_TXT}" 1>&2 || true
     )
     add_custom_target(
         cddlerrors ALL
         DEPENDS "${CDDLERRORS_TXT}"
     )
+
+    if(CBORVERIFY)
+        set(ASBERRORS_TXT "asberrors.txt")
+        set(CHECK_CBOR "${CMAKE_CURRENT_SOURCE_DIR}/check_cbor.sh")
+        add_custom_command(
+            OUTPUT "${ASBERRORS_TXT}"
+            DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CHECK_ASB}" "${COMBINED_CDDL}"
+            COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' sh "${CHECK_CBOR}" "${COMBINED_CDDL}" 2>"${ASBERRORS_TXT}" 1>&2
+        )
+        add_custom_target(
+            asberrors ALL
+            DEPENDS "${ASBERRORS_TXT}"
+        )
+    endif()
 endif()
 

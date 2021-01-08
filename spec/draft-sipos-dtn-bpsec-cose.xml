@@ -86,7 +86,9 @@ The entire CDDL structure can be extracted from the XML version of this document
 The following initial fragment defines the top-level symbols of this document's CDDL, including the ASB data structure with its parameter/result sockets.
         </t>
         <sourcecode type="cddl">
-start = AAD-structure / ext-data-asb
+start = bpsec-cose-asb / AAD-structure /
+  primary-block / extension-block /
+  MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
         </sourcecode>
       </section>
     </section>
@@ -108,6 +110,18 @@ The COSE security context SHALL have the Security Context ID specified in <xref 
       <t>
 Both types of security block can use the same parameters, defined in <xref target="sec-ASB-parameters"/>, to carry public key-related information and each type of security block allows specific COSE message results, defined in <xref target="sec-ASB-results"/>.
       </t>
+      <figure anchor="fig-context-CDDL">
+        <name>COSE context declaration CDDL</name>
+        <sourcecode type="cddl">
+; Specialize the ASB for this context
+bpsec-cose-asb = bpsec-context-use&lt;
+  0, ; Context ID TBD-COSE
+  $bpsec-cose-param,
+  $bpsec-cose-result
+&gt;
+$ext-data-asb /= bpsec-cose-asb
+        </sourcecode>
+      </figure>
       <section>
         <name>Security Scope</name>
         <t>
@@ -198,11 +212,11 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
         <figure anchor="fig-params-CDDL">
           <name>COSE context parameters CDDL</name>
           <sourcecode type="cddl">
-$bpsec-param-pair /= [1, COSE_Key]
-$bpsec-param-pair /= [2, COSE_KeySet]
-$bpsec-param-pair /= [3, x5chain: COSE_X509]
-$bpsec-param-pair /= [4, x5bag: COSE_X509]
-$bpsec-param-pair /= [5, AAD-scope]
+$bpsec-cose-param /= [1, COSE_Key]
+$bpsec-cose-param /= [2, COSE_KeySet]
+$bpsec-cose-param /= [3, x5chain: COSE_X509]
+$bpsec-cose-param /= [4, x5bag: COSE_X509]
+$bpsec-cose-param /= [5, AAD-scope]
           </sourcecode>
         </figure>
         <section anchor="sec-ASB-param-keys">
@@ -294,12 +308,12 @@ These generic requirements are formalized in the CDDL fragment of <xref target="
         <figure anchor="fig-results-CDDL">
           <name>COSE context results CDDL</name>
           <sourcecode type="cddl">
-$bpsec-result-pair /= [16, bstr .cbor COSE_Encrypt0]
-$bpsec-result-pair /= [17, bstr .cbor COSE_Mac0]
-$bpsec-result-pair /= [18, bstr .cbor COSE_Sign1]
-$bpsec-result-pair /= [96, bstr .cbor COSE_Encrypt]
-$bpsec-result-pair /= [97, bstr .cbor COSE_Mac]
-$bpsec-result-pair /= [98, bstr .cbor COSE_Sign]
+$bpsec-cose-result /= [16, bstr .cbor COSE_Encrypt0]
+$bpsec-cose-result /= [17, bstr .cbor COSE_Mac0]
+$bpsec-cose-result /= [18, bstr .cbor COSE_Sign1]
+$bpsec-cose-result /= [96, bstr .cbor COSE_Encrypt]
+$bpsec-cose-result /= [97, bstr .cbor COSE_Mac]
+$bpsec-cose-result /= [98, bstr .cbor COSE_Sign]
           </sourcecode>
         </figure>
         <section anchor="sec-ASB-results-BIB">
@@ -712,6 +726,9 @@ The end entity certificate associated with a BPSec security source SHALL adhere 
     <section anchor="sec-pkix-profile">
       <name>PKIX Certificate Profile</name>
       <t>
+This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
+      </t>
+      <t>
 All end-entity certificates used for BPSec SHALL conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
       </t>
       <t>
@@ -765,7 +782,7 @@ Effectively this means that a BP node uses separate certificates for transport (
         </t>
       </section>
     </section>
-    <section>
+    <section removeInRFC="true">
       <name>Implementation Status</name>
       <t>
 [NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/> and <xref target="github-dtn-bpsec-cose"/>.]
@@ -1085,7 +1102,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1104,7 +1121,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           { / unprotected /
             / kid / 4:'ExampleMAC'
           },
-          null, / payload /
+          null, / payload detached /
           h'190264a1e6a9734990e552660df3c4641efb88fd6439aba866577c7b
 6d174b87' / tag /
         ]&gt;&gt;
@@ -1160,7 +1177,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1191,7 +1208,7 @@ afbc1639960a0c7a'
           { / unprotected /
             / kid / 4:'ExampleEC2'
           },
-          null, / payload /
+          null, / payload detached /
           h'eb085c162bac4ec45c974766b897ee227b189fa257a8fb195c830f04
 f6d6a90318b3e915938e4d32c1baace8aa0bf983f52efcbf1b127b296e72673f3d73
 3023' / signature /
@@ -1271,7 +1288,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1303,7 +1320,7 @@ The payload is the encoded target block-type-specific data from <xref target="fi
           { / unprotected /
             / kid / 4:'ExampleRSA'
           },
-          null, / payload /
+          null, / payload detached /
           h'2229cec7cd4e77e55b7ef39e0305931527e3075e7cad4969ecf1bdc5
 cb8662435128718c7ba465d2251a770a6c48ddc62f515fca43482ae137fffa67c86b
 c60b3b838875621b276235bdc4269f45fd0c08fdd607650d03ae75b86364f7f5f2cc
@@ -1364,7 +1381,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1383,7 +1400,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           { / unprotected /
             / iv / 5: h'6f3093eba5d85143c3dc484a'
           },
-          null, / payload /
+          null, / payload detached /
           [
             [ / recipient /
               h'', / protected /
@@ -1465,7 +1482,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1496,7 +1513,7 @@ afbc1639960a0c7a'
           { / unprotected /
             / iv / 5: h'6f3093eba5d85143c3dc484a'
           },
-          null, / payload /
+          null, / payload detached /
           [
             [ / recipient /
               h'', / protected /
@@ -1601,7 +1618,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <sourcecode type="cbor">
 [
   [2], / targets /
-  0, / security context TBD /
+  0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
     [
@@ -1633,7 +1650,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           { / unprotected /
             / iv / 5: h'6f3093eba5d85143c3dc484a'
           },
-          null, / payload /
+          null, / payload detached /
           [
             [ / recipient /
               h'', / protected /

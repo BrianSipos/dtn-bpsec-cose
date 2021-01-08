@@ -1,30 +1,50 @@
 ; This relies on the defintions of BPv7 "bpv7.cddl"
 
-; The block-type-specific data for BIB and BCB
-ext-data-asb = [
+; Generic structure of block-type-specific data for BIB and BCB
+ext-data-asb = $ext-data-asb .within ext-data-asb-structure
+ext-data-asb-structure = [
   targets: [1* target-block-num],
   context-id: int,
-  flags: uint .bits asb-flag-bits, ; if the sec-params-present is set
-  ? security-source: eid, ; if the sec-source-present is set
-  ? parameters: param-list,
-  target-results: [1* result-list]
+  asb-flags,
+  ? security-source: eid, ; if sec-source-present is set
+  ? parameters: asb-id-value-list, ; if sec-params-present is set
+  target-results: [1* asb-id-value-list]
 ]
 target-block-num = uint
+asb-flags = uint .bits asb-flag-bits
 asb-flag-bits = &(
-  sec-params-present: 1,
-  sec-source-present: 2
+  sec-params-present: 0,
+  sec-source-present: 1
 )
 
 ; Alternatives can be added to the sockets for each context ID
-param-list = [1* $bpsec-param-pair .within asb-id-value-structure]
-result-list = [1* $bpsec-result-pair .within asb-id-value-structure]
-
+asb-id-value-list = [1* asb-id-value-pair]
 ; Interpretation of the pair depends on the context-id and whether
 ; it is a parameter or a result.
-asb-id-value-structure = [
+asb-id-value-pair = [
   id: uint,
   value: any
 ]
 
-$extension-block-structure /= extension-block-use<98, embedded-cbor<ext-data-asb>>
-$extension-block-structure /= extension-block-use<99, embedded-cbor<ext-data-asb>>
+; Provide BPv7 extension block types
+$extension-block /= extension-block-use<98, embedded-cbor<ext-data-asb>>
+$extension-block /= extension-block-use<99, embedded-cbor<ext-data-asb>>
+
+; Specialization of $ext-data-asb for a security context
+; The ParamPair and ResultPair should be sockets for specializing those types.
+bpsec-context-use<ContextId, ParamPair, ResultPair> = [
+  targets: [
+    1* target-block-num
+  ],
+  context-id: ContextId,
+  asb-flags,
+  ? security-source: eid,
+  ? parameters: [
+    1* ParamPair .within asb-id-value-pair
+  ],
+  target-results: [
+    1* [
+      1* ResultPair .within asb-id-value-pair
+    ]
+  ]
+]
