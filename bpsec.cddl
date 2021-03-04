@@ -6,15 +6,14 @@ ext-data-asb-structure = [
   targets: [1* target-block-num],
   context-id: int,
   asb-flags,
-  ? security-source: eid, ; if sec-source-present is set
+  security-source: eid,
   ? parameters: asb-id-value-list, ; if sec-params-present is set
   target-results: [1* asb-id-value-list]
 ]
 target-block-num = uint
 asb-flags = uint .bits asb-flag-bits
 asb-flag-bits = &(
-  sec-params-present: 0,
-  sec-source-present: 1
+  sec-params-present: 0
 )
 
 ; Alternatives can be added to the sockets for each context ID
