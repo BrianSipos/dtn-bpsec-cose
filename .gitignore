@@ -11,3 +11,4 @@ CTestTestfile.cmake
 _deps
 __pycache__/
 *.pyc
+/build/
