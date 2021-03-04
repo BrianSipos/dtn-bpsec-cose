@@ -40,7 +40,7 @@ def main():
         proc.stdin.close()
         exitcodes.append(proc.wait())
 
-    return max(exitcodes)
+    return max(exitcodes) if exitcodes else 0
 
 
 if __name__ == '__main__':
