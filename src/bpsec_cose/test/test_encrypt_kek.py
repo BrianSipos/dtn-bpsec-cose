@@ -1,8 +1,9 @@
 import binascii
 import cbor2
-from cose import SymmetricKey, EncMessage, CoseHeaderKeys, CoseAlgorithms
-import cose.keys.cosekey as cosekey
-from cose.messages.recipient import CoseRecipient, RcptParams
+from cose import headers, algorithms
+from cose.keys import SymmetricKey, keyops, keyparam
+from cose.messages import EncMessage
+from cose.messages.recipient import KeyWrap
 from ..util import encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
@@ -14,16 +15,22 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key encryption key
         kek = SymmetricKey(
-            kid=b'ExampleKEK',
-            k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            key=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            optional_params={
+                keyparam.KpKid: b'ExampleKEK',
+                keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
+            }
         )
-        print('KEK: {}'.format(encode_diagnostic(kek.encode('_kid', 'k'))))
+        print('KEK: {}'.format(encode_diagnostic(cbor2.loads(kek.encode()))))
         # 256-bit content encryption key
         cek = SymmetricKey(
-            kid=b'ExampleCEK',
-            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            key=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            optional_params={
+                keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
+            }
         )
-        print('CEK: {}'.format(encode_diagnostic(cek.encode('_kid', 'k'))))
+        print('CEK: {}'.format(encode_diagnostic(cbor2.loads(cek.encode()))))
         # session IV
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
@@ -46,20 +53,19 @@ class TestExample(BaseTest):
         print('External AAD: {}'.format(encode_diagnostic(ext_aad_dec)))
         print('Encoded: {}'.format(encode_diagnostic(ext_aad_enc)))
 
-        cek.key_ops = cosekey.KeyOps.ENCRYPT
         msg_obj = EncMessage(
             phdr={
-                CoseHeaderKeys.ALG: CoseAlgorithms.A256GCM,
+                headers.Algorithm: algorithms.A256GCM,
             },
             uhdr={
-                CoseHeaderKeys.IV: iv,
+                headers.IV: iv,
             },
             payload=content_plaintext,
             recipients=[
-                CoseRecipient(
+                KeyWrap(
                     uhdr={
-                        CoseHeaderKeys.ALG: CoseAlgorithms.A256KW,
-                        CoseHeaderKeys.KID: kek.kid,
+                        headers.Algorithm: algorithms.A256KW,
+                        headers.KID: kek.kid,
                     },
                     payload=cek.k,
                 ),
@@ -67,6 +73,7 @@ class TestExample(BaseTest):
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
+        msg_obj.recipients[0].key = kek
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
@@ -75,18 +82,7 @@ class TestExample(BaseTest):
         print('Encoded: {}'.format(encode_diagnostic(cose_struct_enc)))
 
         # Encoded message
-        message_enc = msg_obj.encode(
-            key=cek,
-            nonce=msg_obj.uhdr[CoseHeaderKeys.IV],
-            alg=msg_obj.phdr[CoseHeaderKeys.ALG],
-            enc_params=[
-                RcptParams(
-                    key=kek,
-                    alg=msg_obj.recipients[0].uhdr[CoseHeaderKeys.ALG],
-                ),
-            ],
-            tagged=False
-        )
+        message_enc = msg_obj.encode(tag=False)
         message_dec = cbor2.loads(message_enc)
         # Detach the payload
         content_ciphertext = message_dec[2]
@@ -114,13 +110,14 @@ class TestExample(BaseTest):
 
         # Change from detached payload
         message_dec[2] = content_ciphertext
-        decode_obj: EncMessage = EncMessage.decode(cbor2.dumps(cbor2.CBORTag(EncMessage.cbor_tag, message_dec)))
+        decode_obj = EncMessage.from_cose_obj(message_dec)
         decode_obj.external_aad = ext_aad_enc
-        cek.key_ops = cosekey.KeyOps.DECRYPT
-        decode_plaintext = decode_obj.decrypt(key=cek, nonce=decode_obj.uhdr[CoseHeaderKeys.IV])
+
+        recip = decode_obj.recipients[0]
+        recip.key = kek
+        decode_plaintext = decode_obj.decrypt(recipient=recip)
         print('Loopback plaintext:', encode_diagnostic(decode_plaintext))
         self.assertEqual(content_plaintext, decode_plaintext)
-        kek.key_ops = cosekey.KeyOps.UNWRAP
-        decode_cek = kek.key_unwrap(decode_obj.recipients[0].payload)
-        print('Loopback CEK:', encode_diagnostic(decode_cek))
-        self.assertEqual(cek.k, decode_cek)
+
+        print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
+        self.assertEqual(cek.k, decode_obj.key.k)

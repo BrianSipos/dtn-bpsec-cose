@@ -1,8 +1,8 @@
 import binascii
 import cbor2
-from cose import (Sign1Message, CoseHeaderKeys, CoseAlgorithms, EC2,
-                  CoseEllipticCurves)
-import cose.keys.cosekey as cosekey
+from cose import curves, headers, algorithms
+from cose.keys import EC2Key, keyops, keyparam
+from cose.messages import Sign1Message
 from ..util import encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
@@ -12,15 +12,17 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        private_key = EC2(
-            kid=b'ExampleEC2',
-            crv=CoseEllipticCurves.P_256,
+        private_key = EC2Key(
+            crv=curves.P256,
             x=binascii.unhexlify('44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5e4fe0a1787a8'),
             y=binascii.unhexlify('059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc1639960a0c7a'),
             d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
+            optional_params={
+                keyparam.KpKid: b'ExampleEC2',
+                keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
+            }
         )
-        print('Private Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'crv', 'x', 'y', 'd'))))
-        print('Public Key: {}'.format(encode_diagnostic(private_key.encode('_kid', 'crv', 'x', 'y'))))
+        print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
 
         # Primary block
         prim_dec = self._get_primary_item()
@@ -40,18 +42,18 @@ class TestExample(BaseTest):
         print('External AAD: {}'.format(encode_diagnostic(ext_aad_dec)))
         print('Encoded: {}'.format(encode_diagnostic(ext_aad_enc)))
 
-        private_key.key_ops = cosekey.KeyOps.SIGN
         msg_obj = Sign1Message(
             phdr={
-                CoseHeaderKeys.ALG: CoseAlgorithms.ES256,
+                headers.Algorithm: algorithms.Es256,
             },
             uhdr={
-                CoseHeaderKeys.KID: private_key.kid,
+                headers.KID: private_key.kid,
             },
             payload=content_plaintext,
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
+        msg_obj.key = private_key
 
         # COSE internal structure
         cose_struct_enc = msg_obj._sig_structure
@@ -60,12 +62,7 @@ class TestExample(BaseTest):
         print('Encoded: {}'.format(encode_diagnostic(cose_struct_enc)))
 
         # Encoded message
-        message_enc = msg_obj.encode(
-            private_key=private_key,
-            alg=msg_obj.phdr[CoseHeaderKeys.ALG],
-            curve=private_key.crv,
-            tagged=False
-        )
+        message_enc = msg_obj.encode(tag=False)
         message_dec = cbor2.loads(message_enc)
         # Detach the payload
         content_signature = message_dec[2]
@@ -92,9 +89,10 @@ class TestExample(BaseTest):
 
         # Change from detached payload
         message_dec[2] = content_signature
-        decode_obj: Sign1Message = Sign1Message.decode(cbor2.dumps(cbor2.CBORTag(Sign1Message.cbor_tag, message_dec)))
+        decode_obj = Sign1Message.from_cose_obj(message_dec)
         decode_obj.external_aad = ext_aad_enc
-        private_key.key_ops = cosekey.KeyOps.VERIFY
-        verify_valid = decode_obj.verify_signature(public_key=private_key)
+        decode_obj.key = private_key
+
+        verify_valid = decode_obj.verify_signature()
         self.assertTrue(verify_valid)
         print('Loopback verify:', verify_valid)
