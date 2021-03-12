@@ -38,6 +38,20 @@ class TestExample(BaseTest):
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
 
+        # Would be random ephemeral key, but test constant
+        sender_key = EC2Key(
+            crv=curves.P256,
+            x=binascii.unhexlify('fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc'),
+            y=binascii.unhexlify('ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d62'),
+            d=binascii.unhexlify('a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c20880f9d9c3b122a'),
+        )
+        print('Sender Private Key: {}'.format(encode_diagnostic(cbor2.loads(sender_key.encode()))))
+        sender_public = EC2Key(
+            crv=sender_key.crv,
+            x=sender_key.x,
+            y=sender_key.y
+        )
+
         # Primary block
         prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
@@ -69,8 +83,7 @@ class TestExample(BaseTest):
                     uhdr={
                         headers.Algorithm: algorithms.EcdhEsA256KW,
                         headers.KID: private_key.kid,
-                        # Would be random nonce, but test constant
-                        headers.PartyUNonce: binascii.unhexlify(b'e6bd83a5a06841c2ea1dd4eebaaaf252'),
+                        headers.EphemeralKey: sender_public,
                     },
                     payload=cek.k,
                 ),
@@ -78,7 +91,9 @@ class TestExample(BaseTest):
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
-        msg_obj.recipients[0].local_attrs = {
+        recip = msg_obj.recipients[0]
+        recip.key = sender_key
+        recip.local_attrs = {
             headers.StaticKey: private_key,
         }
 
