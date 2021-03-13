@@ -35,11 +35,16 @@ class BaseTest(unittest.TestCase):
         '''
         return item[:3]
 
-    def _get_aad_item(self):
+    def _get_aad_item(self, addl_protected:bytes=b''):
+        ''' Get the AAD-structure item.
+
+        :param addl_protected: The additional-protected parameters encoded.
+        '''
         return [
             self._get_primary_item(),  # primary-ctx
             self._block_identity(self._get_target_item()),  # target-ctx
             None,  # asb-ctx
+            addl_protected,
         ]
 
     def _get_asb_item(self, result):

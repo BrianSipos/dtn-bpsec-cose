@@ -11,8 +11,8 @@ from .bp import EndpointId
 class BlockType(enum.IntEnum):
     ''' BPSec block type codepoints.
     '''
-    BIB = 99  # TBD
-    BCB = 98  # TBD
+    BIB = 11
+    BCB = 12
 
 
 @dataclass

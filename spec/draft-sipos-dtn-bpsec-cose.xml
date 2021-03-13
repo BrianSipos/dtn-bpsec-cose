@@ -21,7 +21,7 @@
         <email>BSipos@rkf-eng.com</email>
       </address>
     </author>
-    <date day="22" month="December" year="2020"/>
+    <date/>
     <area>Transport</area>
     <workgroup>Delay-Tolerant Networking</workgroup>
     <abstract>
@@ -187,48 +187,93 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
             </tr>
             <tr>
               <td>3</td>
-              <td>COSE_X509 as x5chain</td>
+              <td>additional-protected</td>
+              <td><xref target="sec-ASB-param-additional"/> of this document</td>
               <td>
-                <xref target="I-D.ietf-cose-x509"/>
+                <sourcecode type="cbor">''</sourcecode>
+                <t>(empty bstr)</t>
               </td>
-              <td>none</td>
             </tr>
             <tr>
               <td>4</td>
-              <td>COSE_X509 as x5bag</td>
+              <td>additional-unprotected</td>
+              <td><xref target="sec-ASB-param-additional"/> of this document</td>
               <td>
-                <xref target="I-D.ietf-cose-x509"/>
+                <sourcecode type="cbor">{}</sourcecode>
+                <t>(empty map)</t>
               </td>
-              <td>none</td>
             </tr>
             <tr>
               <td>5</td>
               <td>AAD_Scope</td>
-              <td><xref target="sec-ASB-param-AAD-scope"/> of this RFC</td>
-              <td>0x7 (all AAD contexts)</td>
+              <td><xref target="sec-ASB-param-AAD-scope"/> of this document</td>
+              <td>
+                <sourcecode type="cbor">0x7</sourcecode>
+                <t>(all AAD contexts)</t>
+              </td>
             </tr>
           </tbody>
         </table>
-        <figure anchor="fig-params-CDDL">
-          <name>COSE context parameters CDDL</name>
-          <sourcecode type="cddl">
-$bpsec-cose-param /= [1, COSE_Key]
-$bpsec-cose-param /= [2, COSE_KeySet]
-$bpsec-cose-param /= [3, x5chain: COSE_X509]
-$bpsec-cose-param /= [4, x5bag: COSE_X509]
-$bpsec-cose-param /= [5, AAD-scope]
-          </sourcecode>
-        </figure>
         <section anchor="sec-ASB-param-keys">
           <name>Key Containers</name>
           <t>
-Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling parameters of <xref target="tab-ASB-parameters"/>.
-See <xref target="sec-asym-keys"/> for a definition of how the aggregate of all public keys and certificates in security parameters apply to each security result.
+Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling COSE_Key and COSE_KeySet parameters.
           </t>
           <t>
-COSE security parameters SHALL NOT contain any private key material.
+No more than one total COSE_Key or COSE_KeySet parameter SHALL be present in a single security block.
+Security acceptors are sill required to aggregate multiple parameters, if present, in <xref target="sec-asym-keys"/>.
+          </t>
+          <t>
+Key container parameters SHALL NOT contain any private key material.
 The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
           </t>
+          <figure anchor="fig-param-keys-cddl">
+            <name>Key Containers CDDL</name>
+            <sourcecode type="cddl">
+$bpsec-cose-param /= [1, COSE_Key]
+$bpsec-cose-param /= [2, COSE_KeySet]
+            </sourcecode>
+          </figure>
+        </section>
+        <section anchor="sec-ASB-param-additional">
+          <name>Additional Header Maps</name>
+          <t>
+The two parameters Additional Protected and Additional Unprotected allow de-duplicating header items which are common to all COSE results.
+Both additional header values contain a CBOR map which is to be merged with each of the result's unprotected headers.
+Although the additional header items are all treated as unprotected from the perspective of the COSE message, the additional protected map is included within the "external_aad" (see <xref target="sec-context-AAD"/>).
+The expected use of additional header map is to contain an "x5chain" or "x5bag" which applies to all results in the same security block.
+          </t>
+          <t>
+Following the same pattern as COSE, when both additional header maps are present in a single security block they SHALL not contain any duplicated labels.
+Security acceptors SHALL treat a pair of additional header maps containing duplciated lablels as invalid.
+          </t>
+          <t>
+No more than one of each Additional Protected and Additional Unprotected parameter SHALL be present in a single security block.
+Security acceptors SHALL treat a security block with multiple instances of either additional header type as invalid.
+There is no well-defined behavior for a security acceptor to handle multiple Additional Protected parameters.
+          </t>
+          <t>
+Security sources SHOULD NOT include an additional header parameter which represents an empty map.
+Security acceptors SHALL handle empty header map parameters, specifically the Additional Protected parameter because it is part of the external_aad.
+          </t>
+          <t>
+Security acceptors SHALL treat the aggregate of both additional header maps as being present in the "unprotected" header map of the COSE message of each result.
+If the same header label is present in a additional header map and a result message the item in the result message SHALL take precedence (i.e., the additional header items are added only if they are not already present in a result message).
+          </t>
+          <t>
+Additional header maps SHALL NOT contain any private key material.
+The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
+          </t>
+          <figure anchor="fig-additional-cddl">
+            <name>Additional Headers CDDL</name>
+            <sourcecode type="cddl">
+$bpsec-cose-param /= [3, additional-protected]
+additional-protected = empty_or_serialized_map
+
+$bpsec-cose-param /= [4, additional-unprotected]
+additional-unprotected = header_map
+            </sourcecode>
+          </figure>
         </section>
         <section anchor="sec-ASB-param-AAD-scope">
           <name>AAD Scope</name>
@@ -277,6 +322,7 @@ A CDDL representation of this definition is included in <xref target="fig-AAD-sc
           <figure anchor="fig-AAD-scope-cddl">
             <name>AAD Scope CDDL</name>
             <sourcecode type="cddl">
+$bpsec-cose-param /= [5, AAD-scope]
 AAD-scope = uint .bits AAD-scope-flags
 AAD-scope-flags = &amp;(
     has-primary-ctx: 0,
@@ -446,6 +492,9 @@ The second item SHALL be either: a CBOR array containing the first three fields 
             <li>
 The third item SHALL be either: a CBOR array containing the first three fields of the security block containing the result (i.e., the block type code, block number, and control flags) if the AAD Scope has the has-security-ctx flag set, otherwise the null value.
             </li>
+            <li>
+The fourth item SHALL be the Additional Protected header map, which is a bstr value and has a default value of the empty bstr.
+            </li>
           </ol>
           <t>
 A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"/>.
@@ -454,9 +503,14 @@ A CDDL representation of this data is shown below in <xref target="fig-AAD-CDDL"
             <name>COSE context AAD CDDL</name>
             <sourcecode type="cddl">
 AAD-structure = [
-    primary-ctx:  null / primary-block,  ; if has-primary-ctx is set
-    target-ctx:   null / block-metadata, ; if has-target-ctx is set
-    security-ctx: null / block-metadata  ; if has-security-ctx is set
+    ; non-null if has-primary-ctx is set
+    primary-ctx:  null / primary-block,
+    ; non-null if has-target-ctx is set
+    target-ctx:   null / block-metadata,
+    ; non-null if has-security-ctx is set
+    security-ctx: null / block-metadata,
+    ; copy of additional-protected (or default)
+    additional-protected
 ]
 ; The first three fields of BP "canonical-block-structure"
 block-metadata = [
@@ -499,7 +553,7 @@ Generating a result which is likely to be discarded is wasteful of bundle size a
           <section>
             <name>Certificate Identification</name>
             <t>
-Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with mulitple certificates, and any or all of those certificates can be present as security parameters (see <xref target="sec-ASB-param-keys"/>).
+Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with mulitple certificates, and any or all of those certificates MAY be present within an "x5bag" in an Additional Protected parameter (see <xref target="sec-ASB-param-additional"/>).
 When present, a security acceptor SHALL use an "x5t" identifier from a COSE recipient to identify an end-entity certificate to use for result processing.
 Security acceptors SHALL NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient.
             </t>
@@ -520,7 +574,7 @@ For each end-entity certificate referenced by a COSE context result, the securit
           <section anchor="sec-context-auth-valid-nodeid">
             <name>Node ID Authentication</name>
             <t>
-If required by security policy, for each end-entity certificate referenced by a COSE context integrity result the security acceptor SHALL validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from either the Security Source (if present) or the Bundle Source (as the implied security source).
+If required by security policy, for each end-entity certificate referenced by a COSE context integrity result the security acceptor SHALL validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from the Security Source of the containing security block.
 If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, the security acceptor SHALL treat the result as failed.
             </t>
           </section>
@@ -529,7 +583,7 @@ If the NODE-ID validation result is Failure or if the result is Absent and secur
           <name>Policy Recommendations</name>
           <t>
 A RECOMMENDED security policy is to enable the use of OCSP checking when internet connectivity is present.
-A RECOMMENDED security policy is that if an Extended Key Usage is present that it needs to contain "id-kp-bundleSecurity" to be usable as an end-entity certificate for with COSE security results.
+A RECOMMENDED security policy is that if an Extended Key Usage is present that it needs to contain "id-kp-bundleSecurity" to be usable as an end-entity certificate for COSE security results.
 A RECOMMENDED security policy is to require a validated Node ID (of <xref target="sec-context-auth-valid-nodeid"/>) and to ignore any other identifiers in the end-entity certificate.
           </t>
           <t>
@@ -693,18 +747,18 @@ When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL inclu
         <t>
 This section applies when a BIB uses a public key for verification, or when a BCB uses a public key for encryption.
 When using asymmetric keyed algorithms, the security source SHALL include a public key identifier as a recipient header.
-The public key identifier SHALL be either a "kid" <xref target="RFC8152"/>, an "x5t" <xref target="I-D.ietf-cose-x509"/>, or an equivalent identifier.
+The public key identifier SHALL be either a "kid" of <xref target="RFC8152"/>, an "x5t" of <xref target="I-D.ietf-cose-x509"/>, or an equivalent identifier.
         </t>
         <t>
-When a BIB result contains a "kid" identifier, the security source SHOULD include an appropriate COSE public key in the security parameters.
-When BIB result contains a "x5t" identifier, the security source SHOULD include an appropriate PKIX certificate chain in the security parameters.
-For a BIB, if all potential security acceptors are known to possess related public key and/or certificate data then the public key parameters can be omitted.
+When a BIB result contains a "kid" identifier, the security source MAY include an appropriate COSE public key "COSE_Key" in a key container security parameter (see <xref target="sec-ASB-param-keys"/>).
+When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate chain ("x5chain" of <xref target="I-D.ietf-cose-x509"/>) in an additional header map security parameter (see <xref target="sec-ASB-param-additional"/>).
+For a BIB, if all potential security acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
 Risks of not including related data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
         </t>
         <t>
 When present, public keys and certificates SHOULD be included as ASB parameters rather than within ASB results.
 This provides size efficiency when multiple security results are present because they will all be from the same security source and likely share the same public key material.
-Security acceptors SHALL still process public keys or certificates present in a result as applying to that individual result.
+Security acceptors SHALL still process public keys or certificates present in a result message or recipient as applying to that individual COSE level.
         </t>
         <t>
 Security acceptors SHALL aggregate all public keys from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
@@ -1039,7 +1093,8 @@ This results in a consistent AAD-structure as shown in <xref target="fig-ex-AAD-
   [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ], 
     [ 0, 40 ], 1000000 ], / primary-ctx /
   [ 7, 2, 0 ], / target-ctx /
-  null / security-ctx /
+  null, / security-ctx /
+  '' / additional-protected /
 ]
         </sourcecode>
       </figure>
@@ -1059,7 +1114,7 @@ The target block after application of the encryption is shown in <xref target="f
   2, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb162d8ee2e8175cfc340b6df978864907a2' / ciphertext /
+  h'63bb166949afd31b50841ee05153b9cfaf788d' / ciphertext /
 ]
         </sourcecode>
       </figure>
@@ -1091,8 +1146,8 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 [
   "MAC0", / context /
   h'a10105', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6', / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
   h'19012c' / payload /
 ]
           </sourcecode>
@@ -1122,8 +1177,8 @@ The payload is the encoded target block-type-specific data from <xref target="fi
             / kid / 4:'ExampleMAC'
           },
           null, / payload detached /
-          h'190264a1e6a9734990e552660df3c4641efb88fd6439aba866577c7b
-6d174b87' / tag /
+          h'fa8b08724db1f0f4097156b12e65a1e7d57cfcdd413ced62d9e20f2b
+a4efcea5' / tag /
         ]&gt;&gt;
       ]
     ]
@@ -1166,8 +1221,8 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 [
   "Signature1", / context /
   h'a10126', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6', / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
   h'19012c' / payload /
 ]
           </sourcecode>
@@ -1180,18 +1235,6 @@ The payload is the encoded target block-type-specific data from <xref target="fi
   0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
-    [
-      1, / COSE key /
-      { / public key /
-        / kty / 1: 2, / EC2 /
-        / kid / 2: 'ExampleEC2',
-        / crv / -1: 1, / P-256 /
-        / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbdd
-b8b5e4fe0a1787a8',
-        / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715f
-afbc1639960a0c7a'
-      }
-    ],
     [
       5, / AAD-scope /
       0x03 / has-primary-ctx | has-target-ctx /
@@ -1209,9 +1252,9 @@ afbc1639960a0c7a'
             / kid / 4:'ExampleEC2'
           },
           null, / payload detached /
-          h'eb085c162bac4ec45c974766b897ee227b189fa257a8fb195c830f04
-f6d6a90318b3e915938e4d32c1baace8aa0bf983f52efcbf1b127b296e72673f3d73
-3023' / signature /
+          h'66358aa1ee41276688e417d7686db3914f3a6d061a31145912fc18ac
+68c1b980e9bbae2d18887677f9f8fb1d0a6133e62d89a2616826fd1109620122cde6
+eb5c' / signature /
         ]&gt;&gt;
       ]
     ]
@@ -1277,8 +1320,8 @@ The payload is the encoded target block-type-specific data from <xref target="fi
 [
   "Signature1", / context /
   h'a1013824', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6', / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
   h'19012c' / payload /
 ]
           </sourcecode>
@@ -1291,19 +1334,6 @@ The payload is the encoded target block-type-specific data from <xref target="fi
   0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
-    [
-      1, / COSE key /
-      { / public key /
-        / kty / 1: 3, / RSA /
-        / kid / 2: 'ExampleRSA',
-        / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c67
-681231da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded6774
-4ed620707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d78
-35d2d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb
-2925',
-        / e / -2: h'010001'
-      }
-    ],
     [
       5, / AAD-scope /
       0x03 / has-primary-ctx | has-target-ctx /
@@ -1321,11 +1351,11 @@ The payload is the encoded target block-type-specific data from <xref target="fi
             / kid / 4:'ExampleRSA'
           },
           null, / payload detached /
-          h'2229cec7cd4e77e55b7ef39e0305931527e3075e7cad4969ecf1bdc5
-cb8662435128718c7ba465d2251a770a6c48ddc62f515fca43482ae137fffa67c86b
-c60b3b838875621b276235bdc4269f45fd0c08fdd607650d03ae75b86364f7f5f2cc
-442d60e72bff7939478deba7e3492ea96f8ac1f953583df897138f66c16bc2
-07' / signature /
+          h'8e469941a292d3554c81d1a69330b88563b28b415cf777c694d83272
+550d232b57ed4046d03849c2ade086145339872f7712e36ab4c382c1c541185fb15c
+036f00fd2842dff3e9d4f4068716d853f7bfe13791521e28faf42db085ab259a009a
+dceeb2acb7852bec6ec5069fc0d237883da8656aa6773682c3e01bd9732028
+c6' / signature /
         ]&gt;&gt;
       ]
     ]
@@ -1368,8 +1398,8 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6' / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1469,8 +1499,8 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6' / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1485,18 +1515,6 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
   0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
-    [
-      1, / COSE key /
-      { / public key /
-        / kty / 1: 2, / EC2 /
-        / kid / 2: 'ExampleEC2',
-        / crv / -1: 1, / P-256 /
-        / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbdd
-b8b5e4fe0a1787a8',
-        / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715f
-afbc1639960a0c7a'
-      }
-    ],
     [
       5, / AAD-scope /
       0x03 / has-primary-ctx | has-target-ctx /
@@ -1527,12 +1545,10 @@ afbc1639960a0c7a'
 aeb4788ca57d1df6bcc',
                   -3:h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2
 f493c1c9c0670f28d62'
-                },
-                / PartyU nonce / -22:h'e6bd83a5a06841c2ea1dd4eebaaa
-f252'
+                }
               },
-              h'e20b6fd9b46cdaae9e67ccf4893706802a7acb0c3b3a792b3fcb
-a110f2f27d7972934f4e6497ac89' / key-wrapped /
+              h'cb530b03f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed
+6e666c8f2f9ab5465cf11ef02756' / key-wrapped /
             ]
           ]
         ]&gt;&gt;
@@ -1605,8 +1621,8 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'83880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f6' / external_aad /
+  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424083070200f640', / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1621,19 +1637,6 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
   0, / security context TBD-COSE /
   1, / flags: params-present /
   [ / parameters /
-    [
-      1, / COSE key /
-      { / public key /
-        / kty / 1: 3, / RSA /
-        / kid / 2: 'ExampleRSA',
-        / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c67
-681231da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded6774
-4ed620707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d78
-35d2d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb
-2925',
-        / e / -2: h'010001'
-      }
-    ],
     [
       5, / AAD-scope /
       0x03 / has-primary-ctx | has-target-ctx /
@@ -1658,11 +1661,11 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
                 / alg / 1:-41, / RSAES-OAEP w SHA-256 /
                 / kid / 4:'ExampleRSA'
               },
-              h'69e76a39b908090f55b1048c95bd1683d9ce702fd9ed4a149650
-72fd411936ade41a36a9f62921635d14406eb0e1fa3c02ca0d957a4a44006aa3c03e
-326867964b166f8731ebcb20d413fd8f26c57c337689dc42235bfd2b928619b0d4f2
-7ec118c608ad9d18c881bc5124833483ded5f5fb079805f3e299fa45f756ecc4c3
-e6' / key-wrapped /
+              h'66e76f3e924674c02c98ddef1cfee0d79718549849d1bb008993
+28d4b66c8ac481de1ddd258f20514cfe040ead00afeb0709ef22e67607ef5ab62562
+4753cb247152b54240e51e96b5d7fdd37cf97af23e2292d6c6a0d2a8ab25a82b8a6c
+af1d4fa2f1bd7f1fd17d89506e75a1e2687374aa2a1cf21ce387916039d84ecc14
+03' / key-wrapped /
             ]
           ]
         ]&gt;&gt;
