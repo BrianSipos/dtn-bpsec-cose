@@ -141,7 +141,7 @@ Including this data as part of AAD ensures that security target appears in the s
           <dt>Target Block Metadata</dt>
           <dd>
 When the target block is a canonical block (i.e., not the primary block) it contains its block-type-specific data, which is the subject of the security operation, but also metadata identifying the block.
-This metadata explicitly excludes the CRC type and value fields because the CRC is derived from the block-type-specific data.   
+This metadata explicitly excludes the CRC type and value fields because the CRC is derived from the block-type-specific data.
 Including this data as part of AAD ensures that the target data appears in the same block that the security source intended.
           </dd>
           <dt>Security Block Metadata</dt>
@@ -537,7 +537,6 @@ This section describes block-level requirements for handling COSE security data.
         </t>
         <t>
 Security results generated for BIB or BCB results SHALL conform to the COSE profile of <xref target="sec-COSE-profile"/>.
-Security acceptors SHOULD 
         </t>
         <section anchor="sec-context-auth">
           <name>Node Authentication</name>
@@ -825,7 +824,7 @@ The identifier type NODE-ID is defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
       </t>
       <t>
 When allowed by CA policy, a BPSec end-entity certificate SHOULD contain a PKIX Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
-When the PKIX Extended Key Usage extension is present, it SHALL contain a key purpose "id-kp-bundleSecurity" as defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
+When the PKIX Extended Key Usage extension is present, it SHALL contain a key purpose "id-kp-bundleSecurity" of <xref target="IANA-SMI"/>.
 The "id-kp-bundleSecurity" purpose MAY be combined with other purposes in the same certificate.
       </t>
       <t>
@@ -1025,6 +1024,15 @@ The interoperability minimum algorithms and parameters are based on the draft <x
             <date/>
           </front>
         </reference>
+        <reference anchor="IANA-SMI" target="https://www.iana.org/assignments/smi-numbers/">
+          <front>
+            <title>Structure of Management Information (SMI) Numbers</title>
+            <author>
+              <organization>IANA</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6125.xml"/>
@@ -1120,7 +1128,7 @@ This results in a consistent AAD-structure as shown in <xref target="fig-ex-AAD-
         <name>Example scope AAD-structure CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
-  [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ], 
+  [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
     [ 0, 40 ], 1000000 ], / primary-ctx /
   [ 7, 2, 0 ], / target-ctx /
   null, / security-ctx /
