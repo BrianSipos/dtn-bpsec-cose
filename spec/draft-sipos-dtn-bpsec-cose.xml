@@ -366,7 +366,7 @@ $bpsec-cose-result /= [98, bstr .cbor COSE_Sign]
           <name>Integrity Messages</name>
           <t>
 When used within a Block Integrity Block, the COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
-Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its decoded form.
+Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its untagged encoded form.
         </t>
           <table anchor="tab-BIB-results">
             <name>COSE Integrity Results</name>
@@ -380,28 +380,28 @@ Each integrity result value SHALL consist of the COSE message indicated by <xref
             <tbody>
               <tr>
                 <td>97</td>
-                <td>COSE_Mac</td>
+                <td>encoded COSE_Mac</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
               </tr>
               <tr>
                 <td>17</td>
-                <td>COSE_Mac0</td>
+                <td>encoded COSE_Mac0</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
               </tr>
               <tr>
                 <td>98</td>
-                <td>COSE_Sign</td>
+                <td>encoded COSE_Sign</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
               </tr>
               <tr>
                 <td>18</td>
-                <td>COSE_Sign1</td>
+                <td>encoded COSE_Sign1</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
@@ -422,7 +422,7 @@ The COSE payload used for a signature or MAC result SHALL be either the block-ty
           <name>Confidentiality Messages</name>
           <t>
 When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results"/>.
-Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its decoded form.
+Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its untagged encoded form.
           </t>
           <table anchor="tab-BCB-results">
             <name>COSE Confidentiality Results</name>
@@ -436,14 +436,14 @@ Each confidentiality result value SHALL consist of the COSE message indicated by
             <tbody>
               <tr>
                 <td>96</td>
-                <td>COSE_Encrypt</td>
+                <td>encoded COSE_Encrypt</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
               </tr>
               <tr>
                 <td>16</td>
-                <td>COSE_Encrypt0</td>
+                <td>encoded COSE_Encrypt0</td>
                 <td>
                   <xref target="RFC8152"/>
                 </td>
