@@ -17,20 +17,11 @@ class TestEndpointId(unittest.TestCase):
 
 class TestSecurityBlock(unittest.TestCase):
 
-    def test_encode_empty(self):
-        asb = SecurityBlockData()
-        expect_item = [
-            [],
-            None,
-            SecurityBlockData.Flags.NONE,  # flags
-            [],
-        ]
-        self.assertEqual(expect_item, asb.encode_item())
-
     def test_encode_some(self):
         asb = SecurityBlockData(
             context_id=123,
             targets=[1],
+            security_source=EndpointId('dtn://node/').encode_item(),
             parameters=[
                 [1, 2]
             ],
@@ -44,6 +35,7 @@ class TestSecurityBlock(unittest.TestCase):
             [1],
             123,
             SecurityBlockData.Flags.HAS_PARAMS,  # flags
+            [1, '//node/'],
             [  # parameters
                 [1, 2],
             ],

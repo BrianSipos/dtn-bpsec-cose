@@ -39,14 +39,14 @@ set(MISSPELLING_TXT "misspelling.txt")
 add_custom_command(
     OUTPUT "dictionary.cwl"
     DEPENDS "${DICTIONARY_TXT}"
-    COMMAND cat "${DICTIONARY_TXT}" | 
+    COMMAND cat "${DICTIONARY_TXT}" |
         ${ASPELL} --lang=en create master "./dictionary.cwl"
 )
 add_custom_command(
     OUTPUT "${MISSPELLING_TXT}"
     DEPENDS "${DRAFT_NAME_XML}" "${SPELLCHECK_XSL}" "dictionary.cwl"
-    COMMAND ${XMLSTARLET} tr "${SPELLCHECK_XSL}" "${DRAFT_NAME_XML}" | 
-        ${ASPELL} --mode=sgml --lang=EN_US --extra-dicts=./dictionary.cwl list | 
+    COMMAND ${XMLSTARLET} tr "${SPELLCHECK_XSL}" "${DRAFT_NAME_XML}" |
+        ${ASPELL} --mode=sgml --lang=EN_US --extra-dicts=./dictionary.cwl list |
         sort | uniq > "${MISSPELLING_TXT}"
 )
 add_custom_target(
@@ -97,15 +97,15 @@ else()
     add_custom_command(
         OUTPUT "${COMBINED_CDDL}"
         DEPENDS "${EXTRACTED_CDDL}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
-            "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl"
             "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
         COMMAND cat
                 "${EXTRACTED_CDDL}"
-                "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl" 
-                "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl" 
-                "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl" 
+                "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl"
                 "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
                 >"${COMBINED_CDDL}"
     )
@@ -143,13 +143,13 @@ else()
             DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CHECK_CBOR}" "${COMBINED_CDDL}"
             COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' bash "${CHECK_CBOR}" "${COMBINED_CDDL}" 2>"${CBORVALIDERRORS_TXT}" 1>&2 || true
         )
-        add_custom_target(
-            cborvalid ALL
-            DEPENDS "${CBORVALIDERRORS_TXT}"
-        )
-        install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORVALIDERRORS_TXT}"
-            TYPE DOC
-        )
+#        add_custom_target(
+#            cborvalid ALL
+#            DEPENDS "${CBORVALIDERRORS_TXT}"
+#        )
+#        install(
+#            FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORVALIDERRORS_TXT}"
+#            TYPE DOC
+#        )
     endif()
 endif()

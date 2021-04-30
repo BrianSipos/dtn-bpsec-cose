@@ -46,6 +46,7 @@ FIqpKkUcSrgmK2N3qce5f4aRYMpvXYU+5LZfT5KGXKM=
 
         # Security target block
         target_dec = self._get_target_item()
+        target_enc = cbor2.dumps(target_dec)
         content_plaintext = target_dec[4]
         print('Target Block: {}'.format(encode_diagnostic(target_dec)))
         print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
@@ -89,7 +90,7 @@ FIqpKkUcSrgmK2N3qce5f4aRYMpvXYU+5LZfT5KGXKM=
             msg_obj.cbor_tag,
             message_enc
         ])
-        asb_enc = cbor2.dumps(asb_dec)
+        asb_enc = self._get_asb_enc(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
         print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
 
@@ -110,3 +111,6 @@ FIqpKkUcSrgmK2N3qce5f4aRYMpvXYU+5LZfT5KGXKM=
         verify_valid = decode_obj.verify_signature()
         self.assertTrue(verify_valid)
         print('Loopback verify:', verify_valid)
+
+        bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
+        print('Total bundle: {}'.format(encode_diagnostic(bundle)))

@@ -1112,11 +1112,38 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
         <name>Target block CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
-  7, / type code - bundle age /
-  2, / block num /
+  1, / type code: payload /
+  1, / block num /
   0, / flags /
   0, / CRC type /
-  &lt;&lt;300&gt;&gt; / type-specific-data: age /
+  &lt;&lt;"hello"&gt;&gt; / block-type-specific-data /
+]
+        </sourcecode>
+      </figure>
+      <t>
+All of the block integrity block examples operate within the context of the "frame" block of <xref targe="fig-ex-bib-frame"/>, and block confidentiality block examples within the frame block of <xref targe="fig-ex-bcb-frame"/>.
+      </t>
+      <figure anchor="fig-ex-bib-frame">
+        <name>Block integrity block frame CBOR diagnostic</name>
+        <sourcecode type="cbor">
+[
+  11, / type code: BIB /
+  3, / block num /
+  0, / flags /
+  0, / CRC type /
+  b'' / block-type-specific-data to be replaced /
+]
+        </sourcecode>
+      </figure>
+      <figure anchor="fig-ex-bib-frame">
+        <name>Block confidentiality block frame CBOR diagnostic</name>
+        <sourcecode type="cbor">
+[
+  12, / type code: BCB /
+  3, / block num /
+  0, / flags /
+  0, / CRC type /
+  b'' / block-type-specific-data to be replaced /
 ]
         </sourcecode>
       </figure>
@@ -1130,7 +1157,7 @@ This results in a consistent AAD-structure as shown in <xref target="fig-ex-AAD-
 [
   [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
     [ 0, 40 ], 1000000 ], / primary-ctx /
-  [ 7, 2, 0 ], / target-ctx /
+  [ 1, 1, 0 ], / target-ctx /
   null, / security-ctx /
   '' / additional-protected /
 ]
@@ -1148,11 +1175,11 @@ The target block after application of the encryption is shown in <xref target="f
         <name>Encrypted Target block CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
-  7, / type code - bundle age /
-  2, / block num /
+  1, / type code: payload /
+  1, / block num /
   0, / flags /
   0, / CRC type /
-  h'63bb166949afd31b50841ee05153b9cfaf788d' / ciphertext /
+  h'1fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1' / ciphertext /
 ]
         </sourcecode>
       </figure>
@@ -1185,45 +1212,54 @@ The payload is the encoded target block-type-specific data from <xref target="fi
   "MAC0", / context /
   h'a10105', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640', / external_aad /
-  h'19012c' / payload /
+72632f820018281a000f424083010100f640', / external_aad /
+  h'6568656c6c6f' / payload /
 ]
           </sourcecode>
         </figure>
         <figure anchor="fig-ex-mac-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        17, / COSE_Mac0 tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:5 / HMAC 256//256 /
-          }&gt;&gt;,
-          { / unprotected /
-            / kid / 4:'ExampleMAC'
-          },
-          null, / payload detached /
-          h'fa8b08724db1f0f4097156b12e65a1e7d57cfcdd413ced62d9e20f2b
-a4efcea5' / tag /
-        ]&gt;&gt;
-      ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      17, / COSE_Mac0 tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:5 / HMAC 256//256 /
+        }&gt;&gt;,
+        { / unprotected /
+          / kid / 4:'ExampleMAC'
+        },
+        null, / payload detached /
+        h'cea75ab637d2c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0a
+b48f0e' / tag /
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850b030000584c810100018201662f2f7372632f818205
+038181821158358443a10105a1044a4578616d706c654b6579f65820cea75ab637d2
+c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0ab48f0e8501010000466568
+656c6c6fff'
+        </sourcecode>
       </section>
       <section>
         <name>EC Keypair COSE_Sign1</name>
@@ -1260,46 +1296,56 @@ The payload is the encoded target block-type-specific data from <xref target="fi
   "Signature1", / context /
   h'a10126', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640', / external_aad /
-  h'19012c' / payload /
+72632f820018281a000f424083010100f640', / external_aad /
+  h'6568656c6c6f' / payload /
 ]
           </sourcecode>
         </figure>
         <figure anchor="fig-ex-sign-ec2-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        18, / COSE_Sign1 tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:-7 / ES256 /
-          }&gt;&gt;,
-          { / unprotected /
-            / kid / 4:'ExampleEC2'
-          },
-          null, / payload detached /
-          h'66358aa1ee41276688e417d7686db3914f3a6d061a31145912fc18ac
-68c1b980e9bbae2d18887677f9f8fb1d0a6133e62d89a2616826fd1109620122cde6
-eb5c' / signature /
-        ]&gt;&gt;
-      ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      18, / COSE_Sign1 tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:-7 / ES256 /
+        }&gt;&gt;,
+        { / unprotected /
+          / kid / 4:'ExampleEC2'
+        },
+        null, / payload detached /
+        h'b9e130d0b26d35d02299ca27601aab5c36efabefe1608da0c065368ce9
+a78e76e90a26c20caf294d2735861a16ff53b0173a801ceb6993da62c76863a8261a
+ee' / signature /
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850b030000586c810100018201662f2f7372632f818205
+038181821258558443a10126a1044a4578616d706c65454332f65840b9e130d0b26d
+35d02299ca27601aab5c36efabefe1608da0c065368ce9a78e76e90a26c20caf294d
+2735861a16ff53b0173a801ceb6993da62c76863a8261aee8501010000466568656c
+6c6fff'
+        </sourcecode>
       </section>
       <section>
         <name>RSA Keypair COSE_Sign1</name>
@@ -1359,48 +1405,59 @@ The payload is the encoded target block-type-specific data from <xref target="fi
   "Signature1", / context /
   h'a1013824', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640', / external_aad /
-  h'19012c' / payload /
+72632f820018281a000f424083010100f640', / external_aad /
+  h'6568656c6c6f' / payload /
 ]
           </sourcecode>
         </figure>
         <figure anchor="fig-ex-sign-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        18, / COSE_Sign1 tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:-37 / PS256 /
-          }&gt;&gt;,
-          { / unprotected /
-            / kid / 4:'ExampleRSA'
-          },
-          null, / payload detached /
-          h'8e469941a292d3554c81d1a69330b88563b28b415cf777c694d83272
-550d232b57ed4046d03849c2ade086145339872f7712e36ab4c382c1c541185fb15c
-036f00fd2842dff3e9d4f4068716d853f7bfe13791521e28faf42db085ab259a009a
-dceeb2acb7852bec6ec5069fc0d237883da8656aa6773682c3e01bd9732028
-c6' / signature /
-        ]&gt;&gt;
-      ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      18, / COSE_Sign1 tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:-37 / PS256 /
+        }&gt;&gt;,
+        { / unprotected /
+          / kid / 4:'ExampleRSA'
+        },
+        null, / payload detached /
+        h'55dac638eb2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c38
+2845dcb305ca1b43d727113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412
+590de368ccc695d887037f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee1
+30b0a4e990410d7d91a294747a9f53780f72987ed2a488d8b84e7590b418
+5a' / signature /
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850b03000058ad810100018201662f2f7372632f818205
+038181821258968444a1013824a1044a4578616d706c65525341f6588055dac638eb
+2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c382845dcb305ca1b43d727
+113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412590de368ccc695d88703
+7f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee130b0a4e990410d7d91a2
+94747a9f53780f72987ed2a488d8b84e7590b4185a8501010000466568656c6c6fff'
+        </sourcecode>
       </section>
       <section>
         <name>Symmetric KEK COSE_Encrypt</name>
@@ -1437,7 +1494,7 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
   "Encrypt", / context /
   h'a10103', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640' / external_aad /
+72632f820018281a000f424083010100f640' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1447,46 +1504,56 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
         <figure anchor="fig-ex-encrypt-symm-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        96, / COSE_Encrypt tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:3 / A256GCM /
-          }&gt;&gt;,
-          { / unprotected /
-            / iv / 5: h'6f3093eba5d85143c3dc484a'
-          },
-          null, / payload detached /
-          [
-            [ / recipient /
-              h'', / protected /
-              { / unprotected /
-                / alg / 1:-5, / A256KW /
-                / kid / 4:'ExampleKEK'
-              },
-              h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26
-d403a6331159e3d691a708e9984d' / key-wrapped /
-            ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      96, / COSE_Encrypt tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null, / payload detached /
+        [
+          [ / recipient /
+            h'', / protected /
+            { / unprotected /
+              / alg / 1:-5, / A256KW /
+              / kid / 4:'ExampleKEK'
+            },
+            h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d4
+03a6331159e3d691a708e9984d' / key-wrapped /
           ]
-        ]&gt;&gt;
-      ]
+        ]
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850c0300005869810100018201662f2f7372632f818205
+03818182186058518443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
+24044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cdac6a9d
+8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2eea1
+2d4bb6c02d25bf33cec45f3e4f96b1ff'
+        </sourcecode>
       </section>
       <section>
         <name>EC Keypair COSE_Encrypt</name>
@@ -1538,7 +1605,7 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
   "Encrypt", / context /
   h'a10103', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640' / external_aad /
+72632f820018281a000f424083010100f640' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1548,54 +1615,66 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
         <figure anchor="fig-ex-encrypt-ec2-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        96, / COSE_Encrypt tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:3 / A256GCM /
-          }&gt;&gt;,
-          { / unprotected /
-            / iv / 5: h'6f3093eba5d85143c3dc484a'
-          },
-          null, / payload detached /
-          [
-            [ / recipient /
-              h'', / protected /
-              { / unprotected /
-                / alg / 1:-31, / ECDH-ES + A256KW /
-                / kid / 4:'ExampleEC2',
-                / ephemeral key / -1:{
-                  1:2,
-                  -1:1,
-                  -2:h'fedaba748882050d1bef8ba992911898f554450952070
-aeb4788ca57d1df6bcc',
-                  -3:h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2
-f493c1c9c0670f28d62'
-                }
-              },
-              h'cb530b03f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed
-6e666c8f2f9ab5465cf11ef02756' / key-wrapped /
-            ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      96, / COSE_Encrypt tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null, / payload detached /
+        [
+          [ / recipient /
+            h'', / protected /
+            { / unprotected /
+              / alg / 1:-31, / ECDH-ES + A256KW /
+              / kid / 4:'ExampleEC2',
+              / ephemeral key / -1:{
+                1:2,
+                -1:1,
+                -2:h'fedaba748882050d1bef8ba992911898f554450952070ae
+b4788ca57d1df6bcc',
+                -3:h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f4
+93c1c9c0670f28d62'
+              }
+            },
+            h'cb530b03f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed6e
+666c8f2f9ab5465cf11ef02756' / key-wrapped /
           ]
-        ]&gt;&gt;
-      ]
+        ]
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850c03000058b6810100018201662f2f7372632f818205
+038181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af6818340a301
+381e044a4578616d706c6545433220a401022001215820fedaba748882050d1bef8b
+a992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a4f81c7
+0e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b09ec1a0
+ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0275685010100
+00561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1ff'
+        </sourcecode>
       </section>
       <section>
         <name>RSA Keypair COSE_Encrypt</name>
@@ -1660,7 +1739,7 @@ The external_aad is the encoded data from <xref target="fig-ex-AAD-structure"/>.
   "Encrypt", / context /
   h'a10103', / protected /
   h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083070200f640' / external_aad /
+72632f820018281a000f424083010100f640' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1670,49 +1749,62 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
         <figure anchor="fig-ex-encrypt-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
-[
-  [2], / targets /
-  0, / security context TBD-COSE /
-  1, / flags: params-present /
-  [ / parameters /
-    [
-      5, / AAD-scope /
-      0x03 / has-primary-ctx | has-target-ctx /
-    ]
-  ],
+[1], / targets /
+0, / security context TBD-COSE /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
   [
-    [ / target block #2 /
-      [ / result /
-        96, / COSE_Encrypt tag /
-        &lt;&lt;[
-          &lt;&lt;{ / protected /
-             / alg / 1:3 / A256GCM /
-          }&gt;&gt;,
-          { / unprotected /
-            / iv / 5: h'6f3093eba5d85143c3dc484a'
-          },
-          null, / payload detached /
-          [
-            [ / recipient /
-              h'', / protected /
-              { / unprotected /
-                / alg / 1:-41, / RSAES-OAEP w SHA-256 /
-                / kid / 4:'ExampleRSA'
-              },
-              h'66e76f3e924674c02c98ddef1cfee0d79718549849d1bb008993
-28d4b66c8ac481de1ddd258f20514cfe040ead00afeb0709ef22e67607ef5ab62562
-4753cb247152b54240e51e96b5d7fdd37cf97af23e2292d6c6a0d2a8ab25a82b8a6c
-af1d4fa2f1bd7f1fd17d89506e75a1e2687374aa2a1cf21ce387916039d84ecc14
-03' / key-wrapped /
-            ]
+    5, / AAD-scope /
+    0x03 / has-primary-ctx | has-target-ctx /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      96, / COSE_Encrypt tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null, / payload detached /
+        [
+          [ / recipient /
+            h'', / protected /
+            { / unprotected /
+              / alg / 1:-41, / RSAES-OAEP w SHA-256 /
+              / kid / 4:'ExampleRSA'
+            },
+            h'89d4367b14e3c663bf0352f8fc4b206f197d78f3f05dda90b3a88c
+db2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff8
+00a1b52764557382220afa2d115ddbe06729f8c621c440b6341deae871426a9038d0
+281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305cc634088fc3f79
+32' / key-wrapped /
           ]
-        ]&gt;&gt;
-      ]
+        ]
+      ]&gt;&gt;
     ]
   ]
 ]
           </sourcecode>
         </figure>
+        <t>
+The final bundle is encoded as the byte string:
+        </t>
+        <sourcecode type="cbor">
+h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
+632f820018281a000f4240850c03000058c2810100018201662f2f7372632f818205
+03818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
+3828044a4578616d706c65525341588089d4367b14e3c663bf0352f8fc4b206f197d
+78f3f05dda90b3a88cdb2354bdd25eee0cab60f987b6f1441afea8301fc4be226075
+69a5571bef86900ff800a1b52764557382220afa2d115ddbe06729f8c621c440b634
+1deae871426a9038d0281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305
+cc634088fc3f79328501010000561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f
+96b1ff'
+        </sourcecode>
       </section>
     </section>
   </back>

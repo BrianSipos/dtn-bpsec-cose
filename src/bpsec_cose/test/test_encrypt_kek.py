@@ -96,7 +96,7 @@ class TestExample(BaseTest):
             msg_obj.cbor_tag,
             message_enc
         ])
-        asb_enc = cbor2.dumps(asb_dec)
+        asb_enc = self._get_asb_enc(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
         print('Encoded: {}'.format(encode_diagnostic(asb_enc)))
 
@@ -121,3 +121,8 @@ class TestExample(BaseTest):
 
         print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
         self.assertEqual(cek.k, decode_obj.key.k)
+
+        target_dec[4] = content_ciphertext
+        target_enc = cbor2.dumps(target_dec)
+        bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
+        print('Total bundle: {}'.format(encode_diagnostic(bundle)))

@@ -23,11 +23,11 @@ class BaseTest(unittest.TestCase):
 
     def _get_target_item(self):
         return [
-            7,  # bundle age
-            2,
+            1,  # type code: payload
+            1,  # always #1
             0,
             0,
-            cbor2.dumps(300)
+            cbor2.dumps("hello")
         ]
 
     def _block_identity(self, item):
@@ -49,17 +49,23 @@ class BaseTest(unittest.TestCase):
 
     def _get_asb_item(self, result):
         return SecurityBlockData(
-            targets=[2],
+            targets=[1],
             context_id=0,  # TBD
+            security_source=EndpointId('dtn://src/').encode_item(),
             parameters=[
                 [5, 0x03],
             ],
             results=[
-                [  # target 2
+                [  # target block #1
                     result,
                 ],
             ],
         ).encode_item()
+
+    def _get_asb_enc(self, asb_dec):
+        ''' Encode ASB array as unframed CBOR sequence.
+        '''
+        return b''.join(cbor2.dumps(item) for item in asb_dec)
 
     def _get_bpsec_item(self, block_type, asb_dec=None):
         return [
@@ -67,8 +73,11 @@ class BaseTest(unittest.TestCase):
             3,
             0,
             0,
-            cbor2.dumps(asb_dec)
+            self._get_asb_enc(asb_dec or [])
         ]
+
+    def _assemble_bundle(self, blocks_enc):
+        return b'\x9f' + b''.join(blocks_enc) + b'\xff'
 
     def _print_headers(self, item, name: str):
         ''' Print COSE Headers from a decoded item.
