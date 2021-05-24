@@ -15,7 +15,7 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key encryption key
         kek = SymmetricKey(
-            key=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
             optional_params={
                 keyparam.KpKid: b'ExampleKEK',
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
@@ -24,7 +24,7 @@ class TestExample(BaseTest):
         print('KEK: {}'.format(encode_diagnostic(cbor2.loads(kek.encode()))))
         # 256-bit content encryption key
         cek = SymmetricKey(
-            key=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],

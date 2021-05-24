@@ -1,7 +1,7 @@
 import binascii
 import cbor2
-from cose import curves, headers, algorithms
-from cose.keys import SymmetricKey, EC2Key, keyops, keyparam
+from cose import headers, algorithms
+from cose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
 from cose.messages import EncMessage
 from cose.messages.recipient import KeyAgreementWithKeyWrap
 from cose.messages.context import CoseKDFContext, PartyInfo, SuppPubInfo
@@ -27,7 +27,7 @@ class TestExample(BaseTest):
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
         # 256-bit content encryption key
         cek = SymmetricKey(
-            key=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],

@@ -1,7 +1,7 @@
 import binascii
 import cbor2
-from cose import curves, headers, algorithms
-from cose.keys import OKPKey, keyops, keyparam
+from cose import headers, algorithms
+from cose.keys import OKPKey, curves, keyops, keyparam
 from cose.messages import Sign1Message
 from ..util import encode_diagnostic
 from ..bpsec import BlockType

@@ -14,7 +14,7 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key
         key = SymmetricKey(
-            key=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleKey',
                 keyparam.KpKeyOps: [keyops.MacCreateOp, keyops.MacVerifyOp],
