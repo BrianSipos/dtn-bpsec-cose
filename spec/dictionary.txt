@@ -74,6 +74,7 @@ RSA
 RSAES
 SHA
 Sig
+SMI
 smime
 subjectAltName
 TBD

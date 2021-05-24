@@ -190,8 +190,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>additional-protected</td>
               <td><xref target="sec-ASB-param-additional"/> of this document</td>
               <td>
-                <sourcecode>''</sourcecode>
-                <t>(empty bstr)</t>
+                <t><tt>''</tt> (empty bstr)</t>
               </td>
             </tr>
             <tr>
@@ -199,8 +198,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>additional-unprotected</td>
               <td><xref target="sec-ASB-param-additional"/> of this document</td>
               <td>
-                <sourcecode>{}</sourcecode>
-                <t>(empty map)</t>
+                <t><tt>{}</tt> (empty map)</t>
               </td>
             </tr>
             <tr>
@@ -208,8 +206,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>AAD_Scope</td>
               <td><xref target="sec-ASB-param-AAD-scope"/> of this document</td>
               <td>
-                <sourcecode>0x7</sourcecode>
-                <t>(all AAD contexts)</t>
+                <t><tt>0x7</tt> (all AAD contexts)</t>
               </td>
             </tr>
           </tbody>
@@ -257,8 +254,9 @@ Security sources SHOULD NOT include an additional header parameter which represe
 Security acceptors SHALL handle empty header map parameters, specifically the Additional Protected parameter because it is part of the external_aad.
           </t>
           <t>
-Security acceptors SHALL treat the aggregate of both additional header maps as being present in the "unprotected" header map of the COSE message of each result.
-If the same header label is present in a additional header map and a result message the item in the result message SHALL take precedence (i.e., the additional header items are added only if they are not already present in a result message).
+Security acceptors SHALL treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result.
+For single-layer messages (i.e., COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 1) and for other messages the additional headers apply to the final recipients.
+If the same header label is present in a additional header map and a COSE layer's headers the item in the result header SHALL take precedence (i.e., the additional header items are added only if they are not already present in a layer's header).
           </t>
           <t>
 Additional header maps SHALL NOT contain any private key material.
@@ -366,7 +364,7 @@ $bpsec-cose-result /= [98, bstr .cbor COSE_Sign]
           <name>Integrity Messages</name>
           <t>
 When used within a Block Integrity Block, the COSE context SHALL allow only the Result IDs from <xref target="tab-BIB-results"/>.
-Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its untagged encoded form.
+Each integrity result value SHALL consist of the COSE message indicated by <xref target="tab-BIB-results"/> in its non-tagged encoded form.
         </t>
           <table anchor="tab-BIB-results">
             <name>COSE Integrity Results</name>
@@ -409,7 +407,7 @@ Each integrity result value SHALL consist of the COSE message indicated by <xref
             </tbody>
           </table>
           <t>
-Each integrity result SHALL use the "detached" payload form with nil payload value.
+Each integrity result SHALL use the "detached" payload form with <tt>null</tt> payload value.
 The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <xref section="6.3" target="RFC8152"/>.
 The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <xref section="4.4" target="RFC8152"/>.
           </t>
@@ -422,7 +420,7 @@ The COSE payload used for a signature or MAC result SHALL be either the block-ty
           <name>Confidentiality Messages</name>
           <t>
 When used within a Block Confidentiality Block, COSE context SHALL allow only the Result IDs from <xref target="tab-BCB-results"/>.
-Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its untagged encoded form.
+Each confidentiality result value SHALL consist of the COSE message indicated by <xref target="tab-BCB-results"/> in its non-tagged encoded form.
           </t>
           <table anchor="tab-BCB-results">
             <name>COSE Confidentiality Results</name>
@@ -456,7 +454,7 @@ Because COSE encryption with AEAD appends the authentication tag with the cipher
 Security acceptors MUST NOT assume that the size of the plaintext is the same as the size of the ciphertext.
           </t>
           <t>
-Each confidentiality result SHALL use the "detached" payload form with nil payload value.
+Each confidentiality result SHALL use the "detached" payload form with <tt>null</tt> payload value.
 The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <xref section="5.3" target="RFC8152"/>.
           </t>
           <t>
@@ -536,7 +534,7 @@ This also means that if the source byte string was encoded in a non-conforming w
 This section describes block-level requirements for handling COSE security data.
         </t>
         <t>
-Security results generated for BIB or BCB results SHALL conform to the COSE profile of <xref target="sec-COSE-profile"/>.
+All security results generated for BIB or BCB blocks SHALL conform to the COSE profile of <xref target="sec-COSE-profile"/> with header augmentation as defined in <xref target="sec-ASB-param-additional"/>.
         </t>
         <section anchor="sec-context-auth">
           <name>Node Authentication</name>
@@ -1121,7 +1119,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
         </sourcecode>
       </figure>
       <t>
-All of the block integrity block examples operate within the context of the "frame" block of <xref targe="fig-ex-bib-frame"/>, and block confidentiality block examples within the frame block of <xref targe="fig-ex-bcb-frame"/>.
+All of the block integrity block examples operate within the context of the "frame" block of <xref target="fig-ex-bib-frame"/>, and block confidentiality block examples within the frame block of <xref target="fig-ex-bcb-frame"/>.
       </t>
       <figure anchor="fig-ex-bib-frame">
         <name>Block integrity block frame CBOR diagnostic</name>
@@ -1135,7 +1133,7 @@ All of the block integrity block examples operate within the context of the "fra
 ]
         </sourcecode>
       </figure>
-      <figure anchor="fig-ex-bib-frame">
+      <figure anchor="fig-ex-bcb-frame">
         <name>Block confidentiality block frame CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
