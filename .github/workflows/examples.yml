@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       max-parallel: 4
       matrix:
@@ -19,19 +19,19 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install
       run: |
-        sudo apt install libgirepository1.0-dev
+        sudo apt-get update && sudo apt-get install libgirepository1.0-dev python3-pip python3-wheel
         python -m pip install --upgrade pip
         # custom cose repo
-        pip install git+https://github.com/BSipos-RKF/pycose.git
-        pip install -e src
+        pip3 install git+https://github.com/TimothyClaeys/pycose.git@master
+        pip3 install -e src
     - name: Lint with flake8
       run: |
-        pip install flake8
+        pip3 install flake8
         # stop the build if there are Python syntax errors or undefined names
         flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pip install nose
+        pip3 install nose
         nosetests -v src --nocapture

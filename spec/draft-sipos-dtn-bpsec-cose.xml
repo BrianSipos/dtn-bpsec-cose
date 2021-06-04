@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-bsipos-dtn-bpsec-cose-05" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-bsipos-dtn-bpsec-cose-06" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="DTN BPSec COSE">
       DTN Bundle Protocol Security COSE Security Context
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-05"/>
+    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-06"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="RKF Engineering">
         RKF Engineering Solutions, LLC
@@ -212,9 +212,9 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
           </tbody>
         </table>
         <section anchor="sec-ASB-param-keys">
-          <name>Key Containers</name>
+          <name>Raw Public Key Containers</name>
           <t>
-Implementations capable of handling asymmetric-keyed algorithms SHOULD support the public key handling COSE_Key and COSE_KeySet parameters.
+Implementations capable of handling asymmetric-keyed algorithms SHOULD support raw public key handling in COSE_Key and COSE_KeySet parameters.
           </t>
           <t>
 No more than one total COSE_Key or COSE_KeySet parameter SHALL be present in a single security block.
@@ -580,7 +580,7 @@ If the NODE-ID validation result is Failure or if the result is Absent and secur
           <name>Policy Recommendations</name>
           <t>
 A RECOMMENDED security policy is to enable the use of OCSP checking when internet connectivity is present.
-A RECOMMENDED security policy is that if an Extended Key Usage is present that it needs to contain "id-kp-bundleSecurity" to be usable as an end-entity certificate for COSE security results.
+A RECOMMENDED security policy is that if an Extended Key Usage is present that it needs to contain <tt>id-kp-bundleSecurity</tt> of <xref target="IANA-SMI"/> to be usable as an end-entity certificate for COSE security results.
 A RECOMMENDED security policy is to require a validated Node ID (of <xref target="sec-context-auth-valid-nodeid"/>) and to ignore any other identifiers in the end-entity certificate.
           </t>
           <t>
@@ -595,12 +595,12 @@ A tailored policy on a more controlled network could relax the requirement on No
     <section anchor="sec-COSE-profile">
       <name>COSE Profile for BPSec</name>
       <t>
-This section contains requirements which apply to the use of COSE within BPSec across any security context use.
+This section contains requirements which apply to the use of COSE within the BPSec security context defined in this document.
       </t>
       <section anchor="sec-COSE-messages">
         <name>COSE Messages</name>
         <t>
-When generating a BPSec result, security sources SHALL use encode COSE labels with a uint value.
+When generating a BPSec result, security sources SHALL use only COSE labels with a uint value.
 When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
         </t>
         <t>
@@ -753,8 +753,8 @@ When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL inclu
       <section anchor="sec-asym-keys">
         <name>Asymmetric Key Types and Identifiers</name>
         <t>
-This section applies when a BIB uses a public key for verification, or when a BCB uses a public key for encryption.
-When using asymmetric keyed algorithms, the security source SHALL include a public key identifier as a recipient header.
+This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
+When using asymmetric keyed algorithms, the security source SHALL include a public key container or public key identifier as a recipient header.
 The public key identifier SHALL be either a "kid" of <xref target="RFC8152"/>, an "x5t" or "x5chain" of <xref target="I-D.ietf-cose-x509"/>, or an equivalent identifier.
         </t>
         <t>
@@ -822,8 +822,8 @@ The identifier type NODE-ID is defined in <xref target="I-D.ietf-dtn-tcpclv4"/>.
       </t>
       <t>
 When allowed by CA policy, a BPSec end-entity certificate SHOULD contain a PKIX Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
-When the PKIX Extended Key Usage extension is present, it SHALL contain a key purpose "id-kp-bundleSecurity" of <xref target="IANA-SMI"/>.
-The "id-kp-bundleSecurity" purpose MAY be combined with other purposes in the same certificate.
+When the PKIX Extended Key Usage extension is present, it SHALL contain a key purpose <tt>id-kp-bundleSecurity</tt> of <xref target="IANA-SMI"/>.
+The <tt>id-kp-bundleSecurity</tt> purpose MAY be combined with other purposes in the same certificate.
       </t>
       <t>
 When allowed by CA policy, a BPSec end-entity certificate SHALL contain a PKIX Key Usage extension in accordance with <xref section="4.2.1.3" target="RFC5280"/>.
