@@ -7,6 +7,10 @@ import six
 import cbor2
 
 
+def dump_cborseq(items):
+    ''' Concatenate a cborseq of encoded items '''
+    return b''.join(map(cbor2.dumps, items))
+
 def encode_protected(hdr):
     ''' Perform protected header encoding of RFC8152 Section 3.
     '''
@@ -25,7 +29,7 @@ def decode_protected(hdr):
 
 def encode_diagnostic(obj, **kwargs):
     ''' Encode a Python object as a CBOR Extended Diagnostic Notation string.
-    
+
     Special options:
       indent: if provided, indent this many spaces
       bstr_as: either 'hex' (default) or 'base64'

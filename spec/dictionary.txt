@@ -12,6 +12,7 @@ BCP
 BIB
 BPSec
 bstr
+BTSD
 bundleSecurity
 Canonicalization
 CAs
@@ -32,6 +33,7 @@ ctx
 de
 decrypt
 decrypting
+deterministically
 digitalSignature
 DOI
 DTN
@@ -47,6 +49,7 @@ IESG
 IETF
 interoperable
 interoperation
+IPPT
 KDF
 KEK
 keyAgreement
@@ -85,4 +88,5 @@ unencoded
 Untrusted
 URI
 UTF
+Wireshark
 XPath

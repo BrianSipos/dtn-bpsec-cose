@@ -5,7 +5,7 @@ from cose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
 from cose.messages import EncMessage
 from cose.messages.recipient import KeyAgreementWithKeyWrap
 from cose.messages.context import CoseKDFContext, PartyInfo, SuppPubInfo
-from ..util import encode_diagnostic
+from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
 
@@ -65,8 +65,8 @@ class TestExample(BaseTest):
         print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
 
         # Combined AAD
-        ext_aad_dec = self._get_aad_item()
-        ext_aad_enc = cbor2.dumps(ext_aad_dec)
+        ext_aad_dec = self._get_aad_array()
+        ext_aad_enc = dump_cborseq(ext_aad_dec)
         print('External AAD: {}'.format(encode_diagnostic(ext_aad_dec)))
         print('Encoded: {}'.format(encode_diagnostic(ext_aad_enc)))
 
