@@ -88,7 +88,7 @@ class TestExample(BaseTest):
 
         # Change from detached payload
         message_dec[2] = content_signature
-        decode_obj = Mac0Message.from_cose_obj(message_dec)
+        decode_obj = Mac0Message.from_cose_obj(message_dec, allow_unknown_attributes=False)
         decode_obj.external_aad = ext_aad_enc
         decode_obj.key = key
 

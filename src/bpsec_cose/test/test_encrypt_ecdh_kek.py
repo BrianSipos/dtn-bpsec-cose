@@ -132,7 +132,7 @@ class TestExample(BaseTest):
 
         # Change from detached payload
         message_dec[2] = content_ciphertext
-        decode_obj = EncMessage.from_cose_obj(message_dec)
+        decode_obj = EncMessage.from_cose_obj(message_dec, allow_unknown_attributes=False)
         decode_obj.external_aad = ext_aad_enc
 
         recip = decode_obj.recipients[0]
