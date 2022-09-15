@@ -50,92 +50,63 @@ INFO:root:Processing element text:
   3, / block num /
   0, / flags /
   0, / CRC type /
-  b'' / block-type-specific-data to be replaced /
+  '' / BTSD to be replaced /
 ]
-/var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1551:in `rescue in block in to_rb': cbor-diagnostic: Unknown application-oriented extension b (ArgumentError)
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1549:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1554:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `map'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:56:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/bin/diag2pretty.rb:14:in `<top (required)>'
-	from /usr/local/bin/diag2pretty.rb:23:in `load'
-	from /usr/local/bin/diag2pretty.rb:23:in `<main>'
-/var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1549:in `block in to_rb': uninitialized constant CBOR_DIAG::App_b (NameError)
-Did you mean?  CBOR_DIAG::APPS
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1554:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `map'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:56:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/bin/diag2pretty.rb:14:in `<top (required)>'
-	from /usr/local/bin/diag2pretty.rb:23:in `load'
-	from /usr/local/bin/diag2pretty.rb:23:in `<main>'
+85     # array(5)
+   0b  # unsigned(11)
+   03  # unsigned(3)
+   00  # unsigned(0)
+   00  # unsigned(0)
+   40  # bytes(0)
+       # ""
 INFO:root:Processing element text:
 [
   12, / type code: BCB /
   3, / block num /
   0, / flags /
   0, / CRC type /
-  b'' / block-type-specific-data to be replaced /
+  '' / BTSD to be replaced /
 ]
-/var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1551:in `rescue in block in to_rb': cbor-diagnostic: Unknown application-oriented extension b (ArgumentError)
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1549:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1554:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `map'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:56:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/bin/diag2pretty.rb:14:in `<top (required)>'
-	from /usr/local/bin/diag2pretty.rb:23:in `load'
-	from /usr/local/bin/diag2pretty.rb:23:in `<main>'
-/var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1549:in `block in to_rb': uninitialized constant CBOR_DIAG::App_b (NameError)
-Did you mean?  CBOR_DIAG::APPS
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:1554:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `block in to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `map'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:2641:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/lib/cbor-diag-parser.rb:56:in `to_rb'
-	from /var/lib/gems/2.7.0/gems/cbor-diag-0.7.6/bin/diag2pretty.rb:14:in `<top (required)>'
-	from /usr/local/bin/diag2pretty.rb:23:in `load'
-	from /usr/local/bin/diag2pretty.rb:23:in `<main>'
+85     # array(5)
+   0c  # unsigned(12)
+   03  # unsigned(3)
+   00  # unsigned(0)
+   00  # unsigned(0)
+   40  # bytes(0)
+       # ""
 INFO:root:Processing element text:
-[
-  [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
-    [ 0, 40 ], 1000000 ], / primary-ctx /
-  [ 1, 1, 0 ], / target-ctx /
-  null, / security-ctx /
-  '' / additional-protected /
-]
-84                             # array(4)
-   88                          # array(8)
-      07                       # unsigned(7)
-      00                       # unsigned(0)
-      00                       # unsigned(0)
-      82                       # array(2)
-         01                    # unsigned(1)
-         69                    # text(9)
-            2f2f6473742f737663 # "//dst/svc"
-      82                       # array(2)
-         01                    # unsigned(1)
-         66                    # text(6)
-            2f2f7372632f       # "//src/"
-      82                       # array(2)
-         01                    # unsigned(1)
-         66                    # text(6)
-            2f2f7372632f       # "//src/"
-      82                       # array(2)
-         00                    # unsigned(0)
-         18 28                 # unsigned(40)
-      1a 000f4240              # unsigned(1000000)
-   83                          # array(3)
-      01                       # unsigned(1)
-      01                       # unsigned(1)
-      00                       # unsigned(0)
-   f6                          # primitive(22)
-   40                          # bytes(0)
-                               # ""
+3, / scope /
+[ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
+  [ 0, 40 ], 1000000 ], / primary-ctx /
+1, 1, 0, / target-ctx /
+'' / additional-protected /
+# CBOR sequence with 6 elements
+03 # unsigned(3)
+88                          # array(8)
+   07                       # unsigned(7)
+   00                       # unsigned(0)
+   00                       # unsigned(0)
+   82                       # array(2)
+      01                    # unsigned(1)
+      69                    # text(9)
+         2f2f6473742f737663 # "//dst/svc"
+   82                       # array(2)
+      01                    # unsigned(1)
+      66                    # text(6)
+         2f2f7372632f       # "//src/"
+   82                       # array(2)
+      01                    # unsigned(1)
+      66                    # text(6)
+         2f2f7372632f       # "//src/"
+   82                       # array(2)
+      00                    # unsigned(0)
+      18 28                 # unsigned(40)
+   1a 000f4240              # unsigned(1000000)
+01 # unsigned(1)
+01 # unsigned(1)
+00 # unsigned(0)
+40  # bytes(0)
+    # ""
 INFO:root:Processing element text:
 [
   1, / type code: payload /
@@ -174,8 +145,8 @@ INFO:root:Processing element text:
 [
   "MAC0", / context /
   h'a10105', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640', / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
 84                                      # array(4)
@@ -183,19 +154,19 @@ INFO:root:Processing element text:
       4d414330                          # "MAC0"
    43                                   # bytes(3)
       a10105                            # "\xA1\u0001\u0005"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+   58 30                                # bytes(48)
+      03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424001010040 # "\u0003\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\u0001\u0001\u0000@"
    46                                   # bytes(6)
       6568656c6c6f                      # "ehello"
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -210,8 +181,8 @@ INFO:root:Processing element text:
           / kid / 4:'ExampleMAC'
         },
         null, / payload detached /
-        h'cea75ab637d2c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0a
-b48f0e' / tag /
+        h'48d325a89fe966b982d0a603b75b352b1cbe50903ad025b9126431dfdb
+bb0389' / tag /
       ]>>
     ]
   ]
@@ -219,7 +190,7 @@ b48f0e' / tag /
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -234,15 +205,15 @@ b48f0e' / tag /
       82                                # array(2)
          11                             # unsigned(17)
          58 35                          # bytes(53)
-            8443a10105a1044a4578616d706c654d4143f65820cea75ab637d2c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0ab48f0e # "\x84C\xA1\u0001\u0005\xA1\u0004JExampleMAC\xF6X ΧZ\xB67\xD2\xC4I\x9C\xEC\xA9p\xEC\u001A̟x\x9F8+\u0006W\u001A\v۩\xCDZ\n\xB4\x8F\u000E"
+            8443a10105a1044a4578616d706c654d4143f6582048d325a89fe966b982d0a603b75b352b1cbe50903ad025b9126431dfdbbb0389 # "\x84C\xA1\u0001\u0005\xA1\u0004JExampleMAC\xF6X H\xD3%\xA8\x9F\xE9f\xB9\x82Ц\u0003\xB7[5+\u001C\xBEP\x90:\xD0%\xB9\u0012d1\xDFۻ\u0003\x89"
 INFO:root:Processing element text:
 h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 632f820018281a000f4240850b030000584c810100018201662f2f7372632f818205
-038181821158358443a10105a1044a4578616d706c654b6579f65820cea75ab637d2
-c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0ab48f0e8501010000466568
+038181821158358443a10105a1044a4578616d706c654b6579f6582048d325a89fe9
+66b982d0a603b75b352b1cbe50903ad025b9126431dfdbbb03898501010000466568
 656c6c6fff'
 58 8c                                   # bytes(140)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b030000584c810100018201662f2f7372632f818205038181821158358443a10105a1044a4578616d706c654b6579f65820cea75ab637d2c4499ceca970ec1acc9f789f382b06571a0bdba9cd5a0ab48f0e8501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000XL\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0011X5\x84C\xA1\u0001\u0005\xA1\u0004JExampleKey\xF6X ΧZ\xB67\xD2\xC4I\x9C\xEC\xA9p\xEC\u001A̟x\x9F8+\u0006W\u001A\v۩\xCDZ\n\xB4\x8F\u000E\x85\u0001\u0001\u0000\u0000Fehello\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b030000584c810100018201662f2f7372632f818205038181821158358443a10105a1044a4578616d706c654b6579f6582048d325a89fe966b982d0a603b75b352b1cbe50903ad025b9126431dfdbbb03898501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000XL\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0011X5\x84C\xA1\u0001\u0005\xA1\u0004JExampleKey\xF6X H\xD3%\xA8\x9F\xE9f\xB9\x82Ц\u0003\xB7[5+\u001C\xBEP\x90:\xD0%\xB9\u0012d1\xDFۻ\u0003\x89\x85\u0001\u0001\u0000\u0000Fehello\xFF"
 INFO:root:Processing element text:
 [
   { / signing private key /
@@ -279,8 +250,8 @@ INFO:root:Processing element text:
 [
   "Signature1", / context /
   h'a10126', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640', / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
 84                                      # array(4)
@@ -288,19 +259,19 @@ INFO:root:Processing element text:
       5369676e617475726531              # "Signature1"
    43                                   # bytes(3)
       a10126                            # "\xA1\u0001&"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+   58 30                                # bytes(48)
+      03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424001010040 # "\u0003\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\u0001\u0001\u0000@"
    46                                   # bytes(6)
       6568656c6c6f                      # "ehello"
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -315,9 +286,9 @@ INFO:root:Processing element text:
           / kid / 4:'ExampleEC2'
         },
         null, / payload detached /
-        h'b9e130d0b26d35d02299ca27601aab5c36efabefe1608da0c065368ce9
-a78e76e90a26c20caf294d2735861a16ff53b0173a801ceb6993da62c76863a8261a
-ee' / signature /
+        h'b8eb3feb581fde875f277ed757512f1a4b107fcd46373ebc53d2af5549
+8bb07e335a06ef035f16622ca143a6cc1e390441714155e1571e18a3c767bf5128c1
+b0' / signature /
       ]>>
     ]
   ]
@@ -325,7 +296,7 @@ ee' / signature /
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -340,16 +311,16 @@ ee' / signature /
       82                                # array(2)
          12                             # unsigned(18)
          58 55                          # bytes(85)
-            8443a10126a1044a4578616d706c65454332f65840b9e130d0b26d35d02299ca27601aab5c36efabefe1608da0c065368ce9a78e76e90a26c20caf294d2735861a16ff53b0173a801ceb6993da62c76863a8261aee # "\x84C\xA1\u0001&\xA1\u0004JExampleEC2\xF6X@\xB9\xE10вm5\xD0\"\x99\xCA'`\u001A\xAB\\6\xEF\xAB\xEF\xE1`\x8D\xA0\xC0e6\x8C駎v\xE9\n&\xC2\f\xAF)M'5\x86\u001A\u0016\xFFS\xB0\u0017:\x80\u001C\xEBi\x93\xDAb\xC7hc\xA8&\u001A\xEE"
+            8443a10126a1044a4578616d706c65454332f65840b8eb3feb581fde875f277ed757512f1a4b107fcd46373ebc53d2af55498bb07e335a06ef035f16622ca143a6cc1e390441714155e1571e18a3c767bf5128c1b0 # "\x84C\xA1\u0001&\xA1\u0004JExampleEC2\xF6X@\xB8\xEB?\xEBX\u001Fއ_'~\xD7WQ/\u001AK\u0010\u007F\xCDF7>\xBCSүUI\x8B\xB0~3Z\u0006\xEF\u0003_\u0016b,\xA1C\xA6\xCC\u001E9\u0004AqAU\xE1W\u001E\u0018\xA3\xC7g\xBFQ(\xC1\xB0"
 INFO:root:Processing element text:
 h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 632f820018281a000f4240850b030000586c810100018201662f2f7372632f818205
-038181821258558443a10126a1044a4578616d706c65454332f65840b9e130d0b26d
-35d02299ca27601aab5c36efabefe1608da0c065368ce9a78e76e90a26c20caf294d
-2735861a16ff53b0173a801ceb6993da62c76863a8261aee8501010000466568656c
+038181821258558443a10126a1044a4578616d706c65454332f65840b8eb3feb581f
+de875f277ed757512f1a4b107fcd46373ebc53d2af55498bb07e335a06ef035f1662
+2ca143a6cc1e390441714155e1571e18a3c767bf5128c1b08501010000466568656c
 6c6fff'
 58 ac                                   # bytes(172)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b030000586c810100018201662f2f7372632f818205038181821258558443a10126a1044a4578616d706c65454332f65840b9e130d0b26d35d02299ca27601aab5c36efabefe1608da0c065368ce9a78e76e90a26c20caf294d2735861a16ff53b0173a801ceb6993da62c76863a8261aee8501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000Xl\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0012XU\x84C\xA1\u0001&\xA1\u0004JExampleEC2\xF6X@\xB9\xE10вm5\xD0\"\x99\xCA'`\u001A\xAB\\6\xEF\xAB\xEF\xE1`\x8D\xA0\xC0e6\x8C駎v\xE9\n&\xC2\f\xAF)M'5\x86\u001A\u0016\xFFS\xB0\u0017:\x80\u001C\xEBi\x93\xDAb\xC7hc\xA8&\u001A\xEE\x85\u0001\u0001\u0000\u0000Fehello\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b030000586c810100018201662f2f7372632f818205038181821258558443a10126a1044a4578616d706c65454332f65840b8eb3feb581fde875f277ed757512f1a4b107fcd46373ebc53d2af55498bb07e335a06ef035f16622ca143a6cc1e390441714155e1571e18a3c767bf5128c1b08501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000Xl\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0012XU\x84C\xA1\u0001&\xA1\u0004JExampleEC2\xF6X@\xB8\xEB?\xEBX\u001Fއ_'~\xD7WQ/\u001AK\u0010\u007F\xCDF7>\xBCSүUI\x8B\xB0~3Z\u0006\xEF\u0003_\u0016b,\xA1C\xA6\xCC\u001E9\u0004AqAU\xE1W\u001E\u0018\xA3\xC7g\xBFQ(\xC1\xB0\x85\u0001\u0001\u0000\u0000Fehello\xFF"
 INFO:root:Processing element text:
 [
   { / signing private key /
@@ -418,8 +389,8 @@ INFO:root:Processing element text:
 [
   "Signature1", / context /
   h'a1013824', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640', / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
 84                                      # array(4)
@@ -427,19 +398,19 @@ INFO:root:Processing element text:
       5369676e617475726531              # "Signature1"
    44                                   # bytes(4)
       a1013824                          # "\xA1\u00018$"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+   58 30                                # bytes(48)
+      03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424001010040 # "\u0003\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\u0001\u0001\u0000@"
    46                                   # bytes(6)
       6568656c6c6f                      # "ehello"
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -454,11 +425,11 @@ INFO:root:Processing element text:
           / kid / 4:'ExampleRSA'
         },
         null, / payload detached /
-        h'55dac638eb2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c38
-2845dcb305ca1b43d727113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412
-590de368ccc695d887037f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee1
-30b0a4e990410d7d91a294747a9f53780f72987ed2a488d8b84e7590b418
-5a' / signature /
+        h'57a263315f4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9
+cad07cedf2df4b0016f44af69599ed8031e26deae2c26bc9407c31e550437cb9c569
+f6af80feb14ef54ad740bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f59
+51e21c2610b79b1719ff99da66ccabeb5600132625267ea75772d450b7eb
+cb' / signature /
       ]>>
     ]
   ]
@@ -466,7 +437,7 @@ INFO:root:Processing element text:
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -481,17 +452,18 @@ INFO:root:Processing element text:
       82                                # array(2)
          12                             # unsigned(18)
          58 96                          # bytes(150)
-            8444a1013824a1044a4578616d706c65525341f6588055dac638eb2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c382845dcb305ca1b43d727113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412590de368ccc695d887037f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee130b0a4e990410d7d91a294747a9f53780f72987ed2a488d8b84e7590b4185a # "\x84D\xA1\u00018$\xA1\u0004JExampleRSA\xF6X\x80U\xDA\xC68\xEB+n18a\x89\xE2\xE5\xAF\xE0\xF2\xF6\x88\x8C\u0001p\u0013\xBF~\xCB\xDBX\\8(Eܳ\u0005\xCA\eC\xD7'\u0011<F\u0016\xD4\u0018[\xBB\xAF\xCE\xF8<\xA3ΨŃ\xBD\xDBݫ\xC3\xC4\u0012Y\r\xE3h\xCCƕ؇\u0003\u007F:\xFC\x97vn\xDF\xDD\xFA\xAD\xD4<MZHrQY\xD2\xFAҹ\xDE\xE10\xB0\xA4\xE9\x90A\r}\x91\xA2\x94tz\x9FSx\u000Fr\x98~Ҥ\x88ظNu\x90\xB4\u0018Z"
+            8444a1013824a1044a4578616d706c65525341f6588057a263315f4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9cad07cedf2df4b0016f44af69599ed8031e26deae2c26bc9407c31e550437cb9c569f6af80feb14ef54ad740bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f5951e21c2610b79b1719ff99da66ccabeb5600132625267ea75772d450b7ebcb # "\x84D\xA1\u00018$\xA1\u0004JExampleRSA\xF6X\x80W\xA2c1_FA\xE4\vt\x81\xFD\xF6\u0014\r\u0010\xA9\xD5\u001C\xDB\xF2\x9B3\xA4\xC3\u001E\x84w\xA9\xCA\xD0|\xED\xF2\xDFK\u0000\u0016\xF4J\xF6\x95\x99\xED\x801\xE2m\xEA\xE2\xC2k\xC9@|1\xE5PC|\xB9\xC5i\xF6\xAF\x80\xFE\xB1N\xF5J\xD7@\xBF\u0002\xB3\xF6\x80G\x96\u001D\xBE~\xA5\xB1:\xC2a\u000F\xF2pj\xBF\x83\xF5\u000FYQ\xE2\u001C&\u0010\xB7\x9B\u0017\u0019\xFF\x99\xDAf̫\xEBV\u0000\u0013&%&~\xA7Wr\xD4P\xB7\xEB\xCB"
 INFO:root:Processing element text:
 h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 632f820018281a000f4240850b03000058ad810100018201662f2f7372632f818205
-038181821258968444a1013824a1044a4578616d706c65525341f6588055dac638eb
-2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c382845dcb305ca1b43d727
-113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412590de368ccc695d88703
-7f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee130b0a4e990410d7d91a2
-94747a9f53780f72987ed2a488d8b84e7590b4185a8501010000466568656c6c6fff'
+038181821258968444a1013824a1044a4578616d706c65525341f6588057a263315f
+4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9cad07cedf2df4b0016f4
+4af69599ed8031e26deae2c26bc9407c31e550437cb9c569f6af80feb14ef54ad740
+bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f5951e21c2610b79b1719ff
+99da66ccabeb5600132625267ea75772d450b7ebcb8501010000466568656c6c6f
+ff'
 58 ed                                   # bytes(237)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b03000058ad810100018201662f2f7372632f818205038181821258968444a1013824a1044a4578616d706c65525341f6588055dac638eb2b6e31386189e2e5afe0f2f6888c017013bf7ecbdb585c382845dcb305ca1b43d727113c4616d4185bbbafcef83ca3cea8c583bddbddabc3c412590de368ccc695d887037f3afc97766edfddfaadd43c4d5a48725159d2fad2b9dee130b0a4e990410d7d91a294747a9f53780f72987ed2a488d8b84e7590b4185a8501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000X\xAD\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0012X\x96\x84D\xA1\u00018$\xA1\u0004JExampleRSA\xF6X\x80U\xDA\xC68\xEB+n18a\x89\xE2\xE5\xAF\xE0\xF2\xF6\x88\x8C\u0001p\u0013\xBF~\xCB\xDBX\\8(Eܳ\u0005\xCA\eC\xD7'\u0011<F\u0016\xD4\u0018[\xBB\xAF\xCE\xF8<\xA3ΨŃ\xBD\xDBݫ\xC3\xC4\u0012Y\r\xE3h\xCCƕ؇\u0003\u007F:\xFC\x97vn\xDF\xDD\xFA\xAD\xD4<MZHrQY\xD2\xFAҹ\xDE\xE10\xB0\xA4\xE9\x90A\r}\x91\xA2\x94tz\x9FSx\u000Fr\x98~Ҥ\x88ظNu\x90\xB4\u0018Z\x85\u0001\u0001\u0000\u0000Fehello\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850b03000058ad810100018201662f2f7372632f818205038181821258968444a1013824a1044a4578616d706c65525341f6588057a263315f4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9cad07cedf2df4b0016f44af69599ed8031e26deae2c26bc9407c31e550437cb9c569f6af80feb14ef54ad740bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f5951e21c2610b79b1719ff99da66ccabeb5600132625267ea75772d450b7ebcb8501010000466568656c6c6fff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\v\u0003\u0000\u0000X\xAD\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0012X\x96\x84D\xA1\u00018$\xA1\u0004JExampleRSA\xF6X\x80W\xA2c1_FA\xE4\vt\x81\xFD\xF6\u0014\r\u0010\xA9\xD5\u001C\xDB\xF2\x9B3\xA4\xC3\u001E\x84w\xA9\xCA\xD0|\xED\xF2\xDFK\u0000\u0016\xF4J\xF6\x95\x99\xED\x801\xE2m\xEA\xE2\xC2k\xC9@|1\xE5PC|\xB9\xC5i\xF6\xAF\x80\xFE\xB1N\xF5J\xD7@\xBF\u0002\xB3\xF6\x80G\x96\u001D\xBE~\xA5\xB1:\xC2a\u000F\xF2pj\xBF\x83\xF5\u000FYQ\xE2\u001C&\u0010\xB7\x9B\u0017\u0019\xFF\x99\xDAf̫\xEBV\u0000\u0013&%&~\xA7Wr\xD4P\xB7\xEB˅\u0001\u0001\u0000\u0000Fehello\xFF"
 INFO:root:Processing element text:
 [
   {
@@ -530,25 +502,29 @@ INFO:root:Processing element text:
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640' / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 ]
-83                                      # array(3)
-   67                                   # text(7)
-      456e6372797074                    # "Encrypt"
-   43                                   # bytes(3)
-      a10103                            # "\xA1\u0001\u0003"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+*** can't parse [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
+]
+*** Expected one of [ \t\n\r], "/", '"', '{', '[', [0-9], [-+], '0', 'Infinity', '-Infinity', 'NaN', 'false', 'true', 'null', 'undefined', 'simple(', "h'", "'", "b64'", [a-z], "<<", '(' at line 6, column 1 (byte 176) after [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -581,7 +557,7 @@ INFO:root:Processing element text:
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -602,10 +578,10 @@ h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 632f820018281a000f4240850c0300005869810100018201662f2f7372632f818205
 03818182186058518443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
 24044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cdac6a9d
-8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2eea1
-2d4bb6c02d25bf33cec45f3e4f96b1ff'
+8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2ee52
+8b86b0c2f3785b531e634d6ef31c74ff'
 58 b9                                   # bytes(185)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c0300005869810100018201662f2f7372632f81820503818182186058518443a10103a1054c6f3093eba5d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000Xi\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`XQ\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u0001$\u0004JExampleKEKX(\x91\u007F E\xE1\u0016\x95\u0002ubR\xBF\u0011\x9A\x94ͬj\x9D\x89D$[Z\x9A&\xD4\u0003\xA63\u0011Y\xE3֑\xA7\b\xE9\x98M\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEE\xA1-K\xB6\xC0-%\xBF3\xCE\xC4_>O\x96\xB1\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c0300005869810100018201662f2f7372632f81820503818182186058518443a10103a1054c6f3093eba5d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2ee528b86b0c2f3785b531e634d6ef31c74ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000Xi\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`XQ\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u0001$\u0004JExampleKEKX(\x91\u007F E\xE1\u0016\x95\u0002ubR\xBF\u0011\x9A\x94ͬj\x9D\x89D$[Z\x9A&\xD4\u0003\xA63\u0011Y\xE3֑\xA7\b\xE9\x98M\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEER\x8B\x86\xB0\xC2\xF3x[S\u001EcMn\xF3\u001Ct\xFF"
 INFO:root:Processing element text:
 [
   { / sender ephemeral private key /
@@ -681,25 +657,29 @@ INFO:root:Processing element text:
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640' / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 ]
-83                                      # array(3)
-   67                                   # text(7)
-      456e6372797074                    # "Encrypt"
-   43                                   # bytes(3)
-      a10103                            # "\xA1\u0001\u0003"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+*** can't parse [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
+]
+*** Expected one of [ \t\n\r], "/", '"', '{', '[', [0-9], [-+], '0', 'Infinity', '-Infinity', 'NaN', 'false', 'true', 'null', 'undefined', 'simple(', "h'", "'", "b64'", [a-z], "<<", '(' at line 6, column 1 (byte 176) after [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -740,7 +720,7 @@ b4788ca57d1df6bcc',
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -764,9 +744,9 @@ h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 a992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a4f81c7
 0e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b09ec1a0
 ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0275685010100
-00561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1ff'
+00561fd25f64a2ee528b86b0c2f3785b531e634d6ef31c74ff'
 59 0106                                 # bytes(262)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c03000058b6810100018201662f2f7372632f818205038181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af6818340a301381e044a4578616d706c6545433220a401022001215820fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef027568501010000561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000X\xB6\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`X\x9E\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA3\u00018\u001E\u0004JExampleEC2 \xA4\u0001\u0002 \u0001!X \xFEںt\x88\x82\u0005\r\e\x92\x91\u0018\x98\xF5TE\tR\a\n\xEBG\x88\xCAW\xD1\xDFk\xCC\"X Ϊ\x8E\u007F\xF4u\u001AO\x81\xC7\u000E\x98\xF1q3x\xB0\xBD\x82\xA1AJ/I<\u001C\x9C\u0006p\xF2\x8DbX(\xCBS\v\u0003\xF1䰞\xC1\xA0\xCA\u0019\xAF\xAF\xBF(\u0002\x84\u0010j\xB4\a\xAA\xF9\xBF\xEDnfl\x8F/\x9A\xB5F\\\xF1\u001E\xF0'V\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEE\xA1-K\xB6\xC0-%\xBF3\xCE\xC4_>O\x96\xB1\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c03000058b6810100018201662f2f7372632f818205038181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af6818340a301381e044a4578616d706c6545433220a401022001215820fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef027568501010000561fd25f64a2ee528b86b0c2f3785b531e634d6ef31c74ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000X\xB6\x81\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`X\x9E\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA3\u00018\u001E\u0004JExampleEC2 \xA4\u0001\u0002 \u0001!X \xFEںt\x88\x82\u0005\r\e\x92\x91\u0018\x98\xF5TE\tR\a\n\xEBG\x88\xCAW\xD1\xDFk\xCC\"X Ϊ\x8E\u007F\xF4u\u001AO\x81\xC7\u000E\x98\xF1q3x\xB0\xBD\x82\xA1AJ/I<\u001C\x9C\u0006p\xF2\x8DbX(\xCBS\v\u0003\xF1䰞\xC1\xA0\xCA\u0019\xAF\xAF\xBF(\u0002\x84\u0010j\xB4\a\xAA\xF9\xBF\xEDnfl\x8F/\x9A\xB5F\\\xF1\u001E\xF0'V\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEER\x8B\x86\xB0\xC2\xF3x[S\u001EcMn\xF3\u001Ct\xFF"
 INFO:root:Processing element text:
 [
   { / recipient private key /
@@ -850,25 +830,29 @@ INFO:root:Processing element text:
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-72632f820018281a000f424083010100f640' / external_aad /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 ]
-83                                      # array(3)
-   67                                   # text(7)
-      456e6372797074                    # "Encrypt"
-   43                                   # bytes(3)
-      a10103                            # "\xA1\u0001\u0003"
-   58 32                                # bytes(50)
-      84880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f424083010100f640 # "\x84\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x83\u0001\u0001\u0000\xF6@"
+*** can't parse [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
+]
+*** Expected one of [ \t\n\r], "/", '"', '{', '[', [0-9], [-+], '0', 'Infinity', '-Infinity', 'NaN', 'false', 'true', 'null', 'undefined', 'simple(', "h'", "'", "b64'", [a-z], "<<", '(' at line 6, column 1 (byte 176) after [
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
+72632f820018281a000f424001010040', / external_aad /
 INFO:root:Processing element text:
 [1], / targets /
-0, / security context TBD-COSE /
+-1, / security context TBD-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
   [
     5, / AAD-scope /
-    0x03 / has-primary-ctx | has-target-ctx /
+    0b011 / has-primary-ctx | has-target-ctx /
   ]
 ],
 [
@@ -890,11 +874,11 @@ INFO:root:Processing element text:
               / alg / 1:-41, / RSAES-OAEP w SHA-256 /
               / kid / 4:'ExampleRSA'
             },
-            h'89d4367b14e3c663bf0352f8fc4b206f197d78f3f05dda90b3a88c
-db2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff8
-00a1b52764557382220afa2d115ddbe06729f8c621c440b6341deae871426a9038d0
-281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305cc634088fc3f79
-32' / key-wrapped /
+            h'98123325e3f124321a109a374e8a43a33252f79c67a3ec9e3158f6
+7a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b60e0eb9c4b479340f72
+71f14925a32604f9e4b3e944f5a0422ac21745148363bc49e85361ab9344a9b63ea8
+0a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d6614bfa4623a31
+1e' / key-wrapped /
           ]
         ]
       ]>>
@@ -904,7 +888,7 @@ db2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff8
 # CBOR sequence with 6 elements
 81    # array(1)
    01 # unsigned(1)
-00 # unsigned(0)
+20 # negative(0)
 01 # unsigned(1)
 82                 # array(2)
    01              # unsigned(1)
@@ -919,16 +903,16 @@ db2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff8
       82                                # array(2)
          18 60                          # unsigned(96)
          58 aa                          # bytes(170)
-            8443a10103a1054c6f3093eba5d85143c3dc484af6818340a2013828044a4578616d706c65525341588089d4367b14e3c663bf0352f8fc4b206f197d78f3f05dda90b3a88cdb2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff800a1b52764557382220afa2d115ddbe06729f8c621c440b6341deae871426a9038d0281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305cc634088fc3f7932 # "\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u00018(\u0004JExampleRSAX\x80\x89\xD46{\u0014\xE3\xC6c\xBF\u0003R\xF8\xFCK o\u0019}x\xF3\xF0]ڐ\xB3\xA8\x8C\xDB#T\xBD\xD2^\xEE\f\xAB`\xF9\x87\xB6\xF1D\u001A\xFE\xA80\u001Fľ\"`ui\xA5W\e\u000F\xF8\u0000\xA1\xB5'dUs\x82\"\n\xFA-\u0011]\xDB\xE0g)\xF8\xC6!\xC4@\xB64\u001D\xEA\xE8qBj\x908\xD0(\u001D4\x8Do\xDF|\u0013\u00019\xF5ѻ\x84\xC0}\x93\xF6\xD1\xEE\xD1Z\xF8\u0013\u0005\xCCc@\x88\xFC?y2"
+            8443a10103a1054c6f3093eba5d85143c3dc484af6818340a2013828044a4578616d706c65525341588098123325e3f124321a109a374e8a43a33252f79c67a3ec9e3158f67a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b60e0eb9c4b479340f7271f14925a32604f9e4b3e944f5a0422ac21745148363bc49e85361ab9344a9b63ea80a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d6614bfa4623a311e # "\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u00018(\u0004JExampleRSAX\x80\x98\u00123%\xE3\xF1$2\u001A\u0010\x9A7N\x8AC\xA32R\xF7\x9Cg\xA3\xEC\x9E1X\xF6z\u0006dg\u001DDJ\x80\xB7\xF6\xC0_\xA4\xF9\u00165\xE1\xA3rH\u001D\xB3\xF7\xB0\xB6\u000E\u000E\xB9Ĵy4\u000Frq\xF1I%\xA3&\u0004\xF9\xE4\xB3\xE9D\xF5\xA0B*\xC2\u0017E\u0014\x83c\xBCI\xE8Sa\xAB\x93D\xA9\xB6>\xA8\n\u0012\u007Ft\xED\xA2\xFB\r\x99'\x80\xFB\xA4Ԋ[\xC5 `\x9B\xA6\xFD\\f\x8Df\u0014\xBF\xA4b:1\u001E"
 INFO:root:Processing element text:
 h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
 632f820018281a000f4240850c03000058c2810100018201662f2f7372632f818205
 03818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
-3828044a4578616d706c65525341588089d4367b14e3c663bf0352f8fc4b206f197d
-78f3f05dda90b3a88cdb2354bdd25eee0cab60f987b6f1441afea8301fc4be226075
-69a5571bef86900ff800a1b52764557382220afa2d115ddbe06729f8c621c440b634
-1deae871426a9038d0281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305
-cc634088fc3f79328501010000561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f
-96b1ff'
+3828044a4578616d706c65525341588098123325e3f124321a109a374e8a43a33252
+f79c67a3ec9e3158f67a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b6
+0e0eb9c4b479340f7271f14925a32604f9e4b3e944f5a0422ac21745148363bc49e8
+5361ab9344a9b63ea80a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d
+6614bfa4623a311e8501010000561fd25f64a2ee528b86b0c2f3785b531e634d6ef3
+1c74ff'
 59 0112                                 # bytes(274)
-   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c03000058c2810100018201662f2f7372632f81820503818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af6818340a2013828044a4578616d706c65525341588089d4367b14e3c663bf0352f8fc4b206f197d78f3f05dda90b3a88cdb2354bdd25eee0cab60f987b6f1441afea8301fc4be22607569a5571bef86900ff800a1b52764557382220afa2d115ddbe06729f8c621c440b6341deae871426a9038d0281d348d6fdf7c130139f5d1bb84c07d93f6d1eed15af81305cc634088fc3f79328501010000561fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000X\u0081\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`X\xAA\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u00018(\u0004JExampleRSAX\x80\x89\xD46{\u0014\xE3\xC6c\xBF\u0003R\xF8\xFCK o\u0019}x\xF3\xF0]ڐ\xB3\xA8\x8C\xDB#T\xBD\xD2^\xEE\f\xAB`\xF9\x87\xB6\xF1D\u001A\xFE\xA80\u001Fľ\"`ui\xA5W\e\u000F\xF8\u0000\xA1\xB5'dUs\x82\"\n\xFA-\u0011]\xDB\xE0g)\xF8\xC6!\xC4@\xB64\u001D\xEA\xE8qBj\x908\xD0(\u001D4\x8Do\xDF|\u0013\u00019\xF5ѻ\x84\xC0}\x93\xF6\xD1\xEE\xD1Z\xF8\u0013\u0005\xCCc@\x88\xFC?y2\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEE\xA1-K\xB6\xC0-%\xBF3\xCE\xC4_>O\x96\xB1\xFF"
+   9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372632f820018281a000f4240850c03000058c2810100018201662f2f7372632f81820503818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af6818340a2013828044a4578616d706c65525341588098123325e3f124321a109a374e8a43a33252f79c67a3ec9e3158f67a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b60e0eb9c4b479340f7271f14925a32604f9e4b3e944f5a0422ac21745148363bc49e85361ab9344a9b63ea80a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d6614bfa4623a311e8501010000561fd25f64a2ee528b86b0c2f3785b531e634d6ef31c74ff # "\x9F\x88\a\u0000\u0000\x82\u0001i//dst/svc\x82\u0001f//src/\x82\u0001f//src/\x82\u0000\u0018(\u001A\u0000\u000FB@\x85\f\u0003\u0000\u0000X\u0081\u0001\u0000\u0001\x82\u0001f//src/\x81\x82\u0005\u0003\x81\x81\x82\u0018`X\xAA\x84C\xA1\u0001\u0003\xA1\u0005Lo0\x93\xEB\xA5\xD8QC\xC3\xDCHJ\xF6\x81\x83@\xA2\u00018(\u0004JExampleRSAX\x80\x98\u00123%\xE3\xF1$2\u001A\u0010\x9A7N\x8AC\xA32R\xF7\x9Cg\xA3\xEC\x9E1X\xF6z\u0006dg\u001DDJ\x80\xB7\xF6\xC0_\xA4\xF9\u00165\xE1\xA3rH\u001D\xB3\xF7\xB0\xB6\u000E\u000E\xB9Ĵy4\u000Frq\xF1I%\xA3&\u0004\xF9\xE4\xB3\xE9D\xF5\xA0B*\xC2\u0017E\u0014\x83c\xBCI\xE8Sa\xAB\x93D\xA9\xB6>\xA8\n\u0012\u007Ft\xED\xA2\xFB\r\x99'\x80\xFB\xA4Ԋ[\xC5 `\x9B\xA6\xFD\\f\x8Df\u0014\xBF\xA4b:1\u001E\x85\u0001\u0001\u0000\u0000V\u001F\xD2_d\xA2\xEER\x8B\x86\xB0\xC2\xF3x[S\u001EcMn\xF3\u001Ct\xFF"

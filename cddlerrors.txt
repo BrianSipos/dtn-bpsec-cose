@@ -23,4 +23,4 @@
 *** Unused rule status-record-content
 *** Unused rule bundle-status-information
 *** Unused rule status-info-content
-[{1: -343, 2: h'746963', 3: -45, 4: ["tac"], 499: "toe", -342: "tic", 800: "tac"}]
+[7, 3164, 127, 0, 24(h'190F3B'), h'D0FF']
