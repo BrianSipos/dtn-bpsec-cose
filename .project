@@ -7,12 +7,6 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
-			<triggers>clean,full,incremental,</triggers>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>org.eclipse.cdt.core.cBuilder</name>
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>
