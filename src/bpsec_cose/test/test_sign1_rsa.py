@@ -2,9 +2,9 @@ import binascii
 import cbor2
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cose import headers, algorithms
-from cose.keys import RSAKey, keyops, keyparam
-from cose.messages import Sign1Message
+from pycose import headers, algorithms
+from pycose.keys import RSAKey, keyops, keyparam
+from pycose.messages import Sign1Message
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest

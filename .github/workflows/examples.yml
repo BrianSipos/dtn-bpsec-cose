@@ -21,8 +21,6 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install libgirepository1.0-dev python3-pip python3-wheel
         python -m pip install --upgrade pip
-        # custom cose repo
-        pip3 install git+https://github.com/TimothyClaeys/pycose.git@master
         pip3 install -e src
     - name: Lint with flake8
       run: |

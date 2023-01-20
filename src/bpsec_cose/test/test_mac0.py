@@ -1,8 +1,8 @@
 import binascii
 import cbor2
-from cose import headers, algorithms
-from cose.keys import SymmetricKey, keyops, keyparam
-from cose.messages import Mac0Message
+from pycose import headers, algorithms
+from pycose.keys import SymmetricKey, keyops, keyparam
+from pycose.messages import Mac0Message
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
