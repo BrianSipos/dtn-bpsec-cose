@@ -23,4 +23,4 @@
 *** Unused rule status-record-content
 *** Unused rule bundle-status-information
 *** Unused rule status-info-content
-["MAC", h'A701386E0283637469633901D73901A305437461630643746F6563746963637461633901A263746F6538A663746963', h'746163', h'746F65']
+[7, 34691, 1, [1, 0], [2, [2924, 371]], [1, "tic"], [3768, 1488], 2484]
