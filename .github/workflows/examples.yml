@@ -31,5 +31,5 @@ jobs:
         flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pip3 install nose
-        nosetests -v src --nocapture
+        pip3 install pytest
+        python3 -m pytest src/ --capture=no
