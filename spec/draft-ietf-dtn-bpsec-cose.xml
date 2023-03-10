@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-bsipos-dtn-bpsec-cose-07" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-00" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="DTN BPSec COSE">
       DTN Bundle Protocol Security (BPSec) COSE Context
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-bsipos-dtn-bpsec-cose-07"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-00"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
       <address>
@@ -90,6 +90,11 @@ start = bpsec-cose-asb / external_aad /
   primary-block / extension-block /
   MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
         </sourcecode>
+        <t>
+From the document <xref target="RFC8152"/> the definitions are taken for <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt>.
+From the document <xref target="RFC9171"/> the definitions are taken for <tt>primary-block</tt> and <tt>extension-block</tt>.
+<!-- From the document <xref target="RFC9172"/> the definition is taken for <tt>bpsec-context-use</tt>. -->
+        </t>
       </section>
       <section>
         <name>Requirements Language</name>
