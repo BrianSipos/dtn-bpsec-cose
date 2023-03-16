@@ -1,8 +1,8 @@
-# DTN Bundle Protocol Security COSE Security Context
+# DTN Bundle Protocol Security (BPSec) COSE Context
 
-The internet-draft is tracked as [draft-bsipos-dtn-bpsec-cose](https://datatracker.ietf.org/doc/draft-bsipos-dtn-bpsec-cose/).
+The internet-draft is tracked as [draft-ietf-dtn-bpsec-cose](https://datatracker.ietf.org/doc/draft-ietf-dtn-bpsec-cose/).
 
-A local build of the current main branch is available [draft-sipos-dtn-bpsec-cose.html](https://briansipos.github.io/dtn-bpsec-cose/draft-sipos-dtn-bpsec-cose.html).
+A local build of the current main branch is available [draft-sipos-dtn-bpsec-cose.html](https://briansipos.github.io/dtn-bpsec-cose/draft-ietf-dtn-bpsec-cose.html).
 
 Prerequisites to building can be installed on Ubuntu with:
 ```
