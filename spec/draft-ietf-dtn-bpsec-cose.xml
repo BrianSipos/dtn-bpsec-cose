@@ -36,12 +36,12 @@ A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certifi
       <name>Introduction</name>
       <t>
 The Bundle Protocol Security (BPSec) Specification <xref target="RFC9172"/> defines structure and encoding for Block Integrity Block (BIB) and Block Confidentiality Block (BCB) types but does not specify any security contexts to be used by either of the security block types.
-The CBOR Object Signing and Encryption (COSE) specification <xref target="RFC8152"/> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
+The CBOR Object Signing and Encryption (COSE) specifications <xref target="RFC9052"/> and <xref target="RFC9053"/> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
       </t>
       <t>
 This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context"/>.
 A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-COSE-profile"/>.
-The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <xref target="sec-pkix-env"/>.
+The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <xref target="sec-pkix-env"/> using a certificate profile defined in <xref target="sec-pkix-profile"/>.
       </t>
       <t>
 Examples of specific uses are provided in <xref target="sec-examples"/> to aid in implementation support of the interoperability algorithms.
@@ -91,7 +91,7 @@ start = bpsec-cose-asb / AAD-list /
   MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
         </sourcecode>
         <t>
-From the document <xref target="RFC8152"/> the definitions are taken for <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt>.
+From the document <xref target="RFC9052"/> the definitions are taken for <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt>.
 From the document <xref target="RFC9171"/> the definitions are taken for <tt>primary-block</tt> and <tt>extension-block</tt>.
 <!-- From the document <xref target="RFC9172"/> the definition is taken for <tt>bpsec-context-use</tt>. -->
         </t>
@@ -180,7 +180,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>1</td>
               <td>COSE_Key</td>
               <td>
-                <xref target="RFC8152"/>
+                <xref target="RFC9052"/>
               </td>
               <td>none</td>
             </tr>
@@ -188,7 +188,7 @@ When a parameter is not present, the security acceptor SHALL use the Default Val
               <td>2</td>
               <td>COSE_KeySet</td>
               <td>
-                <xref target="RFC8152"/>
+                <xref target="RFC9052"/>
               </td>
               <td>none</td>
             </tr>
@@ -345,7 +345,7 @@ AAD-scope-flags = &amp;(
 Although each COSE context result is a COSE message, the types of message allowed depend upon the security block type in which the result is present: only MAC or signature messages are allowed in a BIB and only encryption messages are allowed in a BCB.
         </t>
         <t>
-The code points for Result ID values are identical to the  existing COSE message-marking tags in <xref section="2" target="RFC8152"/>.
+The code points for Result ID values are identical to the  existing COSE message-marking tags in <xref section="2" target="RFC9052"/>.
 This avoids the need for value-mapping between code points of the two registries.
         </t>
         <t>
@@ -388,36 +388,36 @@ Each integrity result value SHALL consist of the COSE message indicated by <xref
                 <td>97</td>
                 <td>encoded COSE_Mac</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
               <tr>
                 <td>17</td>
                 <td>encoded COSE_Mac0</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
               <tr>
                 <td>98</td>
                 <td>encoded COSE_Sign</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
               <tr>
                 <td>18</td>
                 <td>encoded COSE_Sign1</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
             </tbody>
           </table>
           <t>
 Each integrity result SHALL use the "detached" payload form with <tt>null</tt> payload value.
-The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <xref section="6.3" target="RFC8152"/>.
-The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <xref section="4.4" target="RFC8152"/>.
+The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <xref section="6.3" target="RFC9052"/>.
+The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <xref section="4.4" target="RFC9052"/>.
           </t>
           <t>
 The COSE "protected attributes from the application" used for a signature or MAC result SHALL be the encoded data defined in <xref target="sec-context-AAD"/>.
@@ -444,14 +444,14 @@ Each confidentiality result value SHALL consist of the COSE message indicated by
                 <td>96</td>
                 <td>encoded COSE_Encrypt</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
               <tr>
                 <td>16</td>
                 <td>encoded COSE_Encrypt0</td>
                 <td>
-                  <xref target="RFC8152"/>
+                  <xref target="RFC9052"/>
                 </td>
               </tr>
             </tbody>
@@ -463,7 +463,7 @@ Security acceptors MUST NOT assume that the size of the plaintext is the same as
           </t>
           <t>
 Each confidentiality result SHALL use the "detached" payload form with <tt>null</tt> payload value.
-The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <xref section="5.3" target="RFC8152"/>.
+The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <xref section="5.3" target="RFC9052"/>.
           </t>
           <t>
 The COSE "protected attributes from the application" used for an encryption result SHALL be the encoded data defined in <xref target="sec-context-AAD"/>.
@@ -760,7 +760,7 @@ When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipi
 When generating a BCB result from an EC keypair, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
 When a COSE_Encrypt is used with an EC keypair, the security source SHALL either generate an ephemeral EC keypair or choose a unique PartyU Nonce for each security operation.
-When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="11.2" target="RFC8152"/> even though the source is not required to provide any of those parameters.
+When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
           <dd>
@@ -774,11 +774,11 @@ When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL inclu
         <t>
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
 When using asymmetric keyed algorithms, the security source SHALL include a public key container or public key identifier as a recipient header.
-The public key identifier SHALL be either a "kid" of <xref target="RFC8152"/>, an "x5t" or "x5chain" of <xref target="I-D.ietf-cose-x509"/>, or an equivalent identifier.
+The public key identifier SHALL be either a "kid" of <xref target="RFC9052"/>, an "x5t" or "x5chain" of <xref target="RFC9360"/>, or an equivalent identifier.
         </t>
         <t>
 When a BIB result contains a "kid" identifier, the security source MAY include an appropriate COSE public key "COSE_Key" in a key container security parameter (see <xref target="sec-ASB-param-keys"/>).
-When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <xref target="I-D.ietf-cose-x509"/>) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
+When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <xref target="RFC9360"/>) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
 When a BIB result contains an "x5chain", the security source SHOULD NOT also include an "x5t" as the first certificate in the chain is implicitly the applicable end-entity certificate.
 For a BIB, if all potential security acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
 Risks of not including related data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
@@ -1049,14 +1049,15 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the followin
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6125.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6960.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8152.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8230.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8551.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9052.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9172.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9174.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-x509.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9360.xml"/>
       </references>
       <references>
         <name>Informative References</name>
