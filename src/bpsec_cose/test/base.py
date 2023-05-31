@@ -35,13 +35,18 @@ class BaseTest(unittest.TestCase):
         '''
         return item[:3]
 
+    def _get_aad_scope(self):
+        ''' Get the AAD-scope parameter value.
+        '''
+        return { 0: 0b01, 1: 0b01 }
+
     def _get_aad_array(self, addl_protected:bytes=b''):
         ''' Get the AAD-list array.
 
         :param addl_protected: The additional-protected parameters encoded.
         '''
         return [
-            3,  # scope
+            self._get_aad_scope(),  # scope
             self._get_primary_item(),  # primary-ctx
         ] + self._block_identity(self._get_target_item()) + [  # target-ctx
             addl_protected,
@@ -53,7 +58,7 @@ class BaseTest(unittest.TestCase):
             context_id=0,  # TBD
             security_source=EndpointId('dtn://src/').encode_item(),
             parameters=[
-                [5, 0x03],
+                [5, self._get_aad_scope()],
             ],
             results=[
                 [  # target block #1
