@@ -9,7 +9,7 @@ Expires: 2 December 2023
 
 
            DTN Bundle Protocol Security (BPSec) COSE Context
-                      draft-ietf-dtn-bpsec-cose-00
+                      draft-ietf-dtn-bpsec-cose-01
 
 Abstract
 
