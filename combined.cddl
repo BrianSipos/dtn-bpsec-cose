@@ -1,5 +1,5 @@
 
-start = bpsec-cose-asb / AAD-list /
+start = bpsec-cose-asb / external_aad /
   primary-block / extension-block /
   MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
 
@@ -13,10 +13,6 @@ bpsec-cose-asb = bpsec-context-use<
 $ext-data-asb /= bpsec-cose-asb
 
 
-$bpsec-cose-param /= [1, COSE_Key]
-$bpsec-cose-param /= [2, COSE_KeySet]
-
-
 $bpsec-cose-param /= [3, additional-protected]
 additional-protected = empty_or_serialized_map
 
@@ -25,11 +21,12 @@ additional-unprotected = header_map
 
 
 $bpsec-cose-param /= [5, AAD-scope]
-AAD-scope = uint .bits AAD-scope-flags
+AAD-scope = {
+    *uint => (uint .bits AAD-scope-flags)
+}
 AAD-scope-flags = &(
-    has-primary-ctx: 0,
-    has-target-ctx: 1,
-    has-security-ctx: 2,
+    AAD-metadata: 0,
+    AAD-btsd: 1,
 )
 
 
@@ -41,19 +38,19 @@ $bpsec-cose-result /= [97, bstr .cbor COSE_Mac]
 $bpsec-cose-result /= [98, bstr .cbor COSE_Sign]
 
 
-; Encoded as a CBOR sequence
+external_aad = bstr .cborseq AAD-list
+
 AAD-list = [
-    AAD-structure,
+    AAD-scope,
+    *AAD-block,
     ; copy of additional-protected (or default empty bstr)
     additional-protected
 ]
-
-; Identical to the definition of RFC 9173
-AAD-structure = (
-    AAD-scope,
-    ? primary-block,  ; present if has-primary-ctx flag set
-    ? block-metadata, ; present if has-target-ctx flag set
-    ? block-metadata, ; present if has-security-ctx flag set
+; each AAD item is a group, not a sub-array
+AAD-block = (
+    ? primary-block,   ; present for block number zero
+    ? block-metadata,  ; present if AAD-metadata flag set
+    ? bstr,            ; present if AAD-btsd flag set
 )
 ; Selected fields of a canonical block
 block-metadata = (

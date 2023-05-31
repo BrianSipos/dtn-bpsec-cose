@@ -4,8 +4,8 @@
 
 Delay-Tolerant Networking                                       B. Sipos
 Internet-Draft                                                   JHU/APL
-Intended status: Standards Track                           16 March 2023
-Expires: 17 September 2023
+Intended status: Standards Track                             31 May 2023
+Expires: 2 December 2023
 
 
            DTN Bundle Protocol Security (BPSec) COSE Context
@@ -34,7 +34,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 September 2023.
+   This Internet-Draft will expire on 2 December 2023.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Sipos                   Expires 17 September 2023               [Page 1]
+Sipos                    Expires 2 December 2023                [Page 1]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 Table of Contents
@@ -68,9 +68,8 @@ Table of Contents
    2.  BPSec Security Context  . . . . . . . . . . . . . . . . . . .   5
      2.1.  Security Scope  . . . . . . . . . . . . . . . . . . . . .   5
      2.2.  Parameters  . . . . . . . . . . . . . . . . . . . . . . .   6
-       2.2.1.  Raw Public Key Containers . . . . . . . . . . . . . .   7
-       2.2.2.  Additional Header Maps  . . . . . . . . . . . . . . .   7
-       2.2.3.  AAD Scope . . . . . . . . . . . . . . . . . . . . . .   8
+       2.2.1.  Additional Header Maps  . . . . . . . . . . . . . . .   7
+       2.2.2.  AAD Scope . . . . . . . . . . . . . . . . . . . . . .   8
      2.3.  Results . . . . . . . . . . . . . . . . . . . . . . . . .   9
        2.3.1.  Integrity Messages  . . . . . . . . . . . . . . . . .  10
        2.3.2.  Confidentiality Messages  . . . . . . . . . . . . . .  11
@@ -99,7 +98,8 @@ Table of Contents
      6.7.  Threat: Passive Leak of Key Material  . . . . . . . . . .  24
      6.8.  Threat: Algorithm Vulnerabilities . . . . . . . . . . . .  24
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  24
-     7.1.  BPSec Security Contexts . . . . . . . . . . . . . . . . .  25
+     7.1.  BPSec Security Context Identifiers  . . . . . . . . . . .  25
+     7.2.  BPSec COSE AAD Scope Flags  . . . . . . . . . . . . . . .  25
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  25
      8.1.  Normative References  . . . . . . . . . . . . . . . . . .  25
      8.2.  Informative References  . . . . . . . . . . . . . . . . .  27
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Sipos                   Expires 17 September 2023               [Page 2]
+Sipos                    Expires 2 December 2023                [Page 2]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
      A.3.  RSA Keypair COSE_Sign1  . . . . . . . . . . . . . . . . .  33
@@ -165,9 +165,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023               [Page 3]
+Sipos                    Expires 2 December 2023                [Page 3]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 1.2.  PKIX Environments and CA Policy
@@ -198,7 +198,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    document's CDDL, including the ASB data structure with its parameter/
    result sockets.
 
-   start = bpsec-cose-asb / AAD-list /
+   start = bpsec-cose-asb / external_aad /
      primary-block / extension-block /
      MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
 
@@ -221,9 +221,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023               [Page 4]
+Sipos                    Expires 2 December 2023                [Page 4]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 2.  BPSec Security Context
@@ -261,104 +261,84 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    which is also the term used by COSE to describe the same data.
 
    The sources for AAD within the COSE context are described below,
-   controlled by the AAD Scope Flags parameter of Section 2.2.3, and
+   controlled by the AAD Scope parameter of Section 2.2.2, and
    implemented as defined in Section 2.5.1.  The purpose of this
-   parameter is identical to the AAD Scope parameter and Integrity Scope
-   parameter of [RFC9173].
+   parameter is similar to the AAD Scope parameter and Integrity Scope
+   parameter of [RFC9173] but expanded to allow including _any_ block in
+   the bundle as AAD.
 
-   Bundle Primary Block:  The primary block identifies a bundle and,
-      once created, the contents of this block are immutable.  Changes
-      to the primary block associated with the security target indicate
-      that the target is no longer in its original bundle.  Including
-      the primary block as part of AAD ensures that security target
-      appears in the same bundle that the security source intended.
-
-   Target Block Metadata:  When the target block is a canonical block
-
+   Primary Block:  The primary block identifies a bundle and, once
+      created, the contents of this block are immutable.  Changes to the
+      primary block associated with the security target indicate that
+      the target is no longer in its original bundle.  Including the
+      primary block as part of AAD ensures that security target appears
+      in the same bundle that the security source intended.
 
 
-Sipos                   Expires 17 September 2023               [Page 5]
+
+
+Sipos                    Expires 2 December 2023                [Page 5]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-      (i.e., not the primary block) it contains its block-type-specific
-      data (BTSD), which is the subject of the security operation, but
-      also metadata identifying the block.  This metadata explicitly
-      excludes the CRC type and value fields because the CRC is derived
-      from the BTSD.  Including this metadata as part of AAD ensures
-      that the target data appears in the same block that the security
-      source intended.
+   Canonical Block-Type-Specific Data:  Including the block-type-
+      specific data (BTSD) of a non-target block as part of AAD ensures
+      that that other block's BTSD does not change after the security
+      block is added.  This can guarantee that not only has the security
+      target BTSD not changed but the additional blocks' BTSD have not
+      changed.
 
-   Security Block Metadata:  The BPSec block containing the security
-      result for which the AAD is assembled also has metadata
-      identifying the block.  This metadata explicitly excludes the CRC
-      type and value fields because the security block does not have a
-      full BTSD available at the time the AAD is needed.  Including this
-      metadata as part of AAD ensures that the security result appears
-      in the same block that the security source intended.
+   Canonical Block Metadata:  Including block metadata, which identifies
+      and types a block, as part of AAD ensures that the block presence
+      does not change after the security block is added.  This metadata
+      explicitly excludes the CRC type and value fields because the CRC
+      is derived from the BTSD.  The metadata of the security block and
+      the target block are also allowed, which binds the security result
+      to that specific target.
 
 2.2.  Parameters
 
    Each COSE context parameter value SHALL consist of the COSE structure
    indicated by Table 1 in its decoded (CBOR item) form.  Each security
-   block MAY contain any number of each parameter type.  When a
-   parameter is not present, the security acceptor SHALL use the Default
-   Value of Table 1.
+   block SHALL contain no more than one of each parameter type per
+   target block.
 
-   +===========+========================+==================+===========+
-   | Parameter | Parameter Structure    | Reference        | Default   |
-   | ID        |                        |                  | Value     |
-   +===========+========================+==================+===========+
-   | 1         | COSE_Key               | [RFC8152]        | none      |
-   +-----------+------------------------+------------------+-----------+
-   | 2         | COSE_KeySet            | [RFC8152]        | none      |
-   +-----------+------------------------+------------------+-----------+
-   | 3         | additional-protected   | Section 2.2.2    | '' (empty |
-   |           |                        | of this          | byte      |
-   |           |                        | document         | string)   |
-   +-----------+------------------------+------------------+-----------+
-   | 4         | additional-unprotected | Section 2.2.2    | {} (empty |
-   |           |                        | of this          | map)      |
-   |           |                        | document         |           |
-   +-----------+------------------------+------------------+-----------+
-   | 5         | AAD-scope              | Section 2.2.3    | 0b111     |
-   |           |                        | of this          | (all AAD  |
-   |           |                        | document         | contexts) |
-   +-----------+------------------------+------------------+-----------+
+       +==============+========================+==================+
+       | Parameter ID | Parameter Structure    | Reference        |
+       +==============+========================+==================+
+       | 3            | additional-protected   | Section 2.2.1 of |
+       |              |                        | this document    |
+       +--------------+------------------------+------------------+
+       | 4            | additional-unprotected | Section 2.2.1 of |
+       |              |                        | this document    |
+       +--------------+------------------------+------------------+
+       | 5            | AAD-scope              | Section 2.2.2 of |
+       |              |                        | this document    |
+       +--------------+------------------------+------------------+
 
-                      Table 1: COSE Context Parameters
+                     Table 1: COSE Context Parameters
+
+   When a parameter is not present and a default value is defined below,
+   the security acceptor SHALL use that default value to process the
+   target:
+
+   *  The default additional-protected is '' (an empty byte string).
+
+   *  The default additional-unprotected is {} (an empty map).
+
+   *  The default AAD-scope is a map which indicates the AAD contains
+      the metadata of the primary, security, and target blocks.
 
 
 
 
-
-Sipos                   Expires 17 September 2023               [Page 6]
+Sipos                    Expires 2 December 2023                [Page 6]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-2.2.1.  Raw Public Key Containers
-
-   Implementations capable of handling asymmetric-keyed algorithms
-   SHOULD support raw public key handling in COSE_Key and COSE_KeySet
-   parameters.
-
-   No more than one total COSE_Key or COSE_KeySet parameter SHALL be
-   present in a single security block.  Security acceptors are sill
-   required to aggregate multiple parameters, if present, in
-   Section 3.3.
-
-   Key container parameters SHALL NOT contain any private key material.
-   The security parameters are all stored in the bundle as plaintext and
-   are visible to any bundle handlers.
-
-   $bpsec-cose-param /= [1, COSE_Key]
-   $bpsec-cose-param /= [2, COSE_KeySet]
-
-                       Figure 2: Key Containers CDDL
-
-2.2.2.  Additional Header Maps
+2.2.1.  Additional Header Maps
 
    The two parameters Additional Protected and Additional Unprotected
    allow de-duplicating header items which are common to all COSE
@@ -383,17 +363,6 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    well-defined behavior for a security acceptor to handle multiple
    Additional Protected parameters.
 
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023               [Page 7]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
    Security sources SHOULD NOT include an additional header parameter
    which represents an empty map.  Security acceptors SHALL handle empty
    header map parameters, specifically the Additional Protected
@@ -414,71 +383,94 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    The security parameters are all stored in the bundle as plaintext and
    are visible to any bundle handlers.
 
+
+
+
+
+
+
+Sipos                    Expires 2 December 2023                [Page 7]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
+
    $bpsec-cose-param /= [3, additional-protected]
    additional-protected = empty_or_serialized_map
 
    $bpsec-cose-param /= [4, additional-unprotected]
    additional-unprotected = header_map
 
-                     Figure 3: Additional Headers CDDL
+                     Figure 2: Additional Headers CDDL
 
-2.2.3.  AAD Scope
+2.2.2.  AAD Scope
 
    The AAD Scope parameter controls what data is included in the AAD for
    both integrity and confidentiality operations.  The AAD Scope
-   parameter SHALL be encoded as a uint value with bit flags defined in
-   Table 2.  All reserved bits SHALL be set to zero (which will be
-   elided by CBOR encoding) by security sources.  All reserved bits
-   SHALL be ignored by security acceptors.  The default value for this
-   parameter has all flags set, meaning the AAD includes all available
-   context.  The flags of this parameter value are identical to the AAD
-   Scope flags of Section 4.3.4 of [RFC9173] and Integrity Scope flags
-   of Section 3.3.3 of [RFC9173].
+   parameter SHALL be encoded as a CBOR map containig keys representing
+   bundle block numbers (as uint items) and values representing a
+   collection of bit flags (as uint items) defined in Table 2.
 
-   A CDDL representation of this definition is included in Figure 4 for
+   All AAD Scope keys SHALL correspond with block numbers in the bundle
+   containing the AAD Scope parameter.  Security acceptors SHALL treat
+   any AAD Scope with block numbers not actually present in the
+   containing bundle as invalid.
+
+        +==============+==============+==========================+
+        | Bit Position | Name         | Description              |
+        | (from LSbit) |              |                          |
+        +==============+==============+==========================+
+        | 0            | AAD-metadata | If bit is set, indicates |
+        |              |              | that the block metadata  |
+        |              |              | is included in the AAD.  |
+        +--------------+--------------+--------------------------+
+        | 1            | AAD-btsd     | If bit is set, indicates |
+        |              |              | that the BTSD is         |
+        |              |              | included in the AAD.     |
+        +--------------+--------------+--------------------------+
+
+                         Table 2: AAD Scope Flags
+
+   Any AAD Scope value bits SHALL NOT all be set to zero, which would
+   represent the lack of presence in the AAD and serves no purpose.
+   When the map key identifies the primary block (block number zero) the
+   bits SHALL only have AAD-metadata set, as the primary block has no
+   BTSD.  When the map key identifies the containing security block the
+   bits SHALL only have AAD-metadata set, as the security block BTSD
+   does not yet exist.  When the map key identifies the target block the
+   bits SHALL only have AAD-metadata set, as the target block BTSD is
+   already part of the security operation (integrity or
+   confidentiality).  All reserved bits SHALL be set to zero (which will
+   be elided by CBOR encoding) by security sources.  All reserved bits
+   SHALL be ignored by security acceptors.
+
+
+
+Sipos                    Expires 2 December 2023                [Page 8]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
+
+   A CDDL representation of this definition is included in Figure 3 for
    reference.
 
-
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023               [Page 8]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
-       +==================+========+===============================+
-       | Name             | Code   | Description                   |
-       +==================+========+===============================+
-       | has-primary-ctx  | 0b001  | If bit is set, indicates that |
-       |                  |        | the primary block is included |
-       |                  |        | in AAD scope.                 |
-       +------------------+--------+-------------------------------+
-       | has-target-ctx   | 0b010  | If bit is set, indicates that |
-       |                  |        | the target block metadata is  |
-       |                  |        | included in AAD scope.        |
-       +------------------+--------+-------------------------------+
-       | has-security-ctx | 0b100  | If bit is set, indicates that |
-       |                  |        | the security block metadata   |
-       |                  |        | is included in AAD scope.     |
-       +------------------+--------+-------------------------------+
-       | Reserved         | others |                               |
-       +------------------+--------+-------------------------------+
-
-                          Table 2: AAD Scope Flags
-
    $bpsec-cose-param /= [5, AAD-scope]
-   AAD-scope = uint .bits AAD-scope-flags
+   AAD-scope = {
+       *uint => (uint .bits AAD-scope-flags)
+   }
    AAD-scope-flags = &(
-       has-primary-ctx: 0,
-       has-target-ctx: 1,
-       has-security-ctx: 2,
+       AAD-metadata: 0,
+       AAD-btsd: 1,
    )
 
-                          Figure 4: AAD Scope CDDL
+                          Figure 3: AAD Scope CDDL
+
+   The default value for this parameter (in Section 2.2) includes the
+   primary, target, and security block metadata.
+
+   For the same reasons that security blocks are restricted from
+   overlapping functions by [RFC9172], when a block is included as AAD
+   with the AAD-btsd flag set that block SHALL NOT be the target of a
+   BCB or other BTSD-altering function.
 
 2.3.  Results
 
@@ -498,16 +490,21 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    tagged form SHALL NOT be used.  The Result ID values already provide
    the same information as the COSE tags (using the same code points).
 
-
-
-
-Sipos                   Expires 17 September 2023               [Page 9]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
    These generic requirements are formalized in the CDDL fragment of
-   Figure 5.
+   Figure 4.
+
+
+
+
+
+
+
+
+
+Sipos                    Expires 2 December 2023                [Page 9]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
 
    $bpsec-cose-result /= [16, bstr .cbor COSE_Encrypt0]
    $bpsec-cose-result /= [17, bstr .cbor COSE_Mac0]
@@ -516,7 +513,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    $bpsec-cose-result /= [97, bstr .cbor COSE_Mac]
    $bpsec-cose-result /= [98, bstr .cbor COSE_Sign]
 
-                    Figure 5: COSE context results CDDL
+                    Figure 4: COSE context results CDDL
 
 2.3.1.  Integrity Messages
 
@@ -557,9 +554,12 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 10]
+
+
+
+Sipos                    Expires 2 December 2023               [Page 10]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 2.3.2.  Confidentiality Messages
@@ -613,9 +613,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 11]
+Sipos                    Expires 2 December 2023               [Page 11]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 2.5.  Canonicalization Algorithms
@@ -627,33 +627,40 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 2.5.1.  Generating AAD
 
-   The encoding of this AAD is identical to the AAD of Section 4.7.2 of
-   [RFC9173] and the front items of IPPT of Section 3.7 of [RFC9173].
+   The encoding of this AAD is different from AAD of Section 4.7.2 of
+   [RFC9173] and the front items of IPPT of Section 3.7 of [RFC9173] due
+   to support for binding AAD to an arbitrary number of blocks.
 
    The AAD used for both integrity and confidentiality messages SHALL be
    the deterministically encoded form of a CBOR sequence containing the
    following:
 
    1.  The first item SHALL be the AAD Scope value itself, which is a
-       uint.
+       CBOR map.
 
-   2.  The next item SHALL be the CBOR array (unencoded) form of the
-       primary block of the bundle if the AAD Scope has the has-primary-
-       ctx flag set.
+   2.  For each entry of the AAD Scope map, in ascending block number
+       order, the next items SHALL be one or both of the following:
 
-   3.  The next items SHALL be the first three fields of the target
-       block (i.e., the block type code, block number, and control
-       flags) if the AAD Scope has the has-target-ctx flag set.
+       1.  If the map value has the AAD-metadata flag set, the next item
+           is block metadata taken from either:
 
-   4.  The next items SHALL be the first three fields of the security
-       block containing the result (i.e., the block type code, block
-       number, and control flags) if the AAD Scope has the has-security-
-       ctx flag set.
+           *  If the map key is block number zero, the next item SHALL
+              be the CBOR array (unencoded) form of the primary block of
+              the bundle.
 
-   5.  The last item SHALL be the Additional Protected header map, which
+           *  Otherwise, next items SHALL be the first three fields of
+              the block (i.e., the block type code, block number, and
+              control flags) identified by the block number in the map
+              key.
+
+       2.  If the map value has the AAD-btsd flag set and the map key is
+           _not_ block number zero, the next item is the BTSD of the
+           block identified by the block number in the map key.
+
+   3.  The last item SHALL be the Additional Protected header map, which
        is a bstr, and has a default value of the empty bstr.
 
-   A CDDL representation of this data is shown below in Figure 6.
+   A CDDL representation of this data is shown below in Figure 5.
 
 
 
@@ -662,31 +669,24 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 12]
+Sipos                    Expires 2 December 2023               [Page 12]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-   ; Encoded as a CBOR sequence
+   external_aad = bstr .cborseq AAD-list
+
    AAD-list = [
-       AAD-structure,
+       AAD-scope,
+       *AAD-block,
        ; copy of additional-protected (or default empty bstr)
        additional-protected
    ]
-
-   ; Identical to the definition of RFC 9173
-   AAD-structure = (
-       AAD-scope,
-       ? primary-block,  ; present if has-primary-ctx flag set
-       ? block-metadata, ; present if has-target-ctx flag set
-       ? block-metadata, ; present if has-security-ctx flag set
+   ; each AAD item is a group, not a sub-array
+   AAD-block = (
+       ? primary-block,   ; present for block number zero
+       ? block-metadata,  ; present if AAD-metadata flag set
+       ? bstr,            ; present if AAD-btsd flag set
    )
    ; Selected fields of a canonical block
    block-metadata = (
@@ -695,7 +695,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
        block-control-flags,
    )
 
-                      Figure 6: COSE context AAD CDDL
+                      Figure 5: COSE context AAD CDDL
 
 2.5.2.  Payload Data
 
@@ -715,7 +715,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
    All security results generated for BIB or BCB blocks SHALL conform to
    the COSE profile of Section 3 with header augmentation as defined in
-   Section 2.2.2.
+   Section 2.2.1.
 
 
 
@@ -725,9 +725,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 13]
+Sipos                    Expires 2 December 2023               [Page 13]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 2.6.1.  Node Authentication
@@ -754,7 +754,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    transport, signing, and encryption (see Section 4.1) a single Node ID
    is likely to be associated with multiple certificates, and any or all
    of those certificates MAY be present within an "x5bag" in an
-   Additional Protected parameter (see Section 2.2.2).  When present, a
+   Additional Protected parameter (see Section 2.2.1).  When present, a
    security acceptor SHALL use an "x5chain" or "x5t" to identify an end-
    entity certificate to use for result processing.  Security acceptors
    SHALL NOT assume that a validated certificate containing a NODE-ID
@@ -781,9 +781,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 14]
+Sipos                    Expires 2 December 2023               [Page 14]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    For each end-entity certificate contained in or identified by a COSE
@@ -837,9 +837,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 15]
+Sipos                    Expires 2 December 2023               [Page 15]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 3.1.  COSE Messages
@@ -893,9 +893,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 16]
+Sipos                    Expires 2 December 2023               [Page 16]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    +=================+============+============+======+================+
@@ -949,9 +949,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 17]
+Sipos                    Expires 2 December 2023               [Page 17]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
       keypair, implementations SHALL use a COSE_Sign1 using the private
@@ -1005,25 +1005,22 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 18]
+Sipos                    Expires 2 December 2023               [Page 18]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-   When a BIB result contains a "kid" identifier, the security source
-   MAY include an appropriate COSE public key "COSE_Key" in a key
-   container security parameter (see Section 2.2.1).  When BIB result
-   contains a "x5t" identifier, the security source MAY include an
-   appropriate PKIX certificate container ("x5chain" or "x5bag" of
-   [I-D.ietf-cose-x509]) in a direct COSE header or an additional header
-   security parameter (see Section 2.2.2).  When a BIB result contains
-   an "x5chain", the security source SHOULD NOT also include an "x5t" as
-   the first certificate in the chain is implicitly the applicable end-
-   entity certificate.  For a BIB, if all potential security acceptors
-   are known to possess related public key and/or certificate data then
-   the public key or additional header parameters can be omitted.  Risks
-   of not including related data are described in Section 6.5 and
-   Section 6.6.
+   When BIB result contains a "x5t" identifier, the security source MAY
+   include an appropriate PKIX certificate container ("x5chain" or
+   "x5bag" of [I-D.ietf-cose-x509]) in a direct COSE header or an
+   additional header security parameter (see Section 2.2.1).  When a BIB
+   result contains an "x5chain", the security source SHOULD NOT also
+   include an "x5t" as the first certificate in the chain is implicitly
+   the applicable end-entity certificate.  For a BIB, if all potential
+   security acceptors are known to possess related public key and/or
+   certificate data then the public key or additional header parameters
+   can be omitted.  Risks of not including related data are described in
+   Section 6.5 and Section 6.6.
 
    When present, public keys and certificates SHOULD be included as
    additional header parameters rather than within result COSE messages.
@@ -1058,16 +1055,16 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    4.  Some arbitrary identifier is used to correlate to an end-entity
        certificate (as a "kid").
 
-
-
-
-Sipos                   Expires 17 September 2023              [Page 19]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
    5.  The BIB Security Source is used to imply an associated end-entity
        certificate which identifies that Node ID.
+
+
+
+
+Sipos                    Expires 2 December 2023               [Page 19]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
 
    When PKIX certificates are used by security acceptors and the end-
    entity certificate is not explicitly trusted (i.e. pinned), the
@@ -1095,9 +1092,15 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
    Security acceptors SHALL accept certificates that contain an empty
    Subject field or contain a Subject without a Common Name.  Identity
-   information in end-entity certificates is contained entirely in the
-   subjectAltName extension as a NODE-ID, as defined in Section 4.4.1 of
-   [RFC9174].
+   information in end-entity certificates SHALL be contained in the
+   Subject Alternative Name extension in accordance with Section 4.2.1.6
+   of [RFC5280].
+
+   A BPSec end-entity certificate SHALL contain a NODE-ID in its Subject
+   Alternative Name extension which authenticates the Node ID of the
+   security source (for integrity) or the security acceptor (for
+   confidentiality).  The identifier type NODE-ID is defined in
+   Section 4.4.1 of [RFC9174].
 
    All end-entity and CA certificates used for BPSec SHOULD contain both
    a Subject Key Identifier extension in accordance with Section 4.2.1.2
@@ -1108,23 +1111,17 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    identifiers simplifies the work of an entity needing to assemble a
    certification chain.
 
-   A BPSec end-entity certificate SHALL contain a NODE-ID which
-   authenticates the Node ID of the security source (for integrity) or
-   the security acceptor (for confidentiality).  The identifier type
-   NODE-ID is defined in Section 4.4.1 of [RFC9174].
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 20]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
    When allowed by CA policy, a BPSec end-entity certificate SHOULD
    contain a PKIX Extended Key Usage extension in accordance with
    Section 4.2.1.12 of [RFC5280].  When the PKIX Extended Key Usage
+
+
+
+Sipos                    Expires 2 December 2023               [Page 20]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
+
    extension is present, it SHALL contain a key purpose id-kp-
    bundleSecurity of [IANA-SMI].  The id-kp-bundleSecurity purpose MAY
    be combined with other purposes in the same certificate.
@@ -1150,7 +1147,8 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    public key certificates) to single uses among the following:
 
    Bundle transport:  With key uses as defined in the convergence layer
-      specification(s).
+      specification(s).  Transports can require additional Extended Key
+      Usage, such as id-kp-serverAuth or id-kp-clientAuth.
 
    Block signing:  With key use digitalSignature and/or nonRepudiation.
 
@@ -1173,9 +1171,11 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 21]
+
+
+Sipos                    Expires 2 December 2023               [Page 21]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    This section records the status of known implementations of the
@@ -1191,9 +1191,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    features.  Readers are advised to note that other implementations can
    exist.
 
-   An example implementation of COSE over Blocks has been created as a
-   GitHub project [github-dtn-bpsec-cose] and is intended to use as a
-   proof-of-concept and as a possible source of interoperability
+   An example implementation of COSE over BPSec blocks has been created
+   as a GitHub project [github-dtn-bpsec-cose] and is intended to use as
+   a proof-of-concept and as a possible source of interoperability
    testing.  This example implementation only handles CBOR encoding/
    decoding and cryptographic functions, it does not construct actual
    BIB or BCB and does not integrate with a BP Agent.
@@ -1213,7 +1213,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    parameters (see Section 4.3.1 of [RFC9171]).  These same fields are
    used to correlate Administrative Records with the bundles for which
    the records were generated.  Including the primary block in the AAD
-   Scope for integrity and confidentiality (see Section 2.2.3) binds the
+   Scope for integrity and confidentiality (see Section 2.2.2) binds the
    verification of the secured block to its parent bundle and disallows
    replay of any block with its BIB or BCB.
 
@@ -1229,9 +1229,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 22]
+Sipos                    Expires 2 December 2023               [Page 22]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 6.2.  Threat: Untrusted End-Entity Certificate
@@ -1285,9 +1285,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 23]
+Sipos                    Expires 2 December 2023               [Page 23]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    in BPSec Security Considerations, where a signature is verified to be
@@ -1302,14 +1302,14 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 6.6.  Threat: Non-Trusted Public Key
 
    The profile in Section 3.2 allows the use of PKIX which typically
-   involves end-entity certificates chained up to a trusted root CA.
-   This allows a BIB to contain end-entity certificates not previously
-   known to a security acceptor but still trust the certificate by
-   verifying it up to a trusted CA.  In an environment where security
-   acceptors are known to already contain needed root and intermediate
-   CAs there is no need to include those CAs in a proper chain within
-   the security parameters, but this has a risk of an acceptor not
-   actually having one of the needed CAs.
+   involves end-entity certificates chained up to a trusted root CA.  A
+   BIB can reference or contain end-entity certificates not previously
+   known to a security acceptor but the acceptor can still trust the
+   certificate by verifying it up to a trusted CA.  In an environment
+   where security acceptors are known to already contain needed root and
+   intermediate CAs there is no need to include those CAs in a proper
+   chain within the security parameters, but this has a risk of an
+   acceptor not actually having one of the needed CAs.
 
    Because the security parameters are not included as AAD, there is
    still the possibility that an active attacker removes or alters
@@ -1328,8 +1328,8 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
    Because this use of COSE leaves the specific algorithms chosen for
    BIB and BCB use up to the applications securing bundle data, it is
-   important to use only COSE algorithms which are marked as recommended
-   in the IANA registry [IANA-COSE].
+   important to use only COSE algorithms which are marked as
+   "recommended" in the IANA registry [IANA-COSE].
 
 7.  IANA Considerations
 
@@ -1341,24 +1341,47 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 24]
+Sipos                    Expires 2 December 2023               [Page 24]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-7.1.  BPSec Security Contexts
+7.1.  BPSec Security Context Identifiers
 
    Within the "Bundle Protocol" registry [IANA-BUNDLE], the following
    entry has been added to the "BPSec Security Context Identifiers" sub-
    registry.
 
-             +==========+=============+=====================+
-             | Value    | Description | Reference           |
-             +==========+=============+=====================+
-             | TBD-COSE | COSE        | This specification. |
-             +----------+-------------+---------------------+
+             +==========+=============+======================+
+             | Value    | Description | Reference            |
+             +==========+=============+======================+
+             | TBD-COSE | COSE        | [This specification] |
+             +----------+-------------+----------------------+
 
-                                 Table 6
+                Table 6: BPSec Security Context Identifiers
+
+7.2.  BPSec COSE AAD Scope Flags
+
+   Within the "Bundle Protocol" registry [IANA-BUNDLE], the IANA has
+   created and now maintains a new registry named "BPSec COSE AAD Scope
+   Flags" on the "Bundle Protocol" registry page.  Table 7 shows the
+   initial values for this registry.
+
+   The registration policy for this registry is Specification Required.
+
+   The value range is unsigned 8-bit integer.
+
+    +===========================+==============+======================+
+    | Bit Position (from LSbit) | Name         | Reference            |
+    +===========================+==============+======================+
+    | 0                         | AAD-metadata | [This specification] |
+    +---------------------------+--------------+----------------------+
+    | 1                         | AAD-btsd     | [This specification] |
+    +---------------------------+--------------+----------------------+
+    | 2-7                       | Reserved     | [This specification] |
+    +---------------------------+--------------+----------------------+
+
+                    Table 7: BPSec COSE AAD Scope Flags
 
 8.  References
 
@@ -1371,6 +1394,13 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [IANA-COSE]
               IANA, "CBOR Object Signing and Encryption (COSE)",
               <https://www.iana.org/assignments/cose/>.
+
+
+
+Sipos                    Expires 2 December 2023               [Page 25]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
 
    [IANA-SMI] IANA, "Structure of Management Information (SMI) Numbers",
               <https://www.iana.org/assignments/smi-numbers/>.
@@ -1392,15 +1422,6 @@ Internet-Draft               DTN BPSec COSE                   March 2023
               (PKIX) Certificates in the Context of Transport Layer
               Security (TLS)", RFC 6125, DOI 10.17487/RFC6125, March
               2011, <https://www.rfc-editor.org/info/rfc6125>.
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 25]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
 
    [RFC6960]  Santesson, S., Myers, M., Ankney, R., Malpani, A.,
               Galperin, S., and C. Adams, "X.509 Internet Public Key
@@ -1426,6 +1447,17 @@ Internet-Draft               DTN BPSec COSE                   March 2023
               DOI 10.17487/RFC8230, September 2017,
               <https://www.rfc-editor.org/info/rfc8230>.
 
+
+
+
+
+
+
+Sipos                    Expires 2 December 2023               [Page 26]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
+
    [RFC8551]  Schaad, J., Ramsdell, B., and S. Turner, "Secure/
               Multipurpose Internet Mail Extensions (S/MIME) Version 4.0
               Message Specification", RFC 8551, DOI 10.17487/RFC8551,
@@ -1450,14 +1482,6 @@ Internet-Draft               DTN BPSec COSE                   March 2023
               Schaad, J., "CBOR Object Signing and Encryption (COSE):
               Header Parameters for Carrying and Referencing X.509
               Certificates", Work in Progress, Internet-Draft, draft-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 26]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
               ietf-cose-x509-09, 13 October 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-cose-
               x509-09>.
@@ -1482,6 +1506,14 @@ Internet-Draft               DTN BPSec COSE                   March 2023
               RFC 7942, DOI 10.17487/RFC7942, July 2016,
               <https://www.rfc-editor.org/info/rfc7942>.
 
+
+
+
+Sipos                    Expires 2 December 2023               [Page 27]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
+
    [RFC9171]  Burleigh, S., Fall, K., and E. Birrane, III, "Bundle
               Protocol Version 7", RFC 9171, DOI 10.17487/RFC9171,
               January 2022, <https://www.rfc-editor.org/info/rfc9171>.
@@ -1503,17 +1535,6 @@ Internet-Draft               DTN BPSec COSE                   March 2023
               Sipos, B., "Wireshark Plugin Dissectors for DTN",
               <https://github.com/BrianSipos/dtn-demo-agent/>.
 
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 27]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
-
 Appendix A.  Examples
 
    These examples are intended to have the correct structure of COSE
@@ -1523,7 +1544,7 @@ Appendix A.  Examples
    from the actual profile if there is a meaningful difference.
 
    All of these examples operate within the context of the bundle
-   primary block of Figure 7 with a security target block of Figure 8.
+   primary block of Figure 6 with a security target block of Figure 7.
    All example figures use the extended diagnostic notation [RFC8610].
 
    [
@@ -1537,7 +1558,17 @@ Appendix A.  Examples
      1000000 / lifetime /
    ]
 
-                  Figure 7: Primary block CBOR diagnostic
+                  Figure 6: Primary block CBOR diagnostic
+
+
+
+
+
+
+Sipos                    Expires 2 December 2023               [Page 28]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
 
    [
      1, / type code: payload /
@@ -1547,11 +1578,11 @@ Appendix A.  Examples
      <<"hello">> / block-type-specific-data /
    ]
 
-                   Figure 8: Target block CBOR diagnostic
+                   Figure 7: Target block CBOR diagnostic
 
    All of the block integrity block examples operate within the context
-   of the "frame" block of Figure 9, and block confidentiality block
-   examples within the frame block of Figure 10.
+   of the "frame" block of Figure 8, and block confidentiality block
+   examples within the frame block of Figure 9.
 
    [
      11, / type code: BIB /
@@ -1561,14 +1592,7 @@ Appendix A.  Examples
      '' / BTSD to be replaced /
    ]
 
-           Figure 9: Block integrity block frame CBOR diagnostic
-
-
-
-Sipos                   Expires 17 September 2023              [Page 28]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
+           Figure 8: Block integrity block frame CBOR diagnostic
 
    [
      12, / type code: BCB /
@@ -1578,21 +1602,29 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      '' / BTSD to be replaced /
    ]
 
-           Figure 10: Block confidentiality block CBOR diagnostic
+           Figure 9: Block confidentiality block CBOR diagnostic
 
    All of the examples also operate within a security block containing
-   the AAD Scope parameter with only "has-primary-ctx" and "has-target-
-   ctx" flags set.  This results in a consistent AAD-list as shown in
-   Figure 11, which is encoded as the byte string for COSE external_aad
+   the AAD Scope parameter with only has-primary-ctx and has-target-ctx
+   flags set.  This results in a consistent AAD-list as shown in
+   Figure 10, which is encoded as the byte string for COSE external_aad
    in all of the examples.
 
-   3, / scope /
+   { 0: 0b01, 1: 0b01 }, / AAD-scope /
    [ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
-     [ 0, 40 ], 1000000 ], / primary-ctx /
-   1, 1, 0, / target-ctx /
+     [ 0, 40 ], 1000000 ], / primary-block /
+   1, 1, 0, / target block-metadata /
    '' / additional-protected /
 
-         Figure 11: Example scope AAD-list CBOR-sequence diagnostic
+         Figure 10: Example scope AAD-list CBOR-sequence diagnostic
+
+
+
+
+Sipos                    Expires 2 December 2023               [Page 29]
+
+Internet-Draft               DTN BPSec COSE                     May 2023
+
 
    The only differences between these examples which use EC or RSA
    keypairs and a use of a PKIX public key certificate are: the
@@ -1604,27 +1636,17 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
    Because each of the encryption examples use the same CEK within the
    same AAD, the target ciphertext is also identical.  The target block
-   after application of the encryption is shown in Figure 12.
+   after application of the encryption is shown in Figure 11.
 
    [
      1, / type code: payload /
      1, / block num /
      0, / flags /
      0, / CRC type /
-     h'1fd25f64a2eea12d4bb6c02d25bf33cec45f3e4f96b1' / ciphertext /
+     h'1fd25f64a2ee1152e3e33a3b4ad83d6b368a8949adde' / ciphertext /
    ]
 
-             Figure 12: Encrypted Target block CBOR diagnostic
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 29]
-
-Internet-Draft               DTN BPSec COSE                   March 2023
-
+             Figure 11: Encrypted Target block CBOR diagnostic
 
 A.1.  Symmetric Key COSE_Mac0
 
@@ -1640,47 +1662,27 @@ A.1.  Symmetric Key COSE_Mac0
      }
    ]
 
-                          Figure 13: Symmetric Key
+                          Figure 12: Symmetric Key
 
-   The external_aad is the encoded data from Figure 11.  The payload is
-   the encoded target BTSD from Figure 8.
+   The external_aad is the encoded data from Figure 10.  The payload is
+   the encoded target BTSD from Figure 7.
 
    [
      "MAC0", / context /
      h'a10105', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
      h'6568656c6c6f' / payload /
    ]
 
-                  Figure 14: MAC_structure CBOR diagnostic
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Sipos                   Expires 17 September 2023              [Page 30]
+Sipos                    Expires 2 December 2023               [Page 30]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
+
+                  Figure 13: MAC_structure CBOR diagnostic
 
    [1], / targets /
    -1, / security context TBD-COSE /
@@ -1689,7 +1691,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -1704,22 +1706,22 @@ Internet-Draft               DTN BPSec COSE                   March 2023
              / kid / 4:'ExampleMAC'
            },
            null, / payload detached /
-           h'48d325a89fe966b982d0a603b75b352b1cbe50903ad025b9126431dfdb
-   bb0389' / tag /
+           h'5cf66fcdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d59
+   35ae64' / tag /
          ]>>
        ]
      ]
    ]
 
-             Figure 15: Abstract Security Block CBOR diagnostic
+             Figure 14: Abstract Security Block CBOR diagnostic
 
    The final bundle is encoded as the byte string:
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850b030000584c810100018201662f2f7372632f818205
-   038181821158358443a10105a1044a4578616d706c654b6579f6582048d325a89fe9
-   66b982d0a603b75b352b1cbe50903ad025b9126431dfdbbb03898501010000466568
-   656c6c6fff'
+   632f820018281a000f4240850b0300005850810100018201662f2f7372632f818205
+   a2000101018181821158358443a10105a1044a4578616d706c654b6579f658205cf6
+   6fcdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d5935ae6485010100
+   00466568656c6c6fff'
 
 A.2.  EC Keypair COSE_Sign1
 
@@ -1731,11 +1733,9 @@ A.2.  EC Keypair COSE_Sign1
 
 
 
-
-
-Sipos                   Expires 17 September 2023              [Page 31]
+Sipos                    Expires 2 December 2023               [Page 31]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [
@@ -1752,20 +1752,20 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      }
    ]
 
-                          Figure 16: Example Keys
+                          Figure 15: Example Keys
 
-   The external_aad is the encoded data from Figure 11.  The payload is
-   the encoded target BTSD from Figure 8.
+   The external_aad is the encoded data from Figure 10.  The payload is
+   the encoded target BTSD from Figure 7.
 
    [
      "Signature1", / context /
      h'a10126', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
      h'6568656c6c6f' / payload /
    ]
 
-                  Figure 17: Sig_structure CBOR diagnostic
+                  Figure 16: Sig_structure CBOR diagnostic
 
 
 
@@ -1789,9 +1789,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 32]
+Sipos                    Expires 2 December 2023               [Page 32]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [1], / targets /
@@ -1801,7 +1801,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -1816,24 +1816,24 @@ Internet-Draft               DTN BPSec COSE                   March 2023
              / kid / 4:'ExampleEC2'
            },
            null, / payload detached /
-           h'b8eb3feb581fde875f277ed757512f1a4b107fcd46373ebc53d2af5549
-   8bb07e335a06ef035f16622ca143a6cc1e390441714155e1571e18a3c767bf5128c1
-   b0' / signature /
+           h'5552647e6fa90156b908a84eddd2f631ed7005147afa1437d792fa5508
+   586c20b5134c469ccacc44c4a3c26bef952823d789eb70eeecf4393d8c6818245651
+   4c' / signature /
          ]>>
        ]
      ]
    ]
 
-             Figure 18: Abstract Security Block CBOR diagnostic
+             Figure 17: Abstract Security Block CBOR diagnostic
 
    The final bundle is encoded as the byte string:
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850b030000586c810100018201662f2f7372632f818205
-   038181821258558443a10126a1044a4578616d706c65454332f65840b8eb3feb581f
-   de875f277ed757512f1a4b107fcd46373ebc53d2af55498bb07e335a06ef035f1662
-   2ca143a6cc1e390441714155e1571e18a3c767bf5128c1b08501010000466568656c
-   6c6fff'
+   632f820018281a000f4240850b0300005870810100018201662f2f7372632f818205
+   a2000101018181821258558443a10126a1044a4578616d706c65454332f658405552
+   647e6fa90156b908a84eddd2f631ed7005147afa1437d792fa5508586c20b5134c46
+   9ccacc44c4a3c26bef952823d789eb70eeecf4393d8c68182456514c850101000046
+   6568656c6c6fff'
 
 A.3.  RSA Keypair COSE_Sign1
 
@@ -1845,9 +1845,9 @@ A.3.  RSA Keypair COSE_Sign1
 
 
 
-Sipos                   Expires 17 September 2023              [Page 33]
+Sipos                    Expires 2 December 2023               [Page 33]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    This key strength is not supposed to be a secure configuration, only
@@ -1887,12 +1887,10 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      }
    ]
 
-                          Figure 19: Example Keys
+                          Figure 18: Example Keys
 
-   The external_aad is the encoded data from Figure 11.  The payload is
-   the encoded target BTSD from Figure 8.
-
-
+   The external_aad is the encoded data from Figure 10.  The payload is
+   the encoded target BTSD from Figure 7.
 
 
 
@@ -1901,20 +1899,22 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 34]
+
+
+Sipos                    Expires 2 December 2023               [Page 34]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [
      "Signature1", / context /
      h'a1013824', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
      h'6568656c6c6f' / payload /
    ]
 
-                  Figure 20: Sig_structure CBOR diagnostic
+                  Figure 19: Sig_structure CBOR diagnostic
 
    [1], / targets /
    -1, / security context TBD-COSE /
@@ -1923,7 +1923,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -1938,17 +1938,17 @@ Internet-Draft               DTN BPSec COSE                   March 2023
              / kid / 4:'ExampleRSA'
            },
            null, / payload detached /
-           h'57a263315f4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9
-   cad07cedf2df4b0016f44af69599ed8031e26deae2c26bc9407c31e550437cb9c569
-   f6af80feb14ef54ad740bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f59
-   51e21c2610b79b1719ff99da66ccabeb5600132625267ea75772d450b7eb
-   cb' / signature /
+           h'38aab98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98
+   162dd5325ac06d7daa8a7d4c2903c4f4c6e47e707581a45056240a6393294c96845e
+   d5b6ba3b4ff8ea0bd52ed33e082d0b683d67644de88216cc291ee24aaa84d712dae1
+   e6830bdf18017ac3903d418a779be32bc927315fe57ca7da5bad4d95241a
+   4c' / signature /
          ]>>
        ]
      ]
    ]
 
-             Figure 21: Abstract Security Block CBOR diagnostic
+             Figure 20: Abstract Security Block CBOR diagnostic
 
    The final bundle is encoded as the byte string:
 
@@ -1957,25 +1957,25 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 35]
+Sipos                    Expires 2 December 2023               [Page 35]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850b03000058ad810100018201662f2f7372632f818205
-   038181821258968444a1013824a1044a4578616d706c65525341f6588057a263315f
-   4641e40b7481fdf6140d10a9d51cdbf29b33a4c31e8477a9cad07cedf2df4b0016f4
-   4af69599ed8031e26deae2c26bc9407c31e550437cb9c569f6af80feb14ef54ad740
-   bf02b3f68047961dbe7ea5b13ac2610ff2706abf83f50f5951e21c2610b79b1719ff
-   99da66ccabeb5600132625267ea75772d450b7ebcb8501010000466568656c6c6f
-   ff'
+   632f820018281a000f4240850b03000058b1810100018201662f2f7372632f818205
+   a2000101018181821258968444a1013824a1044a4578616d706c65525341f6588038
+   aab98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98162dd5325ac0
+   6d7daa8a7d4c2903c4f4c6e47e707581a45056240a6393294c96845ed5b6ba3b4ff8
+   ea0bd52ed33e082d0b683d67644de88216cc291ee24aaa84d712dae1e6830bdf1801
+   7ac3903d418a779be32bc927315fe57ca7da5bad4d95241a4c850101000046656865
+   6c6c6fff'
 
 A.4.  Symmetric KEK COSE_Encrypt
 
    This is an example of an encryption with a random CEK and an explicit
    key-encryption key (KEK) identified by a "kid".  The keys used are
-   shown in Figure 22.
+   shown in Figure 21.
 
    [
      {
@@ -1992,30 +1992,30 @@ A.4.  Symmetric KEK COSE_Encrypt
      }
    ]
 
-                          Figure 22: Example Keys
+                          Figure 21: Example Keys
 
-   The external_aad is the encoded data from Figure 11.
+   The external_aad is the encoded data from Figure 10.
 
    [
      "Encrypt", / context /
      h'a10103', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
    ]
 
-                  Figure 23: Enc_structure CBOR diagnostic
+                  Figure 22: Enc_structure CBOR diagnostic
 
-   The ASB item for this encryption operation is shown in Figure 24 and
+   The ASB item for this encryption operation is shown in Figure 23 and
    corresponds with the updated target block (containing the ciphertext)
-   of Figure 12.
+   of Figure 11.
 
 
 
 
 
-Sipos                   Expires 17 September 2023              [Page 36]
+Sipos                    Expires 2 December 2023               [Page 36]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [1], / targets /
@@ -2025,7 +2025,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -2056,29 +2056,29 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      ]
    ]
 
-             Figure 24: Abstract Security Block CBOR diagnostic
+             Figure 23: Abstract Security Block CBOR diagnostic
 
    The final bundle is encoded as the byte string:
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850c0300005869810100018201662f2f7372632f818205
-   03818182186058518443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
-   24044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cdac6a9d
-   8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64a2ee52
-   8b86b0c2f3785b531e634d6ef31c74ff'
+   632f820018281a000f4240850c030000586d810100018201662f2f7372632f818205
+   a200010101818182186058518443a10103a1054c6f3093eba5d85143c3dc484af681
+   8340a20124044a4578616d706c654b454b5828917f2045e1169502756252bf119a94
+   cdac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f
+   64a2ee1152e3e33a3b4ad83d6b368a8949addeff'
 
 
 
-Sipos                   Expires 17 September 2023              [Page 37]
+Sipos                    Expires 2 December 2023               [Page 37]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
 A.5.  EC Keypair COSE_Encrypt
 
    This is an example of an encryption with an P-256 curve ephemeral
    sender keypair and a static recipient keypair identified by a "kid".
-   The keys used are shown in Figure 25.
+   The keys used are shown in Figure 24.
 
    [
      { / sender ephemeral private key /
@@ -2110,29 +2110,29 @@ A.5.  EC Keypair COSE_Encrypt
      }
    ]
 
-                          Figure 25: Example Keys
+                          Figure 24: Example Keys
 
-   The external_aad is the encoded data from Figure 11.
+   The external_aad is the encoded data from Figure 10.
 
    [
      "Encrypt", / context /
      h'a10103', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
    ]
 
-                  Figure 26: Enc_structure CBOR diagnostic
+                  Figure 25: Enc_structure CBOR diagnostic
 
 
 
-Sipos                   Expires 17 September 2023              [Page 38]
+Sipos                    Expires 2 December 2023               [Page 38]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
-   The ASB item for this encryption operation is shown in Figure 27 and
+   The ASB item for this encryption operation is shown in Figure 26 and
    corresponds with the updated target block (containing the ciphertext)
-   of Figure 12.
+   of Figure 11.
 
 
 
@@ -2181,9 +2181,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 39]
+Sipos                    Expires 2 December 2023               [Page 39]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [1], / targets /
@@ -2193,7 +2193,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -2232,26 +2232,26 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      ]
    ]
 
-             Figure 27: Abstract Security Block CBOR diagnostic
+             Figure 26: Abstract Security Block CBOR diagnostic
 
 
 
 
-Sipos                   Expires 17 September 2023              [Page 40]
+Sipos                    Expires 2 December 2023               [Page 40]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    The final bundle is encoded as the byte string:
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850c03000058b6810100018201662f2f7372632f818205
-   038181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af6818340a301
-   381e044a4578616d706c6545433220a401022001215820fedaba748882050d1bef8b
-   a992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a4f81c7
-   0e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b09ec1a0
-   ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0275685010100
-   00561fd25f64a2ee528b86b0c2f3785b531e634d6ef31c74ff'
+   632f820018281a000f4240850c03000058ba810100018201662f2f7372632f818205
+   a2000101018181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af681
+   8340a301381e044a4578616d706c6545433220a401022001215820fedaba74888205
+   0d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff475
+   1a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4
+   b09ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef02756
+   8501010000561fd25f64a2ee1152e3e33a3b4ad83d6b368a8949addeff'
 
 A.6.  RSA Keypair COSE_Encrypt
 
@@ -2293,9 +2293,9 @@ A.6.  RSA Keypair COSE_Encrypt
 
 
 
-Sipos                   Expires 17 September 2023              [Page 41]
+Sipos                    Expires 2 December 2023               [Page 41]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [
@@ -2337,11 +2337,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      }
    ]
 
-                          Figure 28: Example Keys
+                          Figure 27: Example Keys
 
-   The external_aad is the encoded data from Figure 11.
-
-
+   The external_aad is the encoded data from Figure 10.
 
 
 
@@ -2349,23 +2347,25 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 42]
+
+
+Sipos                    Expires 2 December 2023               [Page 42]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [
      "Encrypt", / context /
      h'a10103', / protected /
-     h'03880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f73
-   72632f820018281a000f424001010040', / external_aad /
+     h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+   662f2f7372632f820018281a000f424001010040', / external_aad /
    ]
 
-                  Figure 29: Enc_structure CBOR diagnostic
+                  Figure 28: Enc_structure CBOR diagnostic
 
-   The ASB item for this encryption operation is shown in Figure 30 and
+   The ASB item for this encryption operation is shown in Figure 29 and
    corresponds with the updated target block (containing the ciphertext)
-   of Figure 12.
+   of Figure 11.
 
 
 
@@ -2405,9 +2405,9 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 43]
+Sipos                    Expires 2 December 2023               [Page 43]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    [1], / targets /
@@ -2417,7 +2417,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
    [ / parameters /
      [
        5, / AAD-scope /
-       0b011 / has-primary-ctx | has-target-ctx /
+       {0: 0b01, 1: 0b01}, / primary metadata, target metadata /
      ]
    ],
    [
@@ -2439,11 +2439,11 @@ Internet-Draft               DTN BPSec COSE                   March 2023
                  / alg / 1:-41, / RSAES-OAEP w SHA-256 /
                  / kid / 4:'ExampleRSA'
                },
-               h'98123325e3f124321a109a374e8a43a33252f79c67a3ec9e3158f6
-   7a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b60e0eb9c4b479340f72
-   71f14925a32604f9e4b3e944f5a0422ac21745148363bc49e85361ab9344a9b63ea8
-   0a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d6614bfa4623a31
-   1e' / key-wrapped /
+               h'08ae2d939e1d16d0be9f2ff6fc51a7b5c1701359930212f0a3154c
+   acf20d1eadf81896f6cb124457d8ffef207568f1050a21b3ebc5030fab0cdc202d77
+   ea1dece4cbf6730ce28b98e0090d72d28f45209c6f3df086a94a9f91fb44795f152d
+   59f70c38eccd5b7463d3e71a340b16b6a0644cf781f125fce829410d851dda34
+   b3' / key-wrapped /
              ]
            ]
          ]>>
@@ -2451,7 +2451,7 @@ Internet-Draft               DTN BPSec COSE                   March 2023
      ]
    ]
 
-             Figure 30: Abstract Security Block CBOR diagnostic
+             Figure 29: Abstract Security Block CBOR diagnostic
 
    The final bundle is encoded as the byte string:
 
@@ -2461,20 +2461,20 @@ Internet-Draft               DTN BPSec COSE                   March 2023
 
 
 
-Sipos                   Expires 17 September 2023              [Page 44]
+Sipos                    Expires 2 December 2023               [Page 44]
 
-Internet-Draft               DTN BPSec COSE                   March 2023
+Internet-Draft               DTN BPSec COSE                     May 2023
 
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
-   632f820018281a000f4240850c03000058c2810100018201662f2f7372632f818205
-   03818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af6818340a201
-   3828044a4578616d706c65525341588098123325e3f124321a109a374e8a43a33252
-   f79c67a3ec9e3158f67a0664671d444a80b7f6c05fa4f91635e1a372481db3f7b0b6
-   0e0eb9c4b479340f7271f14925a32604f9e4b3e944f5a0422ac21745148363bc49e8
-   5361ab9344a9b63ea80a127f74eda2fb0d992780fba4d48a5bc520609ba6fd5c668d
-   6614bfa4623a311e8501010000561fd25f64a2ee528b86b0c2f3785b531e634d6ef3
-   1c74ff'
+   632f820018281a000f4240850c03000058c6810100018201662f2f7372632f818205
+   a200010101818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af681
+   8340a2013828044a4578616d706c65525341588008ae2d939e1d16d0be9f2ff6fc51
+   a7b5c1701359930212f0a3154cacf20d1eadf81896f6cb124457d8ffef207568f105
+   0a21b3ebc5030fab0cdc202d77ea1dece4cbf6730ce28b98e0090d72d28f45209c6f
+   3df086a94a9f91fb44795f152d59f70c38eccd5b7463d3e71a340b16b6a0644cf781
+   f125fce829410d851dda34b38501010000561fd25f64a2ee1152e3e33a3b4ad83d6b
+   368a8949addeff'
 
 Acknowledgments
 
@@ -2517,4 +2517,4 @@ Author's Address
 
 
 
-Sipos                   Expires 17 September 2023              [Page 45]
+Sipos                    Expires 2 December 2023               [Page 45]
