@@ -1457,11 +1457,11 @@ A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certifi
       </h2>
 <p id="section-1-1">
 The Bundle Protocol Security (BPSec) Specification <span>[<a href="#RFC9172" class="xref">RFC9172</a>]</span> defines structure and encoding for Block Integrity Block (BIB) and Block Confidentiality Block (BCB) types but does not specify any security contexts to be used by either of the security block types.
-The CBOR Object Signing and Encryption (COSE) specification <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.<a href="#section-1-1" class="pilcrow">¶</a></p>
+The CBOR Object Signing and Encryption (COSE) specifications <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span> and <span>[<a href="#RFC9053" class="xref">RFC9053</a>]</span> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">
 This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <a href="#sec-bpsec-context" class="xref">Section 2</a>.
 A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <a href="#sec-COSE-profile" class="xref">Section 3</a>.
-The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <a href="#sec-pkix-env" class="xref">Section 1.2</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <a href="#sec-pkix-env" class="xref">Section 1.2</a> using a certificate profile defined in <a href="#sec-pkix-profile" class="xref">Section 4</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">
 Examples of specific uses are provided in <a href="#sec-examples" class="xref">Appendix A</a> to aid in implementation support of the interoperability algorithms.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <section id="section-1.1">
@@ -1516,7 +1516,7 @@ start = bpsec-cose-asb / external_aad /
 </pre><a href="#section-1.3-4" class="pilcrow">¶</a>
 </div>
 <p id="section-1.3-5">
-From the document <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span> the definitions are taken for <code>MAC_structure</code>, <code>Sig_structure</code>, <code>Enc_structure</code>, and <code>COSE_KeySet</code>.
+From the document <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span> the definitions are taken for <code>MAC_structure</code>, <code>Sig_structure</code>, <code>Enc_structure</code>, and <code>COSE_KeySet</code>.
 From the document <span>[<a href="#RFC9171" class="xref">RFC9171</a>]</span> the definitions are taken for <code>primary-block</code> and <code>extension-block</code>.<a href="#section-1.3-5" class="pilcrow">¶</a></p>
 </section>
 <section id="section-1.4">
@@ -1778,7 +1778,7 @@ For the same reasons that security blocks are restricted from overlapping functi
 <p id="section-2.3-1">
 Although each COSE context result is a COSE message, the types of message allowed depend upon the security block type in which the result is present: only MAC or signature messages are allowed in a BIB and only encryption messages are allowed in a BCB.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <p id="section-2.3-2">
-The code points for Result ID values are identical to the  existing COSE message-marking tags in <span><a href="https://rfc-editor.org/rfc/rfc8152#section-2" class="relref">Section 2</a> of [<a href="#RFC8152" class="xref">RFC8152</a>]</span>.
+The code points for Result ID values are identical to the  existing COSE message-marking tags in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-2" class="relref">Section 2</a> of [<a href="#RFC9052" class="xref">RFC9052</a>]</span>.
 This avoids the need for value-mapping between code points of the two registries.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">
 When embedding COSE messages, the message CBOR structure SHALL be encoded as a byte string used as the result value.
@@ -1830,7 +1830,7 @@ Each integrity result value SHALL consist of the COSE message indicated by <a hr
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Mac</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
               <tr>
@@ -1838,7 +1838,7 @@ Each integrity result value SHALL consist of the COSE message indicated by <a hr
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Mac0</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
               <tr>
@@ -1846,7 +1846,7 @@ Each integrity result value SHALL consist of the COSE message indicated by <a hr
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Sign</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
               <tr>
@@ -1854,7 +1854,7 @@ Each integrity result value SHALL consist of the COSE message indicated by <a hr
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Sign1</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
             </tbody>
@@ -1862,8 +1862,8 @@ Each integrity result value SHALL consist of the COSE message indicated by <a hr
 </div>
 <p id="section-2.3.1-3">
 Each integrity result SHALL use the "detached" payload form with <code>null</code> payload value.
-The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc8152#section-6.3" class="relref">Section 6.3</a> of [<a href="#RFC8152" class="xref">RFC8152</a>]</span>.
-The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc8152#section-4.4" class="relref">Section 4.4</a> of [<a href="#RFC8152" class="xref">RFC8152</a>]</span>.<a href="#section-2.3.1-3" class="pilcrow">¶</a></p>
+The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-6.3" class="relref">Section 6.3</a> of [<a href="#RFC9052" class="xref">RFC9052</a>]</span>.
+The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-4.4" class="relref">Section 4.4</a> of [<a href="#RFC9052" class="xref">RFC9052</a>]</span>.<a href="#section-2.3.1-3" class="pilcrow">¶</a></p>
 <p id="section-2.3.1-4">
 The COSE "protected attributes from the application" used for a signature or MAC result SHALL be the encoded data defined in <a href="#sec-context-AAD" class="xref">Section 2.5.1</a>.
 The COSE payload used for a signature or MAC result SHALL be either the BTSD of the target, if the target is not the primary block, or an empty byte string if the target is the primary block.<a href="#section-2.3.1-4" class="pilcrow">¶</a></p>
@@ -1896,7 +1896,7 @@ Each confidentiality result value SHALL consist of the COSE message indicated by
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Encrypt</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
               <tr>
@@ -1904,7 +1904,7 @@ Each confidentiality result value SHALL consist of the COSE message indicated by
                 <td class="text-left" rowspan="1" colspan="1">encoded <code>COSE_Encrypt0</code>
 </td>
                 <td class="text-left" rowspan="1" colspan="1">
-                  <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>
+                  <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>
                 </td>
               </tr>
             </tbody>
@@ -1916,7 +1916,7 @@ Because COSE encryption with AEAD appends the authentication tag with the cipher
 Security acceptors MUST NOT assume that the size of the plaintext is the same as the size of the ciphertext.<a href="#section-2.3.2-3" class="pilcrow">¶</a></p>
 <p id="section-2.3.2-4">
 Each confidentiality result SHALL use the "detached" payload form with <code>null</code> payload value.
-The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc8152#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC8152" class="xref">RFC8152</a>]</span>.<a href="#section-2.3.2-4" class="pilcrow">¶</a></p>
+The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <span><a href="https://rfc-editor.org/rfc/rfc9052#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC9052" class="xref">RFC9052</a>]</span>.<a href="#section-2.3.2-4" class="pilcrow">¶</a></p>
 <p id="section-2.3.2-5">
 The COSE "protected attributes from the application" used for an encryption result SHALL be the encoded data defined in <a href="#sec-context-AAD" class="xref">Section 2.5.1</a>.
 The COSE payload used for an encryption result SHALL be the BTSD of the target.
@@ -2256,7 +2256,7 @@ When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipi
 When generating a BCB result from an EC keypair, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <a href="#sec-asym-keys" class="xref">Section 3.3</a>).
 When a COSE_Encrypt is used with an EC keypair, the security source SHALL either generate an ephemeral EC keypair or choose a unique PartyU Nonce for each security operation.
-When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <span><a href="https://rfc-editor.org/rfc/rfc8152#section-11.2" class="relref">Section 11.2</a> of [<a href="#RFC8152" class="xref">RFC8152</a>]</span> even though the source is not required to provide any of those parameters.<a href="#section-3.2-6.10" class="pilcrow">¶</a>
+When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <span><a href="https://rfc-editor.org/rfc/rfc9053#section-5.2" class="relref">Section 5.2</a> of [<a href="#RFC9053" class="xref">RFC9053</a>]</span> even though the source is not required to provide any of those parameters.<a href="#section-3.2-6.10" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.2-6.11">RSA Keypair Confidentiality:</dt>
@@ -2276,9 +2276,9 @@ When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL inclu
 <p id="section-3.3-1">
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
 When using asymmetric keyed algorithms, the security source SHALL include a public key container or public key identifier as a recipient header.
-The public key identifier SHALL be either a "kid" of <span>[<a href="#RFC8152" class="xref">RFC8152</a>]</span>, an "x5t" or "x5chain" of <span>[<a href="#I-D.ietf-cose-x509" class="xref">I-D.ietf-cose-x509</a>]</span>, or an equivalent identifier.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+The public key identifier SHALL be either a "kid" of <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>, an "x5t" or "x5chain" of <span>[<a href="#RFC9360" class="xref">RFC9360</a>]</span>, or an equivalent identifier.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">
-When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <span>[<a href="#I-D.ietf-cose-x509" class="xref">I-D.ietf-cose-x509</a>]</span>) in a direct COSE header or an additional header security parameter (see <a href="#sec-ASB-param-additional" class="xref">Section 2.2.1</a>).
+When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <span>[<a href="#RFC9360" class="xref">RFC9360</a>]</span>) in a direct COSE header or an additional header security parameter (see <a href="#sec-ASB-param-additional" class="xref">Section 2.2.1</a>).
 When a BIB result contains an "x5chain", the security source SHOULD NOT also include an "x5t" as the first certificate in the chain is implicitly the applicable end-entity certificate.
 For a BIB, if all potential security acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
 Risks of not including related data are described in <a href="#sec-threat-unident-key" class="xref">Section 6.5</a> and <a href="#sec-threat-notrust-key" class="xref">Section 6.6</a>.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
@@ -2632,10 +2632,6 @@ The value range is unsigned 8-bit integer.<a href="#section-7.2-3" class="pilcro
         <dd>
 <span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC8152">[RFC8152]</dt>
-        <dd>
-<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE)"</span>, <span class="seriesInfo">RFC 8152</span>, <span class="seriesInfo">DOI 10.17487/RFC8152</span>, <time datetime="2017-07" class="refDate">July 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8152">https://www.rfc-editor.org/info/rfc8152</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
@@ -2652,6 +2648,14 @@ The value range is unsigned 8-bit integer.<a href="#section-7.2-3" class="pilcro
         <dd>
 <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8610">https://www.rfc-editor.org/info/rfc8610</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC9052">[RFC9052]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Structures and Process"</span>, <span class="seriesInfo">STD 96</span>, <span class="seriesInfo">RFC 9052</span>, <span class="seriesInfo">DOI 10.17487/RFC9052</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9052">https://www.rfc-editor.org/info/rfc9052</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9053">[RFC9053]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Initial Algorithms"</span>, <span class="seriesInfo">RFC 9053</span>, <span class="seriesInfo">DOI 10.17487/RFC9053</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9053">https://www.rfc-editor.org/info/rfc9053</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9172">[RFC9172]</dt>
         <dd>
 <span class="refAuthor">Birrane, III, E.</span> and <span class="refAuthor">K. McKeever</span>, <span class="refTitle">"Bundle Protocol Security (BPSec)"</span>, <span class="seriesInfo">RFC 9172</span>, <span class="seriesInfo">DOI 10.17487/RFC9172</span>, <time datetime="2022-01" class="refDate">January 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9172">https://www.rfc-editor.org/info/rfc9172</a>&gt;</span>. </dd>
@@ -2660,9 +2664,9 @@ The value range is unsigned 8-bit integer.<a href="#section-7.2-3" class="pilcro
         <dd>
 <span class="refAuthor">Sipos, B.</span>, <span class="refAuthor">Demmer, M.</span>, <span class="refAuthor">Ott, J.</span>, and <span class="refAuthor">S. Perreault</span>, <span class="refTitle">"Delay-Tolerant Networking TCP Convergence-Layer Protocol Version 4"</span>, <span class="seriesInfo">RFC 9174</span>, <span class="seriesInfo">DOI 10.17487/RFC9174</span>, <time datetime="2022-01" class="refDate">January 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9174">https://www.rfc-editor.org/info/rfc9174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.ietf-cose-x509">[I-D.ietf-cose-x509]</dt>
+<dt id="RFC9360">[RFC9360]</dt>
       <dd>
-<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-cose-x509-09</span>, <time datetime="2022-10-13" class="refDate">13 October 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-cose-x509-09">https://datatracker.ietf.org/doc/html/draft-ietf-cose-x509-09</a>&gt;</span>. </dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates"</span>, <span class="seriesInfo">RFC 9360</span>, <span class="seriesInfo">DOI 10.17487/RFC9360</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9360">https://www.rfc-editor.org/info/rfc9360</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
