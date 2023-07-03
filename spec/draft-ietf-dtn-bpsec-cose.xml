@@ -221,7 +221,7 @@ Security acceptors SHALL handle empty header map parameters, specifically the Ad
           </t>
           <t>
 Security acceptors SHALL treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result.
-For single-layer messages (i.e., COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 1) and for other messages the additional headers apply to the final recipients.
+For single-layer messages (i.e., COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
 If the same header label is present in a additional header map and a COSE layer's headers the item in the result header SHALL take precedence (i.e., the additional header items are added only if they are not already present in a layer's header).
           </t>
           <t>
@@ -450,10 +450,12 @@ Generating or processing COSE messages for the COSE context follows the profile 
         <section anchor="sec-context-AAD">
           <name>Generating AAD</name>
           <t>
-The encoding of this AAD is different from AAD of <xref section="4.7.2" target="RFC9173"/> and the front items of IPPT of <xref section="3.7" target="RFC9173"/> due to support for binding AAD to an arbitrary number of blocks.
+The AAD contents and encoding defined in this section are used for both integrity and confidentiality messages.
+The encoding of this AAD is different from AAD of <xref section="4.7.2" target="RFC9173"/> and the front items of IPPT of <xref section="3.7" target="RFC9173"/> due to support for binding AAD to an arbitrary number of blocks in the same bundle.
           </t>
           <t>
-The AAD used for both integrity and confidentiality messages SHALL be the deterministically encoded form of a CBOR sequence containing the following:
+When used as the <tt>external_aad</tt> for COSE operations, the AAD SHALL be encoded in accordance with the core deterministic encoding requirements of <xref section="4.2.1" target="RFC8949"/>.
+The AAD SHALL consist of a CBOR sequence containing the following:
           </t>
           <ol>
             <li>
@@ -601,8 +603,8 @@ When generating a BPSec result, security sources SHALL use only COSE labels with
 When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
         </t>
         <t>
-When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the lower (content) layers.
-When available and not implied by the bundle source, a COSE message SHALL contain a key identifier in the highest (recipient) layer.
+When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the first (content) layers.
+When available and not implied by the bundle source, a COSE message SHALL contain a key identifier in the last (recipient) layer.
 See <xref target="sec-asym-keys"/> for specifics about asymmetric key identifiers.
 When a key identifier is not available, BPSec acceptors SHALL use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
 Using implied keys has an interoperability risk, see <xref target="sec-threat-unident-key"/> for details.
@@ -621,12 +623,12 @@ The set of integrity algorithms needed for interoperability is listed here.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
-Implementations conforming to this specification SHALL support the symmetric keyed and key-encryption algorithms of <xref target="tab-interop"/>.
-Implementations capable of doing so SHOULD support the asymmetric keyed and key-encryption algorithms of <xref target="tab-interop"/>.
+Implementations conforming to this specification SHALL support the symmetric keyed and key-encryption algorithms marked as "required" in <xref target="tab-interop"/>.
+Implementations capable of doing so SHOULD support the asymmetric keyed and key-encryption algorithms marked as "recommended" in <xref target="tab-interop"/>.
         </t>
         <aside>
           <t>
-The layer-1 required list is identical to the <xref target="RFC9173"/> context list.
+The required algorithms are identical to the capability of the <xref target="RFC9173"/> contexts.
           </t>
         </aside>
         <table anchor="tab-interop">
@@ -643,63 +645,63 @@ The layer-1 required list is identical to the <xref target="RFC9173"/> context l
           <tbody>
             <tr>
               <td>Integrity</td>
-              <td>1</td>
+              <td>0</td>
               <td>HMAC 256/256</td>
               <td>5</td>
               <td>Required</td>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>1</td>
+              <td>0</td>
               <td>ES256</td>
               <td>-7</td>
               <td>Recommended</td>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>1</td>
+              <td>0</td>
               <td>EdDSA</td>
               <td>-8</td>
               <td>Recommended</td>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>1</td>
+              <td>0</td>
               <td>PS256</td>
               <td>-37</td>
               <td>Recommended</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
-              <td>1</td>
+              <td>0</td>
               <td>A256GCM</td>
               <td>3</td>
               <td>Required</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
-              <td>2</td>
+              <td>1</td>
               <td>A256KW</td>
               <td>-5</td>
               <td>Required</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
-              <td>2</td>
+              <td>1</td>
               <td>ECDH-ES + A256KW</td>
               <td>-31</td>
               <td>Recommended</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
-              <td>2</td>
+              <td>1</td>
               <td>ECDH-SS + A256KW</td>
               <td>-34</td>
               <td>Recommended</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
-              <td>2</td>
+              <td>1</td>
               <td>RSAES-OAEP w/ SHA-256</td>
               <td>-41</td>
               <td>Recommended</td>
@@ -735,15 +737,15 @@ When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipi
             </dd>
           <dt>EC Keypair Confidentiality:</dt>
           <dd>
-When generating a BCB result from an EC keypair, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
-When a COSE_Encrypt is used with an EC keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE_Encrypt is used with an EC keypair, the security source SHALL either generate an ephemeral EC keypair or choose a unique PartyU Nonce for each security operation.
-When processing a COSE_Encrypt with an EC keypair, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+When generating a BCB result from an EC public key, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
+When a COSE_Encrypt is used with an EC public key, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Encrypt is used with an EC public key, the security source SHALL either generate an ephemeral EC keypair or choose a unique "PartyU Nonce" for each security operation.
+When processing a COSE_Encrypt with an EC public key, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
           <dd>
-When generating a BCB result from an RSA keypair, implementations SHALL use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
-When a COSE_Encrypt is used with an RSA keypair, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
+When generating a BCB result from an RSA public key, implementations SHALL use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
+When a COSE_Encrypt is used with an RSA public key, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
         </dl>
       </section>
@@ -1071,6 +1073,7 @@ The value range is unsigned 8-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8230.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8551.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8949.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9052.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9172.xml"/>
@@ -1722,7 +1725,7 @@ The associated public key is included as a security parameter.
         </t>
         <t>
 This key strength is not supposed to be a secure configuration, only intended to explain the procedure.
-This padding scheme uses a random salt, so the full layer-2 ciphertext output is not deterministic.
+This padding scheme uses a random salt, so the full Layer 1 ciphertext output is not deterministic.
         </t>
         <figure anchor="fig-ex-encrypt-rsa-keys">
           <name>Example Keys</name>
