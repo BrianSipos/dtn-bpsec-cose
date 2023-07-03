@@ -23,4 +23,4 @@
 *** Unused rule status-record-content
 *** Unused rule bundle-status-information
 *** Unused rule status-info-content
-h'A21901BD03190E1B0340'
+["Signature", h'', h'', h'746963', h'746163']
