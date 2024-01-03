@@ -4,8 +4,8 @@
 
 Delay-Tolerant Networking                                       B. Sipos
 Internet-Draft                                                   JHU/APL
-Intended status: Standards Track                             3 July 2023
-Expires: 4 January 2024
+Intended status: Standards Track                          3 January 2024
+Expires: 6 July 2024
 
 
            DTN Bundle Protocol Security (BPSec) COSE Context
@@ -34,11 +34,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 January 2024.
+   This Internet-Draft will expire on 6 July 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 1]
+Sipos                      Expires 6 July 2024                  [Page 1]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 Table of Contents
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 2]
+Sipos                      Expires 6 July 2024                  [Page 2]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
      A.3.  RSA Keypair COSE_Sign1  . . . . . . . . . . . . . . . . .  33
@@ -165,9 +165,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 3]
+Sipos                      Expires 6 July 2024                  [Page 3]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 1.2.  PKIX Environments and CA Policy
@@ -221,9 +221,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 4]
+Sipos                      Expires 6 July 2024                  [Page 4]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 2.  BPSec Security Context
@@ -277,9 +277,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 5]
+Sipos                      Expires 6 July 2024                  [Page 5]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    Canonical Block-Type-Specific Data:  Including the block-type-
@@ -327,15 +327,15 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
    *  The default additional-unprotected is {} (an empty map).
 
-   *  The default AAD-scope is a map which indicates the AAD contains
-      the metadata of the primary, security, and target blocks.
+   *  The default AAD-scope is {0:0b1,-1:0b1,-2:0b1} (a map which
+      indicates the AAD contains the metadata of the primary, security,
+      and target blocks).
 
 
 
-
-Sipos                    Expires 4 January 2024                 [Page 6]
+Sipos                      Expires 6 July 2024                  [Page 6]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 2.2.1.  Additional Header Maps
@@ -389,9 +389,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                 [Page 7]
+Sipos                      Expires 6 July 2024                  [Page 7]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    $bpsec-cose-param /= [3, additional-protected]
@@ -406,14 +406,18 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
    The AAD Scope parameter controls what data is included in the AAD for
    both integrity and confidentiality operations.  The AAD Scope
-   parameter SHALL be encoded as a CBOR map containig keys representing
-   bundle block numbers (as uint items) and values representing a
-   collection of bit flags (as uint items) defined in Table 2.
+   parameter SHALL be encoded as a CBOR map containing keys referencing
+   bundle blocks (as int items) and values representing a collection of
+   bit flags (as uint items) defined in Table 2.
 
-   All AAD Scope keys SHALL correspond with block numbers in the bundle
-   containing the AAD Scope parameter.  Security acceptors SHALL treat
-   any AAD Scope with block numbers not actually present in the
-   containing bundle as invalid.
+   All non-negative AAD Scope keys SHALL correspond with block numbers
+   in the bundle containing the AAD Scope parameter.  Security acceptors
+   SHALL treat any AAD Scope with block numbers not actually present in
+   the containing bundle as invalid.  The AAD Scope key -1 SHALL be
+   interpreted as corresponding to the target block of the security
+   operation when the AAD is generated from the AAD Scope parameter.
+   The AAD Scope key -2 SHALL be interpreted as corresponding to the
+   security block which contains the AAD Scope parameter.
 
         +==============+==============+==========================+
         | Bit Position | Name         | Description              |
@@ -438,25 +442,29 @@ Internet-Draft               DTN BPSec COSE                    July 2023
    bits SHALL only have AAD-metadata set, as the security block BTSD
    does not yet exist.  When the map key identifies the target block the
    bits SHALL only have AAD-metadata set, as the target block BTSD is
+
+
+
+Sipos                      Expires 6 July 2024                  [Page 8]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
+
    already part of the security operation (integrity or
    confidentiality).  All reserved bits SHALL be set to zero (which will
    be elided by CBOR encoding) by security sources.  All reserved bits
    SHALL be ignored by security acceptors.
-
-
-
-Sipos                    Expires 4 January 2024                 [Page 8]
-
-Internet-Draft               DTN BPSec COSE                    July 2023
-
 
    A CDDL representation of this definition is included in Figure 3 for
    reference.
 
    $bpsec-cose-param /= [5, AAD-scope]
    AAD-scope = {
-       *uint => (uint .bits AAD-scope-flags)
+       *blk-id => (uint .bits AAD-scope-flags)
    }
+   blk-id = uint / blk-target / blk-sec
+   blk-target = -1
+   blk-sec = -2
    AAD-scope-flags = &(
        AAD-metadata: 0,
        AAD-btsd: 1,
@@ -490,21 +498,16 @@ Internet-Draft               DTN BPSec COSE                    July 2023
    tagged form SHALL NOT be used.  The Result ID values already provide
    the same information as the COSE tags (using the same code points).
 
+
+
+
+Sipos                      Expires 6 July 2024                  [Page 9]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
+
    These generic requirements are formalized in the CDDL fragment of
    Figure 4.
-
-
-
-
-
-
-
-
-
-Sipos                    Expires 4 January 2024                 [Page 9]
-
-Internet-Draft               DTN BPSec COSE                    July 2023
-
 
    $bpsec-cose-result /= [16, bstr .cbor COSE_Encrypt0]
    $bpsec-cose-result /= [17, bstr .cbor COSE_Mac0]
@@ -554,12 +557,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-
-
-
-Sipos                    Expires 4 January 2024                [Page 10]
+Sipos                      Expires 6 July 2024                 [Page 10]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 2.3.2.  Confidentiality Messages
@@ -613,9 +613,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 11]
+Sipos                      Expires 6 July 2024                 [Page 11]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 2.5.  Canonicalization Algorithms
@@ -639,9 +639,13 @@ Internet-Draft               DTN BPSec COSE                    July 2023
    a CBOR sequence containing the following:
 
    1.  The first item SHALL be the AAD Scope value itself, which is a
-       CBOR map.
+       CBOR map.  Because of deterministic encoding, the negative keys
+       will occur after positive keys.  Be aware that there is no
+       guarantee that this is the same encoded order as the AAD Scope
+       parameter itself.
 
    2.  For each entry of the AAD Scope map, in ascending block number
+       order followed by the negative sentinel values in descending
        order, the next items SHALL be one or both of the following:
 
        1.  If the map value has the AAD-metadata flag set, the next item
@@ -663,16 +667,14 @@ Internet-Draft               DTN BPSec COSE                    July 2023
    3.  The last item SHALL be the Additional Protected header map, which
        is a bstr, and has a default value of the empty bstr.
 
-   A CDDL representation of this data is shown below in Figure 5.
 
 
-
-
-
-Sipos                    Expires 4 January 2024                [Page 12]
+Sipos                      Expires 6 July 2024                 [Page 12]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
+
+   A CDDL representation of this data is shown below in Figure 5.
 
    external_aad = bstr .cborseq AAD-list
 
@@ -723,11 +725,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-
-
-Sipos                    Expires 4 January 2024                [Page 13]
+Sipos                      Expires 6 July 2024                 [Page 13]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 2.6.1.  Node Authentication
@@ -781,9 +781,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 14]
+Sipos                      Expires 6 July 2024                 [Page 14]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    For each end-entity certificate contained in or identified by a COSE
@@ -837,9 +837,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 15]
+Sipos                      Expires 6 July 2024                 [Page 15]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 3.1.  COSE Messages
@@ -893,9 +893,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 16]
+Sipos                      Expires 6 July 2024                 [Page 16]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    +=================+============+============+======+================+
@@ -949,9 +949,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 17]
+Sipos                      Expires 6 July 2024                 [Page 17]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
       keypair, implementations SHALL use a COSE_Sign1 using the private
@@ -1005,9 +1005,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 18]
+Sipos                      Expires 6 July 2024                 [Page 18]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    When BIB result contains a "x5t" identifier, the security source MAY
@@ -1061,9 +1061,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 19]
+Sipos                      Expires 6 July 2024                 [Page 19]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    When PKIX certificates are used by security acceptors and the end-
@@ -1117,9 +1117,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 20]
+Sipos                      Expires 6 July 2024                 [Page 20]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    extension is present, it SHALL contain a key purpose id-kp-
@@ -1173,9 +1173,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 21]
+Sipos                      Expires 6 July 2024                 [Page 21]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    This section records the status of known implementations of the
@@ -1229,9 +1229,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 22]
+Sipos                      Expires 6 July 2024                 [Page 22]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 6.2.  Threat: Untrusted End-Entity Certificate
@@ -1285,9 +1285,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 23]
+Sipos                      Expires 6 July 2024                 [Page 23]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    in BPSec Security Considerations, where a signature is verified to be
@@ -1341,9 +1341,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 24]
+Sipos                      Expires 6 July 2024                 [Page 24]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 7.1.  BPSec Security Context Identifiers
@@ -1397,9 +1397,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 25]
+Sipos                      Expires 6 July 2024                 [Page 25]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [IANA-SMI] IANA, "Structure of Management Information (SMI) Numbers",
@@ -1453,9 +1453,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 26]
+Sipos                      Expires 6 July 2024                 [Page 26]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [RFC8610]  Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
@@ -1509,9 +1509,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 27]
+Sipos                      Expires 6 July 2024                 [Page 27]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
@@ -1565,9 +1565,9 @@ Appendix A.  Examples
 
 
 
-Sipos                    Expires 4 January 2024                [Page 28]
+Sipos                      Expires 6 July 2024                 [Page 28]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
                   Figure 6: Primary block CBOR diagnostic
@@ -1621,9 +1621,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 29]
+Sipos                      Expires 6 July 2024                 [Page 29]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
          Figure 10: Example scope AAD-list CBOR-sequence diagnostic
@@ -1677,9 +1677,9 @@ A.1.  Symmetric Key COSE_Mac0
 
 
 
-Sipos                    Expires 4 January 2024                [Page 30]
+Sipos                      Expires 6 July 2024                 [Page 30]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [
@@ -1733,9 +1733,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 31]
+Sipos                      Expires 6 July 2024                 [Page 31]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 A.2.  EC Keypair COSE_Sign1
@@ -1789,9 +1789,9 @@ A.2.  EC Keypair COSE_Sign1
 
 
 
-Sipos                    Expires 4 January 2024                [Page 32]
+Sipos                      Expires 6 July 2024                 [Page 32]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [1], / targets /
@@ -1845,9 +1845,9 @@ A.3.  RSA Keypair COSE_Sign1
 
 
 
-Sipos                    Expires 4 January 2024                [Page 33]
+Sipos                      Expires 6 July 2024                 [Page 33]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    This key strength is not supposed to be a secure configuration, only
@@ -1901,9 +1901,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 34]
+Sipos                      Expires 6 July 2024                 [Page 34]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [
@@ -1957,9 +1957,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 35]
+Sipos                      Expires 6 July 2024                 [Page 35]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
@@ -2013,9 +2013,9 @@ A.4.  Symmetric KEK COSE_Encrypt
 
 
 
-Sipos                    Expires 4 January 2024                [Page 36]
+Sipos                      Expires 6 July 2024                 [Page 36]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [1], / targets /
@@ -2069,9 +2069,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 37]
+Sipos                      Expires 6 July 2024                 [Page 37]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 A.5.  EC Keypair COSE_Encrypt
@@ -2125,9 +2125,9 @@ A.5.  EC Keypair COSE_Encrypt
 
 
 
-Sipos                    Expires 4 January 2024                [Page 38]
+Sipos                      Expires 6 July 2024                 [Page 38]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    The ASB item for this encryption operation is shown in Figure 26 and
@@ -2181,9 +2181,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 39]
+Sipos                      Expires 6 July 2024                 [Page 39]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [1], / targets /
@@ -2237,9 +2237,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 40]
+Sipos                      Expires 6 July 2024                 [Page 40]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    The final bundle is encoded as the byte string:
@@ -2293,9 +2293,9 @@ A.6.  RSA Keypair COSE_Encrypt
 
 
 
-Sipos                    Expires 4 January 2024                [Page 41]
+Sipos                      Expires 6 July 2024                 [Page 41]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [
@@ -2349,9 +2349,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 42]
+Sipos                      Expires 6 July 2024                 [Page 42]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [
@@ -2405,9 +2405,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 43]
+Sipos                      Expires 6 July 2024                 [Page 43]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [1], / targets /
@@ -2461,9 +2461,9 @@ Internet-Draft               DTN BPSec COSE                    July 2023
 
 
 
-Sipos                    Expires 4 January 2024                [Page 44]
+Sipos                      Expires 6 July 2024                 [Page 44]
 
-Internet-Draft               DTN BPSec COSE                    July 2023
+Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    h'9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f7372
@@ -2517,4 +2517,4 @@ Author's Address
 
 
 
-Sipos                    Expires 4 January 2024                [Page 45]
+Sipos                      Expires 6 July 2024                 [Page 45]

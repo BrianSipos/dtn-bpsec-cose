@@ -1,5 +1,0 @@
-LSbit
-btsd
-clientAuth
-containig
-serverAuth

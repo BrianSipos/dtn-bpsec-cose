@@ -19,7 +19,7 @@ A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certifi
 <meta content="draft-ietf-dtn-bpsec-cose-02" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.12.2
-    Python 3.10.6
+    Python 3.10.12
     weasyprint 54.1
 -->
 <link href="/home/runner/work/dtn-bpsec-cose/dtn-bpsec-cose/spec/draft-ietf-dtn-bpsec-cose.xml" rel="alternate" type="application/rfc+xml">
@@ -1177,11 +1177,11 @@ li > p:last-of-type {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">DTN BPSec COSE</td>
-<td class="right">July 2023</td>
+<td class="right">January 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Sipos</td>
-<td class="center">Expires 4 January 2024</td>
+<td class="center">Expires 6 July 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1194,12 +1194,12 @@ li > p:last-of-type {
 <dd class="internet-draft">draft-ietf-dtn-bpsec-cose-02</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-07-03" class="published">3 July 2023</time>
+<time datetime="2024-01-03" class="published">3 January 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-01-04">4 January 2024</time></dd>
+<dd class="expires"><time datetime="2024-07-06">6 July 2024</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1235,7 +1235,7 @@ A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certifi
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 January 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 July 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1244,7 +1244,7 @@ A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certifi
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2023 IETF Trust and the persons identified as the
+            Copyright (c) 2024 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1646,7 +1646,7 @@ When a parameter is not present and a default value is defined below, the securi
 </li>
           <li class="normal" id="section-2.2-4.2">The default <code>additional-unprotected</code> is <code>{}</code> (an empty map).<a href="#section-2.2-4.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-2.2-4.3">The default <code>AAD-scope</code> is a map which indicates the AAD contains the metadata of the primary, security, and target blocks.<a href="#section-2.2-4.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-2.2-4.3">The default <code>AAD-scope</code> is <code>{0:0b1,-1:0b1,-2:0b1}</code> (a map which indicates the AAD contains the metadata of the primary, security, and target blocks).<a href="#section-2.2-4.3" class="pilcrow">¶</a>
 </li>
         </ul>
 <div id="sec-ASB-param-additional">
@@ -1700,10 +1700,12 @@ additional-unprotected = header_map
           </h4>
 <p id="section-2.2.2-1">
 The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
-The AAD Scope parameter SHALL be encoded as a CBOR map containig keys representing bundle block numbers (as uint items) and values representing a collection of bit flags (as uint items) defined in <a href="#tab-AAD-scope-flags" class="xref">Table 2</a>.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
+The AAD Scope parameter SHALL be encoded as a CBOR map containing keys referencing bundle blocks (as int items) and values representing a collection of bit flags (as uint items) defined in <a href="#tab-AAD-scope-flags" class="xref">Table 2</a>.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
 <p id="section-2.2.2-2">
-All AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
-Security acceptors SHALL treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
+All non-negative AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
+Security acceptors SHALL treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
+The AAD Scope key -1 SHALL be interpreted as corresponding to the target block of the security operation when the AAD is generated from the AAD Scope parameter.
+The AAD Scope key -2 SHALL be interpreted as corresponding to the security block which contains the AAD Scope parameter.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
 <span id="name-aad-scope-flags"></span><div id="tab-AAD-scope-flags">
 <table class="center" id="table-2">
             <caption>
@@ -1750,8 +1752,11 @@ A CDDL representation of this definition is included in <a href="#fig-AAD-scope-
 <pre class="lang-cddl sourcecode">
 $bpsec-cose-param /= [5, AAD-scope]
 AAD-scope = {
-    *uint =&gt; (uint .bits AAD-scope-flags)
+    *blk-id =&gt; (uint .bits AAD-scope-flags)
 }
+blk-id = uint / blk-target / blk-sec
+blk-target = -1
+blk-sec = -2
 AAD-scope-flags = &amp;(
     AAD-metadata: 0,
     AAD-btsd: 1,
@@ -1951,11 +1956,13 @@ When used as the <code>external_aad</code> for COSE operations, the AAD SHALL be
 The AAD SHALL consist of a CBOR sequence containing the following:<a href="#section-2.5.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-2.5.1-3">
             <li id="section-2.5.1-3.1">
-The first item SHALL be the AAD Scope value itself, which is a CBOR map.<a href="#section-2.5.1-3.1" class="pilcrow">¶</a>
+The first item SHALL be the AAD Scope value itself, which is a CBOR map.
+Because of deterministic encoding, the negative keys will occur after positive keys.
+Be aware that there is no guarantee that this is the same encoded order as the AAD Scope parameter itself.<a href="#section-2.5.1-3.1" class="pilcrow">¶</a>
 </li>
             <li id="section-2.5.1-3.2">
               <p id="section-2.5.1-3.2.1">
-For each entry of the AAD Scope map, in ascending block number order, the next items SHALL be one or both of the following:<a href="#section-2.5.1-3.2.1" class="pilcrow">¶</a></p>
+For each entry of the AAD Scope map, in ascending block number order followed by the negative sentinel values in descending order, the next items SHALL be one or both of the following:<a href="#section-2.5.1-3.2.1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-2.5.1-3.2.2">
                 <li id="section-2.5.1-3.2.2.1">
                   <p id="section-2.5.1-3.2.2.1.1">

@@ -22,8 +22,11 @@ additional-unprotected = header_map
 
 $bpsec-cose-param /= [5, AAD-scope]
 AAD-scope = {
-    *uint => (uint .bits AAD-scope-flags)
+    *blk-id => (uint .bits AAD-scope-flags)
 }
+blk-id = uint / blk-target / blk-sec
+blk-target = -1
+blk-sec = -2
 AAD-scope-flags = &(
     AAD-metadata: 0,
     AAD-btsd: 1,
