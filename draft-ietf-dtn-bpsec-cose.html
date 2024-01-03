@@ -2236,7 +2236,7 @@ The following are recommended key and recipient uses within COSE/BPSec:<a href="
           <dt id="section-3.2-6.1">Symmetric Key Integrity:</dt>
           <dd style="margin-left: 1.5em" id="section-3.2-6.2">
 When generating a BIB result from a symmetric key, implementations SHALL use a COSE_Mac0 using the private key directly.
-When a COSE_Mac0 is used with a direct key, the headers SHALL include a key identifier ("kid" header).<a href="#section-3.2-6.2" class="pilcrow">¶</a>
+When a COSE_Mac0 is used with a direct key, the headers SHALL include a key identifier ("kid" header and possibly "kid context" header).<a href="#section-3.2-6.2" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.2-6.3">EC Keypair Integrity:</dt>
@@ -2285,7 +2285,7 @@ When a COSE_Encrypt is used with an RSA public key, the recipient layer SHALL in
 <p id="section-3.3-1">
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
 When using asymmetric keyed algorithms, the security source SHALL include a public key container or public key identifier as a recipient header.
-The public key identifier SHALL be either a "kid" of <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span>, an "x5t" or "x5chain" of <span>[<a href="#RFC9360" class="xref">RFC9360</a>]</span>, or an equivalent identifier.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+The public key identifier SHALL be either an "x5t" or "x5chain" of <span>[<a href="#RFC9360" class="xref">RFC9360</a>]</span>, or "kid" of <span>[<a href="#RFC9052" class="xref">RFC9052</a>]</span> and possibly "kid context" of <span>[<a href="#RFC8613" class="xref">RFC8613</a>]</span>, or an equivalent identifier.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">
 When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <span>[<a href="#RFC9360" class="xref">RFC9360</a>]</span>) in a direct COSE header or an additional header security parameter (see <a href="#sec-ASB-param-additional" class="xref">Section 2.2.1</a>).
 When a BIB result contains an "x5chain", the security source SHOULD NOT also include an "x5t" as the first certificate in the chain is implicitly the applicable end-entity certificate.
@@ -2312,7 +2312,7 @@ The RECOMMENDED priority policy for including PKIX material for BIB results is a
 </li>
             <li id="section-3.3.1-2.3">When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").<a href="#section-3.3.1-2.3" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.3.1-2.4">Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid").<a href="#section-3.3.1-2.4" class="pilcrow">¶</a>
+            <li id="section-3.3.1-2.4">Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").<a href="#section-3.3.1-2.4" class="pilcrow">¶</a>
 </li>
             <li id="section-3.3.1-2.5">The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.<a href="#section-3.3.1-2.5" class="pilcrow">¶</a>
 </li>
@@ -2656,6 +2656,10 @@ The value range is unsigned 8-bit integer.<a href="#section-7.2-3" class="pilcro
 <dt id="RFC8610">[RFC8610]</dt>
         <dd>
 <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8610">https://www.rfc-editor.org/info/rfc8610</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8613">[RFC8613]</dt>
+        <dd>
+<span class="refAuthor">Selander, G.</span>, <span class="refAuthor">Mattsson, J.</span>, <span class="refAuthor">Palombini, F.</span>, and <span class="refAuthor">L. Seitz</span>, <span class="refTitle">"Object Security for Constrained RESTful Environments (OSCORE)"</span>, <span class="seriesInfo">RFC 8613</span>, <span class="seriesInfo">DOI 10.17487/RFC8613</span>, <time datetime="2019-07" class="refDate">July 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8613">https://www.rfc-editor.org/info/rfc8613</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8949">[RFC8949]</dt>
         <dd>

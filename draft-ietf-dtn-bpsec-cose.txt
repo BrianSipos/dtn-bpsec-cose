@@ -114,12 +114,12 @@ Sipos                      Expires 6 July 2024                  [Page 2]
 Internet-Draft               DTN BPSec COSE                 January 2024
 
 
-     A.3.  RSA Keypair COSE_Sign1  . . . . . . . . . . . . . . . . .  33
-     A.4.  Symmetric KEK COSE_Encrypt  . . . . . . . . . . . . . . .  36
-     A.5.  EC Keypair COSE_Encrypt . . . . . . . . . . . . . . . . .  38
-     A.6.  RSA Keypair COSE_Encrypt  . . . . . . . . . . . . . . . .  41
-   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  45
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  45
+     A.3.  RSA Keypair COSE_Sign1  . . . . . . . . . . . . . . . . .  34
+     A.4.  Symmetric KEK COSE_Encrypt  . . . . . . . . . . . . . . .  37
+     A.5.  EC Keypair COSE_Encrypt . . . . . . . . . . . . . . . . .  39
+     A.6.  RSA Keypair COSE_Encrypt  . . . . . . . . . . . . . . . .  42
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  46
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  46
 
 1.  Introduction
 
@@ -933,7 +933,8 @@ Internet-Draft               DTN BPSec COSE                 January 2024
    Symmetric Key Integrity:  When generating a BIB result from a
       symmetric key, implementations SHALL use a COSE_Mac0 using the
       private key directly.  When a COSE_Mac0 is used with a direct key,
-      the headers SHALL include a key identifier ("kid" header).
+      the headers SHALL include a key identifier ("kid" header and
+      possibly "kid context" header).
 
    EC Keypair Integrity:  When generating a BIB result from an EC
       keypair, implementations SHALL use a COSE_Sign1 using the private
@@ -941,7 +942,6 @@ Internet-Draft               DTN BPSec COSE                 January 2024
       headers SHALL include a public key identifier (see Section 3.3).
 
    RSA Keypair Integrity:  When generating a BIB result from an RSA
-
 
 
 
@@ -997,9 +997,9 @@ Internet-Draft               DTN BPSec COSE                 January 2024
    key-wrap, or when a BCB uses a public key for encryption or key-wrap.
    When using asymmetric keyed algorithms, the security source SHALL
    include a public key container or public key identifier as a
-   recipient header.  The public key identifier SHALL be either a "kid"
-   of [RFC9052], an "x5t" or "x5chain" of [RFC9360], or an equivalent
-   identifier.
+   recipient header.  The public key identifier SHALL be either an "x5t"
+   or "x5chain" of [RFC9360], or "kid" of [RFC9052] and possibly "kid
+   context" of [RFC8613], or an equivalent identifier.
 
 
 
@@ -1053,7 +1053,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
        end-entity certificates, a certificate thumbnail (as an "x5t").
 
    4.  Some arbitrary identifier is used to correlate to an end-entity
-       certificate (as a "kid").
+       certificate (as a "kid" with an optional "kid context").
 
    5.  The BIB Security Source is used to imply an associated end-entity
        certificate which identifies that Node ID.
@@ -1464,6 +1464,11 @@ Internet-Draft               DTN BPSec COSE                 January 2024
               JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
               June 2019, <https://www.rfc-editor.org/info/rfc8610>.
 
+   [RFC8613]  Selander, G., Mattsson, J., Palombini, F., and L. Seitz,
+              "Object Security for Constrained RESTful Environments
+              (OSCORE)", RFC 8613, DOI 10.17487/RFC8613, July 2019,
+              <https://www.rfc-editor.org/info/rfc8613>.
+
    [RFC8949]  Bormann, C. and P. Hoffman, "Concise Binary Object
               Representation (CBOR)", STD 94, RFC 8949,
               DOI 10.17487/RFC8949, December 2020,
@@ -1502,17 +1507,17 @@ Internet-Draft               DTN BPSec COSE                 January 2024
               <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/
               NIST.SP.800-57pt1r5.pdf>.
 
-   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
-              Text on Security Considerations", BCP 72, RFC 3552,
-              DOI 10.17487/RFC3552, July 2003,
-              <https://www.rfc-editor.org/info/rfc3552>.
-
 
 
 Sipos                      Expires 6 July 2024                 [Page 27]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
+
+   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
+              Text on Security Considerations", BCP 72, RFC 3552,
+              DOI 10.17487/RFC3552, July 2003,
+              <https://www.rfc-editor.org/info/rfc3552>.
 
    [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
               Code: The Implementation Status Section", BCP 205,
@@ -1552,6 +1557,19 @@ Appendix A.  Examples
    primary block of Figure 6 with a security target block of Figure 7.
    All example figures use the extended diagnostic notation [RFC8610].
 
+
+
+
+
+
+
+
+
+Sipos                      Expires 6 July 2024                 [Page 28]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
+
    [
      7, / BP version /
      0, / flags /
@@ -1562,13 +1580,6 @@ Appendix A.  Examples
      [0, 40], / timestamp /
      1000000 / lifetime /
    ]
-
-
-
-Sipos                      Expires 6 July 2024                 [Page 28]
-
-Internet-Draft               DTN BPSec COSE                 January 2024
-
 
                   Figure 6: Primary block CBOR diagnostic
 
@@ -1606,6 +1617,15 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
            Figure 9: Block confidentiality block CBOR diagnostic
 
+
+
+
+
+Sipos                      Expires 6 July 2024                 [Page 29]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
+
    All of the examples also operate within a security block containing
    the AAD Scope parameter with only has-primary-ctx and has-target-ctx
    flags set.  This results in a consistent AAD-list as shown in
@@ -1617,14 +1637,6 @@ Internet-Draft               DTN BPSec COSE                 January 2024
      [ 0, 40 ], 1000000 ], / primary-block /
    1, 1, 0, / target block-metadata /
    '' / additional-protected /
-
-
-
-
-Sipos                      Expires 6 July 2024                 [Page 29]
-
-Internet-Draft               DTN BPSec COSE                 January 2024
-
 
          Figure 10: Example scope AAD-list CBOR-sequence diagnostic
 
@@ -1655,19 +1667,7 @@ A.1.  Symmetric Key COSE_Mac0
    This is an example of a MAC with recipient having a 256-bit symmetric
    key identified by a "kid".
 
-   [
-     {
-       / kty / 1: 4, / symmetric /
-       / kid / 2: 'ExampleMAC',
-       / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
-   99dbae4ce45c'
-     }
-   ]
 
-                          Figure 12: Symmetric Key
-
-   The external_aad is the encoded data from Figure 10.  The payload is
-   the encoded target BTSD from Figure 7.
 
 
 
@@ -1683,6 +1683,20 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
    [
+     {
+       / kty / 1: 4, / symmetric /
+       / kid / 2: 'ExampleMAC',
+       / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+   99dbae4ce45c'
+     }
+   ]
+
+                          Figure 12: Symmetric Key
+
+   The external_aad is the encoded data from Figure 10.  The payload is
+   the encoded target BTSD from Figure 7.
+
+   [
      "MAC0", / context /
      h'a10105', / protected /
      h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
@@ -1691,6 +1705,38 @@ Internet-Draft               DTN BPSec COSE                 January 2024
    ]
 
                   Figure 13: MAC_structure CBOR diagnostic
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sipos                      Expires 6 July 2024                 [Page 31]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
 
    [1], / targets /
    -1, / security context TBD-COSE /
@@ -1731,18 +1777,22 @@ Internet-Draft               DTN BPSec COSE                 January 2024
    6fcdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d5935ae6485010100
    00466568656c6c6fff'
 
-
-
-Sipos                      Expires 6 July 2024                 [Page 31]
-
-Internet-Draft               DTN BPSec COSE                 January 2024
-
-
 A.2.  EC Keypair COSE_Sign1
 
    This is an example of a signature with a recipient having a P-256
    curve EC keypair identified by a "kid".  The associated public key is
    included as a security parameter.
+
+
+
+
+
+
+
+Sipos                      Expires 6 July 2024                 [Page 32]
+
+Internet-Draft               DTN BPSec COSE                 January 2024
+
 
    [
      { / signing private key /
@@ -1789,7 +1839,13 @@ A.2.  EC Keypair COSE_Sign1
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 32]
+
+
+
+
+
+
+Sipos                      Expires 6 July 2024                 [Page 33]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -1845,7 +1901,7 @@ A.3.  RSA Keypair COSE_Sign1
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 33]
+Sipos                      Expires 6 July 2024                 [Page 34]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -1901,7 +1957,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 34]
+Sipos                      Expires 6 July 2024                 [Page 35]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -1957,7 +2013,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 35]
+Sipos                      Expires 6 July 2024                 [Page 36]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2013,7 +2069,7 @@ A.4.  Symmetric KEK COSE_Encrypt
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 36]
+Sipos                      Expires 6 July 2024                 [Page 37]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2069,7 +2125,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 37]
+Sipos                      Expires 6 July 2024                 [Page 38]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2125,7 +2181,7 @@ A.5.  EC Keypair COSE_Encrypt
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 38]
+Sipos                      Expires 6 July 2024                 [Page 39]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2181,7 +2237,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 39]
+Sipos                      Expires 6 July 2024                 [Page 40]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2237,7 +2293,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 40]
+Sipos                      Expires 6 July 2024                 [Page 41]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2293,7 +2349,7 @@ A.6.  RSA Keypair COSE_Encrypt
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 41]
+Sipos                      Expires 6 July 2024                 [Page 42]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2349,7 +2405,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 42]
+Sipos                      Expires 6 July 2024                 [Page 43]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2405,7 +2461,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 43]
+Sipos                      Expires 6 July 2024                 [Page 44]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2461,7 +2517,7 @@ Internet-Draft               DTN BPSec COSE                 January 2024
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 44]
+Sipos                      Expires 6 July 2024                 [Page 45]
 
 Internet-Draft               DTN BPSec COSE                 January 2024
 
@@ -2517,4 +2573,4 @@ Author's Address
 
 
 
-Sipos                      Expires 6 July 2024                 [Page 45]
+Sipos                      Expires 6 July 2024                 [Page 46]
