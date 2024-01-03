@@ -196,7 +196,7 @@ When a parameter is not present and a default value is defined below, the securi
         <ul>
           <li>The default <tt>additional-protected</tt> is <tt>''</tt> (an empty byte string).</li>
           <li>The default <tt>additional-unprotected</tt> is <tt>{}</tt> (an empty map).</li>
-          <li>The default <tt>AAD-scope</tt> is a map which indicates the AAD contains the metadata of the primary, security, and target blocks.</li>
+          <li>The default <tt>AAD-scope</tt> is <tt>{0:0b1,-1:0b1,-2:0b1}</tt> (a map which indicates the AAD contains the metadata of the primary, security, and target blocks).</li>
         </ul>
         <section anchor="sec-ASB-param-additional">
           <name>Additional Header Maps</name>
@@ -243,7 +243,7 @@ additional-unprotected = header_map
           <name>AAD Scope</name>
           <t>
 The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
-The AAD Scope parameter SHALL be encoded as a CBOR map containing keys representing bundle block numbers (as int items) and values representing a collection of bit flags (as uint items) defined in <xref target="tab-AAD-scope-flags"/>.
+The AAD Scope parameter SHALL be encoded as a CBOR map containing keys referencing bundle blocks (as int items) and values representing a collection of bit flags (as uint items) defined in <xref target="tab-AAD-scope-flags"/>.
           </t>
           <t>
 All non-negative AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
