@@ -722,7 +722,7 @@ The following are recommended key and recipient uses within COSE/BPSec:
           <dt>Symmetric Key Integrity:</dt>
           <dd>
 When generating a BIB result from a symmetric key, implementations SHALL use a COSE_Mac0 using the private key directly.
-When a COSE_Mac0 is used with a direct key, the headers SHALL include a key identifier ("kid" header).
+When a COSE_Mac0 is used with a direct key, the headers SHALL include a key identifier ("kid" header and possibly "kid context" header).
           </dd>
           <dt>EC Keypair Integrity:</dt>
           <dd>
@@ -761,7 +761,7 @@ When a COSE_Encrypt is used with an RSA public key, the recipient layer SHALL in
         <t>
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
 When using asymmetric keyed algorithms, the security source SHALL include a public key container or public key identifier as a recipient header.
-The public key identifier SHALL be either a "kid" of <xref target="RFC9052"/>, an "x5t" or "x5chain" of <xref target="RFC9360"/>, or an equivalent identifier.
+The public key identifier SHALL be either an "x5t" or "x5chain" of <xref target="RFC9360"/>, or "kid" of <xref target="RFC9052"/> and possibly "kid context" of <xref target="RFC8613"/>, or an equivalent identifier.
         </t>
         <t>
 When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <xref target="RFC9360"/>) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
@@ -787,7 +787,7 @@ The RECOMMENDED priority policy for including PKIX material for BIB results is a
             <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain").</li>
             <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain").</li>
             <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").</li>
-            <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid").</li>
+            <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").</li>
             <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
           </ol>
           <t>
@@ -1080,6 +1080,7 @@ The value range is unsigned 8-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8230.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8551.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8610.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8613.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8949.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9052.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
