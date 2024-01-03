@@ -1,5 +1,5 @@
-AAD
 aad
+AAD
 acceptor
 acceptor's
 acceptors
@@ -12,16 +12,18 @@ BCP
 BIB
 BPSec
 bstr
+btsd
 BTSD
 bundleSecurity
 Canonicalization
 CAs
 CBOR
-CDDL
 cddl
+CDDL
 CEK
 ciphersuite
 ciphertext
+clientAuth
 CoAP
 CoRE
 COSE
@@ -36,8 +38,8 @@ decrypting
 deterministically
 digitalSignature
 DOI
-DTN
 dtn
+DTN
 ECDH
 EdDSA
 encodings
@@ -59,6 +61,7 @@ keypairs
 KeySet
 kp
 LLC
+LSbit
 NIST
 nonRepudiation
 OAEP
@@ -66,8 +69,8 @@ OCSP
 PartyU
 pkcs
 PKI
-PKIX
 pkix
+PKIX
 plaintext
 PSK
 PSS
@@ -75,6 +78,7 @@ RESTful
 RKF
 RSA
 RSAES
+serverAuth
 SHA
 Sig
 SMI

@@ -57,24 +57,20 @@ class TestExample(BaseTest):
             uhdr={
                 headers.KID: private_key.kid,
             },
-            payload=content_plaintext,
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
         msg_obj.key = private_key
 
         # COSE internal structure
-        cose_struct_enc = msg_obj._sig_structure
+        cose_struct_enc = msg_obj._create_sig_structure(detached_payload=content_plaintext)
         cose_struct_dec = cbor2.loads(cose_struct_enc)
         print('COSE Structure: {}'.format(encode_diagnostic(cose_struct_dec)))
         print('Encoded: {}'.format(encode_diagnostic(cose_struct_enc)))
 
         # Encoded message
-        message_enc = msg_obj.encode(tag=False)
+        message_enc = msg_obj.encode(detached_payload=content_plaintext, tag=False)
         message_dec = cbor2.loads(message_enc)
-        # Detach the payload
-        content_signature = message_dec[2]
-        message_dec[2] = None
         self._print_message(message_dec, recipient_idx=4)
         message_enc = cbor2.dumps(message_dec)
 
@@ -95,13 +91,11 @@ class TestExample(BaseTest):
         print('BPSec block: {}'.format(encode_diagnostic(bpsec_dec)))
         print('Encoded: {}'.format(encode_diagnostic(bpsec_enc)))
 
-        # Change from detached payload
-        message_dec[2] = content_signature
         decode_obj = Sign1Message.from_cose_obj(message_dec, allow_unknown_attributes=False)
         decode_obj.external_aad = ext_aad_enc
         decode_obj.key = private_key
 
-        verify_valid = decode_obj.verify_signature()
+        verify_valid = decode_obj.verify_signature(detached_payload=content_plaintext)
         self.assertTrue(verify_valid)
         print('Loopback verify:', verify_valid)
 
