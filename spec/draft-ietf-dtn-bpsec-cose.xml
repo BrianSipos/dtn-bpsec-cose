@@ -196,7 +196,7 @@ When a parameter is not present and a default value is defined below, the securi
         <ul>
           <li>The default <tt>additional-protected</tt> is <tt>''</tt> (an empty byte string).</li>
           <li>The default <tt>additional-unprotected</tt> is <tt>{}</tt> (an empty map).</li>
-          <li>The default <tt>AAD-scope</tt> is a map which indicates the AAD contains the metadata of the primary, security, and target blocks.</li>
+          <li>The default <tt>AAD-scope</tt> is <tt>{0:0b1,-1:0b1,-2:0b1}</tt> (a map which indicates the AAD contains the metadata of the primary, security, and target blocks).</li>
         </ul>
         <section anchor="sec-ASB-param-additional">
           <name>Additional Header Maps</name>
@@ -243,11 +243,13 @@ additional-unprotected = header_map
           <name>AAD Scope</name>
           <t>
 The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
-The AAD Scope parameter SHALL be encoded as a CBOR map containig keys representing bundle block numbers (as uint items) and values representing a collection of bit flags (as uint items) defined in <xref target="tab-AAD-scope-flags"/>.
+The AAD Scope parameter SHALL be encoded as a CBOR map containing keys referencing bundle blocks (as int items) and values representing a collection of bit flags (as uint items) defined in <xref target="tab-AAD-scope-flags"/>.
           </t>
           <t>
-All AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
+All non-negative AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
 Security acceptors SHALL treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
+The AAD Scope key -1 SHALL be interpreted as corresponding to the target block of the security operation when the AAD is generated from the AAD Scope parameter.
+The AAD Scope key -2 SHALL be interpreted as corresponding to the security block which contains the AAD Scope parameter.
           </t>
           <table anchor="tab-AAD-scope-flags">
             <name>AAD Scope Flags</name>
@@ -287,8 +289,11 @@ A CDDL representation of this definition is included in <xref target="fig-AAD-sc
             <sourcecode type="cddl">
 $bpsec-cose-param /= [5, AAD-scope]
 AAD-scope = {
-    *uint => (uint .bits AAD-scope-flags)
+    *blk-id => (uint .bits AAD-scope-flags)
 }
+blk-id = uint / blk-target / blk-sec
+blk-target = -1
+blk-sec = -2
 AAD-scope-flags = &amp;(
     AAD-metadata: 0,
     AAD-btsd: 1,
@@ -460,10 +465,12 @@ The AAD SHALL consist of a CBOR sequence containing the following:
           <ol>
             <li>
 The first item SHALL be the AAD Scope value itself, which is a CBOR map.
+Because of deterministic encoding, the negative keys will occur after positive keys.
+Be aware that there is no guarantee that this is the same encoded order as the AAD Scope parameter itself. 
             </li>
             <li>
               <t>
-For each entry of the AAD Scope map, in ascending block number order, the next items SHALL be one or both of the following:
+For each entry of the AAD Scope map, in ascending block number order followed by the negative sentinel values in descending order, the next items SHALL be one or both of the following:
               </t>
               <ol>
                 <li>
