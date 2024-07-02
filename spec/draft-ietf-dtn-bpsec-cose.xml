@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-03" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-04" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="BPSec COSE">
       DTN Bundle Protocol Security (BPSec) COSE Context
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-03"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-04"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
       <address>
@@ -556,8 +556,8 @@ Generating a result which is likely to be discarded is wasteful of bundle size a
             <name>Certificate Identification</name>
             <t>
 Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with multiple certificates, and any or all of those certificates MAY be present within an "x5bag" in an Additional Protected parameter (see <xref target="sec-ASB-param-additional"/>).
-When present, a security acceptor SHALL use an "x5chain" or "x5t" to identify an end-entity certificate to use for result processing.
-Security acceptors SHALL NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient (see <xref target="sec-asym-keys"/>).
+When present, a security verifier or acceptor SHALL use an "x5chain" or "x5t" to identify an end-entity certificate to use for result processing.
+Security verifiers and acceptors SHALL NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient (see <xref target="sec-asym-keys"/>).
             </t>
           </section>
           <section anchor="sec-context-auth-valid-cert">
@@ -695,6 +695,27 @@ The required algorithms are identical to the capability of the <xref target="RFC
             <tr>
               <td>Confidentiality</td>
               <td>1</td>
+              <td>direct</td>
+              <td>-6</td>
+              <td>Recommended with caveats</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>ECDH-ES + HKDF-256</td>
+              <td>-25</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>ECDH-SS + HKDF-256</td>
+              <td>-27</td>
+              <td>Recommended</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
               <td>ECDH-ES + A256KW</td>
               <td>-31</td>
               <td>Recommended</td>
@@ -737,16 +758,17 @@ When a COSE signature is generated with an RSA keypair, the signature uses a PSS
           </dd>
           <dt>Symmetric Key Confidentiality:</dt>
           <dd>
-When generating a BCB result from an symmetric key, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
-When generating a BCB result from a symmetric key, implementations SHOULD NOT use COSE_Encrypt0 or COSE_Encrypt with direct CEK.
-Doing so risks key overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
-When a COSE_Encrypt is used with an overall key-encryption key (KEK), the recipient layer SHALL include a key identifier for the KEK.
+When generating a BCB result from a symmetric key-encryption key (KEK), implementations SHOULD use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
+When a COSE_Encrypt is used with an overall KEK, the recipient layer SHALL include a key identifier for the KEK.
+When generating a BCB result from a symmetric CEK, implementations SHOULD use COSE_Encrypt0 or COSE_Encrypt with direct CEK.
+Session CEKs MUST be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
             </dd>
           <dt>EC Keypair Confidentiality:</dt>
           <dd>
 When generating a BCB result from an EC public key, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an EC public key, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE_Encrypt is used with an EC public key, the security source SHALL either generate an ephemeral EC keypair or choose a unique "PartyU Nonce" for each security operation.
+When a COSE_Encrypt is used with an EC public key, the security source SHALL either generate an ephemeral EC keypair or choose a unique HKDF "salt" for each security operation.
+When a COSE_Encrypt is used with an EC public key and a single recipient, the direct HKDF algorithms (code -25 and -27) are RECOMMENDED over the key wrapped algorithms (code -31 and -34) to reduce message size.
 When processing a COSE_Encrypt with an EC public key, the security acceptor SHALL process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
@@ -755,6 +777,9 @@ When generating a BCB result from an RSA public key, implementations SHALL use a
 When a COSE_Encrypt is used with an RSA public key, the recipient layer SHALL include a public key identifier (see <xref target="sec-asym-keys"/>).
             </dd>
         </dl>
+        <t>
+Implementations conforming to this specification SHALL support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" identifier.
+        </t>
       </section>
       <section anchor="sec-asym-keys">
         <name>Asymmetric Key Types and Identifiers</name>
