@@ -120,7 +120,7 @@ Both types of security block can use the same parameters, defined in <xref targe
         <sourcecode type="cddl">
 ; Specialize the ASB for this context
 bpsec-cose-asb = bpsec-context-use&lt;
-  -1, ; Context ID TBD-COSE
+  -1, ; Context ID TBA-COSE
   $bpsec-cose-param,
   $bpsec-cose-result
 &gt;
@@ -255,7 +255,7 @@ The AAD Scope key -2 SHALL be interpreted as corresponding to the security block
             <name>AAD Scope Flags</name>
             <thead>
               <tr>
-                <th>Bit Position (from LSbit)</th>
+                <th><t>Bit Position</t><t>(from LSbit)</t></th>
                 <th>Name</th>
                 <th>Description</th>
               </tr>
@@ -739,7 +739,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
         <t>
 The following are recommended key and recipient uses within COSE/BPSec:
         </t>
-        <dl newline="false" spacing="normal">
+        <dl newline="true">
           <dt>Symmetric Key Integrity:</dt>
           <dd>
 When generating a BIB result from a symmetric key, implementations SHALL use a COSE_Mac0 using the private key directly.
@@ -758,11 +758,15 @@ When a COSE signature is generated with an RSA keypair, the signature uses a PSS
           </dd>
           <dt>Symmetric Key Confidentiality:</dt>
           <dd>
+            <t>
 When generating a BCB result from a symmetric key-encryption key (KEK), implementations SHOULD use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
 When a COSE_Encrypt is used with an overall KEK, the recipient layer SHALL include a key identifier for the KEK.
+            </t>
+            <t>
 When generating a BCB result from a symmetric CEK, implementations SHOULD use COSE_Encrypt0 or COSE_Encrypt with direct CEK.
 Session CEKs MUST be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
-            </dd>
+            </t>
+          </dd>
           <dt>EC Keypair Confidentiality:</dt>
           <dd>
 When generating a BCB result from an EC public key, implementations SHALL use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
@@ -1015,7 +1019,7 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the followin
           </thead>
           <tbody>
             <tr>
-              <td>TBD-COSE</td>
+              <td>TBA-COSE</td>
               <td>COSE</td>
               <td>[This specification]</td>
             </tr>
@@ -1038,7 +1042,7 @@ The value range is unsigned 8-bit integer.
           <name>BPSec COSE AAD Scope Flags</name>
           <thead>
             <tr>
-              <th>Bit Position (from LSbit)</th>
+              <th><t>Bit Position</t><t>(from LSbit)</t></th>
               <th>Name</th>
               <th>Reference</th>
             </tr>
@@ -1294,7 +1298,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1378,7 +1382,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1487,7 +1491,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1579,7 +1583,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1690,7 +1694,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1824,7 +1828,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBD-COSE /
+-1, / security context TBA-COSE /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
