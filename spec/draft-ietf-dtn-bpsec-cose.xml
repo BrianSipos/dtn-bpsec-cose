@@ -72,7 +72,7 @@ This specification gives requirements about how to use PKIX certificates issued 
         </t>
         <t>
 To support the PKIX uses defined in this document, the CA(s) issuing certificates for BP nodes are aware of the end use of the certificate, have a mechanism for verifying ownership of a Node ID, and are issuing certificates directly for that Node ID.
-BPSec security acceptors authenticate the Node ID of security sources when verifying integrity (see <xref target="sec-context-auth"/>) using a public key provided by a PKIX certificate (see <xref target="sec-context-auth"/>) following the certificate profile of <xref target="sec-pkix-profile"/>.
+BPSec security verifiers and acceptors authenticate the Node ID of security sources when verifying integrity (see <xref target="sec-context-auth"/>) using a public key provided by a PKIX certificate (see <xref target="sec-context-auth"/>) following the certificate profile of <xref target="sec-pkix-profile"/>.
         </t>
       </section>
       <section>
@@ -195,7 +195,7 @@ When a parameter is not present and a default value is defined below, the securi
         </t>
         <ul>
           <li>The default <tt>additional-protected</tt> is <tt>''</tt> (an empty byte string).</li>
-          <li>The default <tt>additional-unprotected</tt> is <tt>{}</tt> (an empty map).</li>
+          <li>The default <tt>additional-unprotected</tt> is <tt>''</tt> (an empty byte string).</li>
           <li>The default <tt>AAD-scope</tt> is <tt>{0:0b1,-1:0b1,-2:0b1}</tt> (a map which indicates the AAD contains the metadata of the primary, security, and target blocks).</li>
         </ul>
         <section anchor="sec-ASB-param-additional">
@@ -208,19 +208,19 @@ The expected use of additional header map is to contain a certificate (chain) or
           </t>
           <t>
 Following the same pattern as COSE, when both additional header maps are present in a single security block they SHALL not contain any duplicated labels.
-Security acceptors SHALL treat a pair of additional header maps containing duplicated labels as invalid.
+Security verifiers and acceptors SHALL treat a pair of additional header maps containing duplicated labels as invalid.
           </t>
           <t>
 No more than one of each Additional Protected and Additional Unprotected parameter SHALL be present in a single security block.
-Security acceptors SHALL treat a security block with multiple instances of either additional header type as invalid.
+Security verifiers and acceptors SHALL treat a security block with multiple instances of either additional header type as invalid.
 There is no well-defined behavior for a security acceptor to handle multiple Additional Protected parameters.
           </t>
           <t>
 Security sources SHOULD NOT include an additional header parameter which represents an empty map.
-Security acceptors SHALL handle empty header map parameters, specifically the Additional Protected parameter because it is part of the <tt>external_aad</tt>.
+Security verifiers and acceptors SHALL handle empty header map parameters, specifically the Additional Protected parameter because it is part of the <tt>external_aad</tt>.
           </t>
           <t>
-Security acceptors SHALL treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result.
+Security verifiers and acceptors SHALL treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result.
 For single-layer messages (i.e., COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
 If the same header label is present in a additional header map and a COSE layer's headers the item in the result header SHALL take precedence (i.e., the additional header items are added only if they are not already present in a layer's header).
           </t>
@@ -235,7 +235,7 @@ $bpsec-cose-param /= [3, additional-protected]
 additional-protected = empty_or_serialized_map
 
 $bpsec-cose-param /= [4, additional-unprotected]
-additional-unprotected = header_map
+additional-unprotected = empty_or_serialized_map
             </sourcecode>
           </figure>
         </section>
@@ -247,7 +247,7 @@ The AAD Scope parameter SHALL be encoded as a CBOR map containing keys referenci
           </t>
           <t>
 All non-negative AAD Scope keys SHALL correspond with block numbers in the bundle containing the AAD Scope parameter.
-Security acceptors SHALL treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
+Security verifiers and acceptors SHALL treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
 The AAD Scope key -1 SHALL be interpreted as corresponding to the target block of the security operation when the AAD is generated from the AAD Scope parameter.
 The AAD Scope key -2 SHALL be interpreted as corresponding to the security block which contains the AAD Scope parameter.
           </t>
@@ -279,7 +279,7 @@ When the map key identifies the primary block (block number zero) the bits SHALL
 When the map key identifies the containing security block the bits SHALL only have <tt>AAD-metadata</tt> set, as the security block BTSD does not yet exist.
 When the map key identifies the target block the bits SHALL only have <tt>AAD-metadata</tt> set, as the target block BTSD is already part of the security operation (integrity or confidentiality).
 All reserved bits SHALL be set to zero (which will be elided by CBOR encoding) by security sources.
-All reserved bits SHALL be ignored by security acceptors.
+All reserved bits SHALL be ignored by security verifiers and acceptors.
           </t>
           <t>
 A CDDL representation of this definition is included in <xref target="fig-AAD-scope-cddl"/> for reference.
@@ -428,7 +428,7 @@ Each confidentiality result value SHALL consist of the COSE message indicated by
           <t>
 Only algorithms which support Authenticated Encryption with Authenticated Data (AEAD) SHALL be usable in the first (content) layer of a confidentiality result.
 Because COSE encryption with AEAD appends the authentication tag with the ciphertext, the size of the BTSD will grow after an encryption operation.
-Security acceptors MUST NOT assume that the size of the plaintext is the same as the size of the ciphertext.
+Security verifiers and acceptors MUST NOT assume that the size of the plaintext is the same as the size of the ciphertext.
           </t>
           <t>
 Each confidentiality result SHALL use the "detached" payload form with <tt>null</tt> payload value.
@@ -601,13 +601,13 @@ A tailored policy on a more controlled network could relax the requirement on No
       <name>COSE Profile</name>
       <t>
 This section contains requirements which apply to the use of COSE within the BPSec security context defined in this document.
-Other variations of COSE within BPSec can be used but are not expected to be interoperable or usable by all security acceptors.
+Other variations of COSE within BPSec can be used but are not expected to be interoperable or usable by all security verifiers and acceptors.
       </t>
       <section anchor="sec-COSE-messages">
         <name>COSE Messages</name>
         <t>
 When generating a BPSec result, security sources SHALL use only COSE labels with a uint value.
-When processing a BPSec result, security acceptors MAY handle COSE labels with with a tstr value.
+When processing a BPSec result, security verifiers and acceptors MAY handle COSE labels with with a tstr value.
         </t>
         <t>
 When used in a BPSec result, each COSE message SHALL contain an explicit algorithm identifier in the first (content) layers.
@@ -791,17 +791,17 @@ The public key identifier SHALL be either an "x5t" or "x5chain" of <xref target=
         <t>
 When BIB result contains a "x5t" identifier, the security source MAY include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <xref target="RFC9360"/>) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
 When a BIB result contains an "x5chain", the security source SHOULD NOT also include an "x5t" as the first certificate in the chain is implicitly the applicable end-entity certificate.
-For a BIB, if all potential security acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
+For a BIB, if all potential security verifiers and acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
 Risks of not including related data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
         </t>
         <t>
 When present, public keys and certificates SHOULD be included as additional header parameters rather than within result COSE messages.
 This provides size efficiency when multiple security results are present because they will all be from the same security source and likely share the same public key material.
-Security acceptors SHALL still process public keys or certificates present in a result message or recipient as applying to that individual COSE level.
+Security verifiers and acceptors SHALL still process public keys or certificates present in a result message or recipient as applying to that individual COSE level.
         </t>
         <t>
-Security acceptors SHALL aggregate all COSE_Key objects from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
-Because each context contains a single set of security parameters which apply to all results in the same context, security acceptors SHALL treat all public keys as being related to the security source itself and potentially applying to every result.
+Security verifiers and acceptors SHALL aggregate all COSE_Key objects from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
+Because each context contains a single set of security parameters which apply to all results in the same context, security verifiers and acceptors SHALL treat all public keys as being related to the security source itself and potentially applying to every result.
         </t>
         <section anchor="sec-asym-keys-policy-rec">
           <name>Policy Recommendations</name>
@@ -816,7 +816,7 @@ The RECOMMENDED priority policy for including PKIX material for BIB results is a
             <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
           </ol>
           <t>
-When PKIX certificates are used by security acceptors and the end-entity certificate is not explicitly trusted (i.e. pinned), the security acceptor SHALL perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
+When PKIX certificates are used by security verifiers and acceptors and the end-entity certificate is not explicitly trusted (i.e. pinned), the security acceptor SHALL perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
 Leaving out part of the certification chain can cause the security acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
           </t>
           <t>
@@ -835,10 +835,10 @@ All end-entity certificates used for BPSec SHALL conform to <xref target="RFC528
       </t>
       <t>
 This profile requires Version 3 certificates due to the extensions used by this profile.
-Security acceptors SHALL reject as invalid Version 1 and Version 2 end-entity certificates.
+Security verifiers and acceptors SHALL reject as invalid Version 1 and Version 2 end-entity certificates.
       </t>
       <t>
-Security acceptors SHALL accept certificates that contain an empty Subject field or contain a Subject without a Common Name.
+Security verifiers and acceptors SHALL accept certificates that contain an empty Subject field or contain a Subject without a Common Name.
 Identity information in end-entity certificates SHALL be contained in the Subject Alternative Name extension in accordance with <xref section="4.2.1.6" target="RFC5280"/>.
       </t>
       <t>
@@ -847,7 +847,7 @@ The identifier type NODE-ID is defined in <xref section="4.4.1" target="RFC9174"
       </t>
       <t>
 All end-entity and CA certificates used for BPSec SHOULD contain both a Subject Key Identifier extension in accordance with <xref section="4.2.1.2" target="RFC5280"/> and an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
-Security acceptors SHOULD NOT rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
+Security verifiers and acceptors SHOULD NOT rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
 Including key identifiers simplifies the work of an entity needing to assemble a certification chain.
       </t>
       <t>
@@ -863,7 +863,7 @@ See <xref target="sec-pkix-multiple-certs"/> for discussion of key use policies 
       </t>
       <t>
 A BPSec end-entity certificate MAY contain an Online Certificate Status Protocol (OCSP) URI within an Authority Information Access extension in accordance with <xref section="4.2.2.1" target="RFC5280"/>.
-Security acceptors are not expected to have continuous internet connectivity sufficient to perform OCSP verification.
+Security verifiers and acceptors are not expected to have continuous internet connectivity sufficient to perform OCSP verification.
       </t>
       <section anchor="sec-pkix-multiple-certs">
         <name>Multiple-Certificate Uses</name>
@@ -934,7 +934,7 @@ If an agent mistakenly allows the use of non-AEAD encryption when decrypting and
         <t>
 The profile in <xref target="sec-context-auth"/> uses end-entity certificates chained up to a trusted root CA.
 A security source can include a certificate set which does not contain the full chain, possibly excluding intermediate or root CAs.
-In an environment where security acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs, but this has a risk of an acceptor not actually having one of the needed CAs.
+In an environment where security verifiers and acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs, but this has a risk of an acceptor not actually having one of the needed CAs.
         </t>
       </section>
       <section>
@@ -973,7 +973,7 @@ This can cause the security acceptor to not be able to properly verify a valid s
         <t>
 The profile in <xref target="sec-interop-alg"/> allows the use of PKIX which typically involves end-entity certificates chained up to a trusted root CA.
 A BIB can reference or contain end-entity certificates not previously known to a security acceptor but the acceptor can still trust the certificate by verifying it up to a trusted CA.
-In an environment where security acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs in a proper chain within the security parameters, but this has a risk of an acceptor not actually having one of the needed CAs.
+In an environment where security verifiers and acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs in a proper chain within the security parameters, but this has a risk of an acceptor not actually having one of the needed CAs.
         </t>
         <t>
 Because the security parameters are not included as AAD, there is still the possibility that an active attacker removes or alters certification chain data in the parameters.
