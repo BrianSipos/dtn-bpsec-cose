@@ -120,7 +120,7 @@ Both types of security block can use the same parameters, defined in <xref targe
         <sourcecode type="cddl">
 ; Specialize the ASB for this context
 bpsec-cose-asb = bpsec-context-use&lt;
-  -1, ; Context ID TBA-COSE
+  3, ; Context ID COSE
   $bpsec-cose-param,
   $bpsec-cose-result
 &gt;
@@ -1019,7 +1019,7 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the followin
           </thead>
           <tbody>
             <tr>
-              <td>TBA-COSE</td>
+              <td>3</td>
               <td>COSE</td>
               <td>[This specification]</td>
             </tr>
@@ -1298,7 +1298,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1382,7 +1382,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1491,7 +1491,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1583,7 +1583,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1694,7 +1694,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1828,7 +1828,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /

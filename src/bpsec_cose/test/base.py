@@ -53,9 +53,14 @@ class BaseTest(unittest.TestCase):
         ]
 
     def _get_asb_item(self, result):
+        ''' Get the ASB CBOR-item for a CBOR-item result.
+
+        :param result: The single result item for target block number 1.
+        :return: The ASB as a CBOR item.
+        '''
         return SecurityBlockData(
             targets=[1],
-            context_id=0,  # TBD
+            context_id=3,  # COSE
             security_source=EndpointId('dtn://src/').encode_item(),
             parameters=[
                 [5, self._get_aad_scope()],
