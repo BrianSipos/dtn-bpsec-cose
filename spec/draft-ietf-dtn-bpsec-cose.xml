@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-04" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-05" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="BPSec COSE">
       DTN Bundle Protocol Security (BPSec) COSE Context
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-04"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-05"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
       <address>
@@ -110,7 +110,7 @@ This document specifies a single security context for use in both BPSec integrit
 This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable parameters and COSE messages which can be present.
       </t>
       <t>
-The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
+The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bundle"/>.
       </t>
       <t>
 Both types of security block can use the same parameters, defined in <xref target="sec-ASB-parameters"/>, to carry public key-related information and each type of security block allows specific COSE message results, defined in <xref target="sec-ASB-results"/>.
@@ -120,7 +120,7 @@ Both types of security block can use the same parameters, defined in <xref targe
         <sourcecode type="cddl">
 ; Specialize the ASB for this context
 bpsec-cose-asb = bpsec-context-use&lt;
-  -1, ; Context ID TBA-COSE
+  3, ; Context ID COSE
   $bpsec-cose-param,
   $bpsec-cose-result
 &gt;
@@ -1003,10 +1003,10 @@ Because this use of COSE leaves the specific algorithms chosen for BIB and BCB u
       <t>
 Registration procedures referred to in this section are defined in <xref target="RFC8126"/>.
       </t>
-      <section anchor="sec-iana-bpsec-ctx">
-        <name>BPSec Security Context Identifiers</name>
+      <section anchor="sec-iana-bundle">
+        <name>Bundle Protocol</name>
         <t>
-Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the following entry has been added to the "BPSec Security Context Identifiers" sub-registry.
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the following entry has been added to the "BPSec Security Context Identifiers" registry.
         </t>
         <table>
           <name>BPSec Security Context Identifiers</name>
@@ -1019,17 +1019,14 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the followin
           </thead>
           <tbody>
             <tr>
-              <td>TBA-COSE</td>
+              <td>3</td>
               <td>COSE</td>
               <td>[This specification]</td>
             </tr>
           </tbody>
         </table>
-      </section>
-      <section>
-        <name>BPSec COSE AAD Scope Flags</name>
         <t>
-Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags" on the "Bundle Protocol" registry page.
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags".
 <xref target="tab-iana-aad-scope"/> shows the initial values for this registry.
         </t>
         <t>
@@ -1298,7 +1295,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1382,7 +1379,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1491,7 +1488,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1583,7 +1580,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1694,7 +1691,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
@@ -1828,7 +1825,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
--1, / security context TBA-COSE /
+3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
 [ / parameters /
