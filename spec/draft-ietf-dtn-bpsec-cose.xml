@@ -110,7 +110,7 @@ This document specifies a single security context for use in both BPSec integrit
 This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable parameters and COSE messages which can be present.
       </t>
       <t>
-The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bpsec-ctx"/>.
+The COSE security context SHALL have the Security Context ID specified in <xref target="sec-iana-bundle"/>.
       </t>
       <t>
 Both types of security block can use the same parameters, defined in <xref target="sec-ASB-parameters"/>, to carry public key-related information and each type of security block allows specific COSE message results, defined in <xref target="sec-ASB-results"/>.
@@ -1003,10 +1003,10 @@ Because this use of COSE leaves the specific algorithms chosen for BIB and BCB u
       <t>
 Registration procedures referred to in this section are defined in <xref target="RFC8126"/>.
       </t>
-      <section anchor="sec-iana-bpsec-ctx">
-        <name>BPSec Security Context Identifiers</name>
+      <section anchor="sec-iana-bundle">
+        <name>Bundle Protocol</name>
         <t>
-Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the following entry has been added to the "BPSec Security Context Identifiers" sub-registry.
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the following entry has been added to the "BPSec Security Context Identifiers" registry.
         </t>
         <table>
           <name>BPSec Security Context Identifiers</name>
@@ -1025,11 +1025,8 @@ Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the followin
             </tr>
           </tbody>
         </table>
-      </section>
-      <section>
-        <name>BPSec COSE AAD Scope Flags</name>
         <t>
-Within the "Bundle Protocol" registry <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags" on the "Bundle Protocol" registry page.
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags".
 <xref target="tab-iana-aad-scope"/> shows the initial values for this registry.
         </t>
         <t>
