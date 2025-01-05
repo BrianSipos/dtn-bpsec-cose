@@ -78,20 +78,43 @@ if(NOT CBORVERIFY)
     message(WARNING "No `diag2pretty.rb` found")
 else()
     set(CBORERRORS_TXT "cborerrors.txt")
-    add_custom_command(
-        OUTPUT "${CBORERRORS_TXT}"
-        DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
-        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}" 1>&2 || true
-    )
     add_custom_target(
         cborerrors ALL
-        DEPENDS "${CBORERRORS_TXT}"
+        BYPRODUCTS "${CBORERRORS_TXT}"
+        DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
+        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' "${CBORVERIFY}" 2>"${CBORERRORS_TXT}" 1>&2
+        COMMENT "Generating ${CBORERRORS_TXT}"
     )
     install(
         FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORERRORS_TXT}"
         TYPE DOC
     )
 endif()
+
+# Process each CBOR hex-encoded fragment independently for well-formedness
+find_program(XXD_EXEC xxd)
+if(NOT XXD_EXEC)
+    message(WARNING "No `xxd` found")
+endif()
+find_program(CBOR2DIAG cbor2diag.rb)
+if(NOT CBOR2DIAG)
+    message(WARNING "No `cbor2diag.rb` found")
+endif()
+if(XXD_EXEC AND CBOR2DIAG)
+    set(CBORHEXERRORS_TXT "cborhexerrors.txt")
+    add_custom_target(
+        cborhexerrors ALL
+        BYPRODUCTS "${CBORHEXERRORS_TXT}"
+        DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}"
+        COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cborhex"]' bash -c '${XXD_EXEC} -r -p | ${CBOR2DIAG} -e' 2>"${CBORHEXERRORS_TXT}" 1>&2
+        COMMENT "Generating ${CBORHEXERRORS_TXT}"
+    )
+    install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORHEXERRORS_TXT}"
+        TYPE DOC
+    )
+endif()
+
 
 # Process all CDDL concatenated together
 set(EXTRACTED_CDDL "extracted.cddl")
@@ -132,14 +155,12 @@ if(NOT CDDLTOOL)
     message(WARNING "No `cddl` found")
 else()
     set(CDDLERRORS_TXT "cddlerrors.txt")
-    add_custom_command(
-        OUTPUT "${CDDLERRORS_TXT}"
-        DEPENDS "${COMBINED_CDDL}"
-        COMMAND ${CDDLTOOL} "${COMBINED_CDDL}" generate 2>"${CDDLERRORS_TXT}" 1>&2 || true
-    )
     add_custom_target(
         cddlerrors ALL
-        DEPENDS "${CDDLERRORS_TXT}"
+        BYPRODUCTS "${CDDLERRORS_TXT}"
+        DEPENDS "${COMBINED_CDDL}"
+        COMMAND ${CDDLTOOL} compile-cddl --cddl "${COMBINED_CDDL}" 2>"${CDDLERRORS_TXT}" 1>&2
+        COMMENT "Generating ${CDDLERRORS_TXT}"
     )
     install(
         FILES "${CMAKE_CURRENT_BINARY_DIR}/${CDDLERRORS_TXT}"
@@ -153,18 +174,16 @@ else()
     else()
         set(CBORVALIDERRORS_TXT "cborvaliderrors.txt")
         set(CHECK_CBOR "${CMAKE_CURRENT_SOURCE_DIR}/check_cbor.sh")
-        add_custom_command(
-            OUTPUT "${CBORVALIDERRORS_TXT}"
+        add_custom_target(
+            cborvaliderrors ALL
+            BYPRODUCTS "${CBORVALIDERRORS_TXT}"
             DEPENDS "${DRAFT_NAME_XML}" "${SPLIT_ARTWORK}" "${CHECK_CBOR}" "${COMBINED_CDDL}"
-            COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' "${CHECK_CBOR}" "${COMBINED_CDDL}" 2>"${CBORVALIDERRORS_TXT}" 1>&2 || true
+            COMMAND ${PYTHON} "${SPLIT_ARTWORK}" "${DRAFT_NAME_XML}" '//sourcecode[@type="cbor"]' "${CHECK_CBOR}" "${COMBINED_CDDL}" 2>"${CBORVALIDERRORS_TXT}" 1>&2
+            COMMENT "Generating ${CBORVALIDERRORS_TXT}"
         )
-#        add_custom_target(
-#            cborvalid ALL
-#            DEPENDS "${CBORVALIDERRORS_TXT}"
-#        )
-#        install(
-#            FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORVALIDERRORS_TXT}"
-#            TYPE DOC
-#        )
+        install(
+            FILES "${CMAKE_CURRENT_BINARY_DIR}/${CBORVALIDERRORS_TXT}"
+            TYPE DOC
+        )
     endif()
 endif()

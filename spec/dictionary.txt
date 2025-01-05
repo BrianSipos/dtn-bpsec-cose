@@ -21,6 +21,7 @@ CBOR
 cddl
 CDDL
 CEK
+CEKs
 ciphersuite
 ciphertext
 clientAuth
@@ -45,6 +46,7 @@ EdDSA
 encodings
 endian
 GCM
+HKDF
 HMAC
 IANA
 IESG
@@ -92,5 +94,7 @@ unencoded
 Untrusted
 URI
 UTF
+verifier
+verifiers
 Wireshark
 XPath
