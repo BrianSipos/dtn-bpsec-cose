@@ -9,6 +9,7 @@ Prerequisites to building can be installed on Ubuntu with:
 ```
 sudo apt-get install -y cmake python3 python3-pip python3-setuptools python3-wheel ruby xmlstarlet aspell cargo
 pip3 install xml2rfc
+sudo gem install cbor-diag
 sudo cargo install --root /usr/local cddl
 ```
 
