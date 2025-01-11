@@ -1593,7 +1593,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
            / alg / 1:3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4:'ExampleCEK'
+          / kid / 4:'ExampleCEK',
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null / payload detached /
