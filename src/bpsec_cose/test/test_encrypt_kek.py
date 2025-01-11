@@ -68,12 +68,12 @@ class TestExample(BaseTest):
                         headers.KID: kek.kid,
                     },
                     payload=cek.k,
+                    key=kek,
                 ),
             ],
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
-        msg_obj.recipients[0].key = kek
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
@@ -125,4 +125,4 @@ class TestExample(BaseTest):
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
-        print('Total bundle: {}'.format(encode_diagnostic(bundle)))
+        self._print_bundle(bundle)

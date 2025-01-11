@@ -147,4 +147,4 @@ class TestExample(BaseTest):
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
-        print('Total bundle: {}'.format(encode_diagnostic(bundle)))
+        self._print_bundle(bundle)

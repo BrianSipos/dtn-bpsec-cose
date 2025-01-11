@@ -2,6 +2,7 @@
 '''
 import unittest
 import cbor2
+import textwrap
 from bpsec_cose.bp import EndpointId
 from bpsec_cose.bpsec import SecurityBlockData
 from bpsec_cose.util import decode_protected, encode_diagnostic
@@ -107,3 +108,6 @@ class BaseTest(unittest.TestCase):
         if recipient_idx and recipient_idx in item:
             for (ix, rcpt) in enumerate(item[recipient_idx]):
                 self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
+
+    def _print_bundle(self, bundle):
+        print('Total bundle size {}:\n{}'.format(len(bundle), textwrap.fill(bundle.hex(), 68)))

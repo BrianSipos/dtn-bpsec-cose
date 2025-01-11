@@ -1242,7 +1242,7 @@ The only differences between these examples which use EC or RSA keypairs and a u
 Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
-Because each of the encryption examples use the same CEK within the same AAD, the target ciphertext is also identical.
+Because each of the COSE_Encrypt examples use the same CEK within the same AAD, the target ciphertext is also identical.
 The target block after application of the encryption is shown in <xref target="fig-ex-encrypt-target-final"/>.
       </t>
       <figure anchor="fig-ex-encrypt-target-final">
@@ -1325,7 +1325,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 144 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1410,7 +1410,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 176 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1521,7 +1521,7 @@ e6830bdf18017ac3903d418a779be32bc927315fe57ca7da5bad4d95241a
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 241 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1532,6 +1532,98 @@ b98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98162dd5325ac06d
 0bd52ed33e082d0b683d67644de88216cc291ee24aaa84d712dae1e6830bdf18017a
 c3903d418a779be32bc927315fe57ca7da5bad4d95241a4c8501010000466568656c
 6c6fff
+        </sourcecode>
+      </section>
+      <section>
+        <name>Symmetric CEK COSE_Encrypt0</name>
+        <t>
+This is an example of an encryption with an explicit CEK identified by a "kid".
+The keys used are shown in <xref target="fig-ex-encrypt0-symm-keys"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt0-symm-keys">
+          <name>Example Key</name>
+          <sourcecode type="cbor">
+[
+  {
+    / kty / 1: 4, / symmetric /
+    / kid / 2: 'ExampleCEK',
+    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
+99dbae4ce45c'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt0-symm-struct">
+          <name><tt>Enc_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Encrypt0", / context /
+  h'a10103', / protected /
+  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
+662f2f7372632f820018281a000f424001010040' / external_aad /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt0-symm-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt0-target-final"/>.
+This ciphertext is different than the common one in <xref target="fig-ex-encrypt-target-final"/> because of the different context string in <xref target="fig-ex-encrypt0-symm-struct"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt0-symm-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[1], / targets /
+3, / security context /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
+  [
+    5, / AAD-scope /
+    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      16, / COSE_Encrypt0 tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1:3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / kid / 4:'ExampleCEK'
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null / payload detached /
+      ]&gt;&gt;
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt0-target-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  1, / type code: payload /
+  1, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'1fd25f64a2ee75a86f4dfe2690a09b79f97e0572fa2b' / ciphertext /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 140 byte string in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
+2f820018281a000f4240850c030000583c810103018201662f2f7372632f818205a2
+000101018181821058218343a10103a2044a4578616d706c6543454b054c6f3093eb
+a5d85143c3dc484af68501010000561fd25f64a2ee75a86f4dfe2690a09b79f97e05
+72fa2bff
         </sourcecode>
       </section>
       <section>
@@ -1619,7 +1711,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 189 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1738,7 +1830,7 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 266 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1867,7 +1959,7 @@ b3' / key-wrapped /
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following byte string in base-16:
+The final bundle is encoded as the following 278 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263

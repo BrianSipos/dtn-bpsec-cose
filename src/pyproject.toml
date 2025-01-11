@@ -44,6 +44,11 @@ flake8 = [
   "flake8_formatter_junit_xml",
 ]
 
+[tool.pytest.ini_options]
+testpaths="bpsec_cose/test"
+log_cli="True"
+log_cli_level="info"
+
 [tool.pylint.MAIN]
 load-plugins="pylint_junit"
 suggestion-mode="no"

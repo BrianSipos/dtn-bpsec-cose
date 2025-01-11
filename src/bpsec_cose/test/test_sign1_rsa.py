@@ -100,4 +100,4 @@ class TestExample(BaseTest):
         print('Loopback verify:', verify_valid)
 
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
-        print('Total bundle: {}'.format(encode_diagnostic(bundle)))
+        self._print_bundle(bundle)
