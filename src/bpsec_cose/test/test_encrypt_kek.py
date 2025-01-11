@@ -18,6 +18,7 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
             optional_params={
                 keyparam.KpKid: b'ExampleKEK',
+                keyparam.KpAlg: algorithms.A256KW,
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
             }
         )
@@ -27,6 +28,7 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
             }
         )
@@ -68,12 +70,12 @@ class TestExample(BaseTest):
                         headers.KID: kek.kid,
                     },
                     payload=cek.k,
+                    key=kek,
                 ),
             ],
             # Non-encoded parameters
             external_aad=ext_aad_enc,
         )
-        msg_obj.recipients[0].key = kek
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
@@ -125,4 +127,4 @@ class TestExample(BaseTest):
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
-        print('Total bundle: {}'.format(encode_diagnostic(bundle)))
+        self._print_bundle(bundle)

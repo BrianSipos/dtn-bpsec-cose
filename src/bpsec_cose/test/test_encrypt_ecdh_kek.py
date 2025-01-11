@@ -21,6 +21,7 @@ class TestExample(BaseTest):
             d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
             optional_params={
                 keyparam.KpKid: b'ExampleEC2',
+                keyparam.KpAlg: algorithms.EcdhEsA256KW,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         )
@@ -30,6 +31,7 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
             }
         )
@@ -147,4 +149,4 @@ class TestExample(BaseTest):
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
-        print('Total bundle: {}'.format(encode_diagnostic(bundle)))
+        self._print_bundle(bundle)
