@@ -17,6 +17,7 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleKey',
+                keyparam.KpAlg: algorithms.HMAC256,
                 keyparam.KpKeyOps: [keyops.MacCreateOp, keyops.MacVerifyOp],
             }
         )

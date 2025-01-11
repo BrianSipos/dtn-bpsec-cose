@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc [
+ <!ENTITY nbsp    "&#160;">
+ <!ENTITY zwsp   "&#8203;">
+ <!ENTITY nbhy   "&#8209;">
+ <!ENTITY wj     "&#8288;">
+]>
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-05" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
   <front>
     <title abbrev="BPSec COSE">
@@ -888,31 +894,6 @@ Effectively this means that a BP node uses separate certificates for transport (
         </t>
       </section>
     </section>
-    <section removeInRFC="true">
-      <name>Implementation Status</name>
-      <t>
-[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/>, <xref target="github-dtn-bpsec-cose"/>, <xref target="github-dtn-demo-agent"/>, and <xref target="github-dtn-wireshark"/>.]
-      </t>
-      <t>
-This section records the status of known implementations of the
-protocol defined by this specification at the time of posting of
-this Internet-Draft, and is based on a proposal described in
-<xref target="RFC7942"/>.
-The description of implementations in this section is
-intended to assist the IETF in its decision processes in progressing
-drafts to RFCs. Please note that the listing of any individual
-implementation here does not imply endorsement by the IETF.
-Furthermore, no effort has been spent to verify the information
-presented here that was supplied by IETF contributors. This is not
-intended as, and must not be construed to be, a catalog of available
-implementations or their features. Readers are advised to note that
-other implementations can exist.
-      </t>
-      <t>
-An example implementation of COSE over BPSec blocks has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a possible source of interoperability testing.
-This example implementation only handles CBOR encoding/decoding and cryptographic functions, it does not construct actual BIB or BCB and does not integrate with a BP Agent.
-      </t>
-    </section>
     <section anchor="sec-security">
       <name>Security Considerations</name>
       <t>
@@ -1148,11 +1129,11 @@ The value range is unsigned 8-bit integer.
             <date/>
           </front>
         </reference>
-        <reference anchor="github-dtn-wireshark" target="https://github.com/BrianSipos/dtn-demo-agent/">
+        <reference anchor="gitlab-wireshark" target="https://gitlab.com/wireshark/wireshark">
           <front>
-            <title>Wireshark Plugin Dissectors for DTN</title>
-            <author fullname="Brian Sipos" initials="B." surname="Sipos">
-              <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
+            <title>Wireshark repository</title>
+            <author>
+              <organization>Wireshark Foundation</organization>
             </author>
             <date/>
           </front>
@@ -1269,6 +1250,8 @@ This is an example of a MAC with recipient having a 256-bit symmetric key identi
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleMAC',
+    / alg / 3: 5, / HMAC 256//256 /
+    / ops / 4: [9, 10], / MAC create, MAC verify /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -1310,10 +1293,10 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       17, / COSE_Mac0 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:5 / HMAC 256//256 /
+           / alg / 1: 5 / HMAC 256//256 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4:'ExampleMAC'
+          / kid / 4: 'ExampleMAC'
         },
         null, / payload detached /
         h'5cf66fcdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d59
@@ -1348,6 +1331,8 @@ The associated public key is included as a security parameter.
   { / signing private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
+    / alg / 3: -7, / ES256 /
+    / ops / 4: [1, 2], / sign, verify /
     / crv / -1: 1, / P-256 /
     / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
 e4fe0a1787a8',
@@ -1394,10 +1379,10 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:-7 / ES256 /
+           / alg / 1: -7 / ES256 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4:'ExampleEC2'
+          / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
         h'5552647e6fa90156b908a84eddd2f631ed7005147afa1437d792fa5508
@@ -1438,6 +1423,8 @@ This signature uses a random salt, so the full signature output is not determini
   { / signing private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
+    / alg / 3: -37, / PS256 /
+    / ops / 4: [1, 2], / sign, verify /
     / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
 31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
 20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
@@ -1503,10 +1490,10 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:-37 / PS256 /
+           / alg / 1: -37 / PS256 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4:'ExampleRSA'
+          / kid / 4: 'ExampleRSA'
         },
         null, / payload detached /
         h'38aab98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98
@@ -1538,7 +1525,7 @@ c3903d418a779be32bc927315fe57ca7da5bad4d95241a4c8501010000466568656c
         <name>Symmetric CEK COSE_Encrypt0</name>
         <t>
 This is an example of an encryption with an explicit CEK identified by a "kid".
-The keys used are shown in <xref target="fig-ex-encrypt0-symm-keys"/>.
+The key used is shown in <xref target="fig-ex-encrypt0-symm-keys"/>, which includes a Base&nbsp;IV parameter in order to reduce the total size of the COSE message using a Partial&nbsp;IV.
         </t>
         <figure anchor="fig-ex-encrypt0-symm-keys">
           <name>Example Key</name>
@@ -1547,6 +1534,9 @@ The keys used are shown in <xref target="fig-ex-encrypt0-symm-keys"/>.
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleCEK',
+    / alg / 3: 3, / A256GCM /
+    / ops / 4: [3, 4], / encrypt, decrypt /
+    / base IV / 5: h'6f3093eba5d85143c3dc0000',
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -1590,11 +1580,11 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
       16, / COSE_Encrypt0 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:3 / A256GCM /
+           / alg / 1: 3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4:'ExampleCEK',
-          / iv / 5: h'6f3093eba5d85143c3dc484a'
+          / kid / 4: 'ExampleCEK',
+          / partial iv / 6: h'484a'
         },
         null / payload detached /
       ]&gt;&gt;
@@ -1616,14 +1606,13 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 140 byte string in base-16:
+The final bundle is encoded as the following 129 byte string in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850c030000583c810103018201662f2f7372632f818205a2
-000101018181821058218343a10103a2044a4578616d706c6543454b054c6f3093eb
-a5d85143c3dc484af68501010000561fd25f64a2ee75a86f4dfe2690a09b79f97e05
-72fa2bff
+2f820018281a000f4240850c0300005831810103018201662f2f7372632f818205a2
+0001010181818210578343a10103a2044a4578616d706c6543454b0642484af68501
+010000561fd25f64a2ee75a86f4dfe2690a09b79f97e0572fa2bff
         </sourcecode>
       </section>
       <section>
@@ -1639,12 +1628,16 @@ The keys used are shown in <xref target="fig-ex-encrypt-symm-keys"/>.
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleKEK',
+    / alg / 3: -5, / A256KW /
+    / ops / 4: [5, 6], / wrap, unwrap /
     / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
 ae38ad7a972e'
   },
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleCEK',
+    / alg / 3: 3, / A256GCM /
+    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -1687,7 +1680,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
       96, / COSE_Encrypt tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:3 / A256GCM /
+           / alg / 1: 3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
@@ -1697,8 +1690,8 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           [ / recipient /
             h'', / protected /
             { / unprotected /
-              / alg / 1:-5, / A256KW /
-              / kid / 4:'ExampleKEK'
+              / alg / 1: -5, / A256KW /
+              / kid / 4: 'ExampleKEK'
             },
             h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d4
 03a6331159e3d691a708e9984d' / key-wrapped /
@@ -1745,6 +1738,8 @@ ca57d1df6bcc',
   { / recipient private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
+    / alg / 3: -31, / ECDH-ES + A256KW /
+    / ops / 4: [7], / derive key /
     / crv / -1: 1, / P-256 /
     / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
 e4fe0a1787a8',
@@ -1756,6 +1751,8 @@ e4fe0a1787a8',
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleCEK',
+    / alg / 3: 3, / A256GCM /
+    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -1798,7 +1795,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
       96, / COSE_Encrypt tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:3 / A256GCM /
+           / alg / 1: 3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
@@ -1808,14 +1805,14 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           [ / recipient /
             h'', / protected /
             { / unprotected /
-              / alg / 1:-31, / ECDH-ES + A256KW /
-              / kid / 4:'ExampleEC2',
-              / ephemeral key / -1:{
-                1:2,
-                -1:1,
-                -2:h'fedaba748882050d1bef8ba992911898f554450952070ae
+              / alg / 1: -31, / ECDH-ES + A256KW /
+              / kid / 4: 'ExampleEC2',
+              / ephemeral key / -1: {
+                1: 2,
+                -1: 1,
+                -2: h'fedaba748882050d1bef8ba992911898f554450952070ae
 b4788ca57d1df6bcc',
-                -3:h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f4
+                -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f4
 93c1c9c0670f28d62'
               }
             },
@@ -1860,6 +1857,8 @@ This padding scheme uses a random salt, so the full Layer 1 ciphertext output is
   { / recipient private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
+    / alg / 3: -41, / RSAES-OAEP w SHA-256 /
+    / ops / 4: [1, 2], / sign, verify /
     / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
 31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
 20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
@@ -1890,6 +1889,8 @@ f4f92865ca3'
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleCEK',
+    / alg / 3: 3, / A256GCM /
+    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -1932,7 +1933,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
       96, / COSE_Encrypt tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1:3 / A256GCM /
+           / alg / 1: 3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
@@ -1942,8 +1943,8 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           [ / recipient /
             h'', / protected /
             { / unprotected /
-              / alg / 1:-41, / RSAES-OAEP w SHA-256 /
-              / kid / 4:'ExampleRSA'
+              / alg / 1: -41, / RSAES-OAEP w SHA-256 /
+              / kid / 4: 'ExampleRSA'
             },
             h'08ae2d939e1d16d0be9f2ff6fc51a7b5c1701359930212f0a3154c
 acf20d1eadf81896f6cb124457d8ffef207568f1050a21b3ebc5030fab0cdc202d77
@@ -1978,6 +1979,38 @@ f086a94a9f91fb44795f152d59f70c38eccd5b7463d3e71a340b16b6a0644cf781f1
       <name>Acknowledgments</name>
       <t>
 The interoperability minimum algorithms and parameters are based on those available in <xref target="RFC9173"/>.
+      </t>
+    </section>
+    <section removeInRFC="true" numbered="false">
+      <name>Implementation Status</name>
+      <t>
+[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/>, <xref target="github-dtn-bpsec-cose"/>, <xref target="github-dtn-demo-agent"/>, and <xref target="gitlab-wireshark"/>.]
+      </t>
+      <t>
+This section records the status of known implementations of the
+protocol defined by this specification at the time of posting of
+this Internet-Draft, and is based on a proposal described in
+<xref target="RFC7942"/>.
+The description of implementations in this section is
+intended to assist the IETF in its decision processes in progressing
+drafts to RFCs. Please note that the listing of any individual
+implementation here does not imply endorsement by the IETF.
+Furthermore, no effort has been spent to verify the information
+presented here that was supplied by IETF contributors. This is not
+intended as, and must not be construed to be, a catalog of available
+implementations or their features. Readers are advised to note that
+other implementations can exist.
+      </t>
+      <t>
+A limited implementation of this COSE Context has been added to the <xref target="github-dtn-demo-agent"/> to help with interoperability testing.
+      </t>
+      <t>
+As of the time of writing a COSE Contet dissector has been accepted to the default development branch of the Wireshark project <xref target="gitlab-wireshark"/>.
+That dissector integrates the full-featured COSE dissector on top of BPSec, so will scale with any future additions to COSE itself.
+      </t>
+      <t>
+An example implementation of this COSE Context has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a source of data for the examples in <xref target="sec-examples"/>.
+This example implementation only handles CBOR encoding/decoding and cryptographic functions, it does not construct actual BIB or BCB and does not integrate with a BP Agent.
       </t>
     </section>
   </back>

@@ -26,6 +26,7 @@ class TestExample(BaseTest):
             qinv=binascii.unhexlify(b'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4ed9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65f4f92865ca3'),
             optional_params={
                 keyparam.KpKid: b'ExampleRSA',
+                keyparam.KpAlg: algorithms.Ps256,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )

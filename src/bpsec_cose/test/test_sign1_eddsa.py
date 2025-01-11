@@ -18,6 +18,7 @@ class TestExample(BaseTest):
             d=binascii.unhexlify('6820977a9be08d676dac7ee19e1595d0552894ee2d71feb1d7b1d2a9f31754fd'),
             optional_params={
                 keyparam.KpKid: b'ExampleEd25519',
+                keyparam.KpAlg: algorithms.EdDSA,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )

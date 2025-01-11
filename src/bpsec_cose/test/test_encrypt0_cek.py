@@ -8,6 +8,14 @@ from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
 
+def bytes_pad(val: bytes, size: int) -> bytes:
+    return b'\x00' * (size - len(val)) + val
+
+def bytes_xor(lt: bytes, rt: bytes) -> bytes:
+    size = max([len(lt), len(rt)])
+    lt = bytes_pad(lt, size)
+    rt = bytes_pad(rt, size)
+    return bytes(ltp ^ rtp for ltp, rtp in zip(lt, rt))
 
 class TestExample(BaseTest):
 
@@ -19,13 +27,14 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
+                keyparam.KpBaseIV: binascii.unhexlify('6f3093eba5d85143c3dc0000'),
             }
         )
         print('CEK: {}'.format(encode_diagnostic(cbor2.loads(cek.encode()))))
         # session IV
-        iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
-        print('IV: {}'.format(binascii.hexlify(iv)))
+        partial_iv = binascii.unhexlify('484A')
 
         # Primary block
         prim_dec = self._get_primary_item()
@@ -51,13 +60,14 @@ class TestExample(BaseTest):
             },
             uhdr={
                 headers.KID: cek.kid,
-                headers.IV: iv,
+                headers.PartialIV: partial_iv,
             },
             payload=content_plaintext,
             # Non-encoded parameters
             external_aad=ext_aad_enc,
             key=cek,
         )
+        print('IV: {}'.format(binascii.hexlify(msg_obj._get_nonce())))
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
@@ -101,9 +111,6 @@ class TestExample(BaseTest):
         decode_plaintext = decode_obj.decrypt()
         print('Loopback plaintext:', encode_diagnostic(decode_plaintext))
         self.assertEqual(content_plaintext, decode_plaintext)
-
-        print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
-        self.assertEqual(cek.k, decode_obj.key.k)
 
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)

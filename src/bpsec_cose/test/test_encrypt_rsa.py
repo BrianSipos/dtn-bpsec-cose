@@ -27,6 +27,7 @@ class TestExample(BaseTest):
             qinv=binascii.unhexlify(b'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4ed9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65f4f92865ca3'),
             optional_params={
                 keyparam.KpKid: b'ExampleRSA',
+                keyparam.KpAlg: algorithms.RsaesOaepSha256,
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
             }
         )
@@ -36,6 +37,7 @@ class TestExample(BaseTest):
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
             }
         )
