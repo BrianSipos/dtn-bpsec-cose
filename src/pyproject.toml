@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ietf-dtn-bpsec-cose-demo"
+version = "0.0.0"
+authors = [
+  { name="Brian Sipos", email="brian.sipos+ietf@gmail.com" },
+]
+description = "Examples of COSE/BPSEC operations"
+readme = "README.md"
+license = { text="LGPL-3" }
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Lesser General Public License (LGPL)",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries",
+]
+
+dependencies = [
+  "cbor2 >=4.1",
+  "pycose >=1.0.1",
+  "cryptography >=0.9",
+  "six",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-cov",
+  "coverage",
+]
+pylint = [
+  "pylint",
+  "pylint_junit",
+]
+flake8 = [
+  "flake8",
+  "flake8_pyproject",
+  "flake8_formatter_junit_xml",
+]
+
+[tool.pylint.MAIN]
+load-plugins="pylint_junit"
+suggestion-mode="no"
+[tool.pylint.FORMAT]
+max-line-length=100
+[tool.pylint.DESIGN]
+min-public-methods=1
+
+[tool.flake8]
+max-line-length=100
+
+[project.urls]
+"Homepage" = "https://github.com/BrianSipos/dtn-bpsec-cose"
+"Bug Tracker" = "https://github.com/BrianSipos/dtn-bpsec-cose/issues"
