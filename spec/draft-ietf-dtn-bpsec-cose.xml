@@ -1308,7 +1308,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 144 byte string in base-16:
+The final bundle is encoded as the following 144 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1395,7 +1395,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 176 byte string in base-16:
+The final bundle is encoded as the following 176 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1508,7 +1508,7 @@ e6830bdf18017ac3903d418a779be32bc927315fe57ca7da5bad4d95241a
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 241 byte string in base-16:
+The final bundle is encoded as the following 241 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1606,7 +1606,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 129 byte string in base-16:
+The final bundle is encoded as the following 129 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1704,7 +1704,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 189 byte string in base-16:
+The final bundle is encoded as the following 189 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1827,7 +1827,7 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 266 byte string in base-16:
+The final bundle is encoded as the following 266 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
@@ -1960,7 +1960,7 @@ b3' / key-wrapped /
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 278 byte string in base-16:
+The final bundle is encoded as the following 278 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
