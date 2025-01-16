@@ -2005,7 +2005,7 @@ other implementations can exist.
 A limited implementation of this COSE Context has been added to the <xref target="github-dtn-demo-agent"/> to help with interoperability testing.
       </t>
       <t>
-As of the time of writing a COSE Contet dissector has been accepted to the default development branch of the Wireshark project <xref target="gitlab-wireshark"/>.
+As of the time of writing a COSE Context dissector has been accepted to the default development branch of the Wireshark project <xref target="gitlab-wireshark"/>.
 That dissector integrates the full-featured COSE dissector on top of BPSec, so will scale with any future additions to COSE itself.
       </t>
       <t>
