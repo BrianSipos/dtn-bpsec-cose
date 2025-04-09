@@ -16,7 +16,7 @@ class BaseTest(unittest.TestCase):
             0,
             0,
             EndpointId('dtn://dst/svc').encode_item(),
-            EndpointId('dtn://src/').encode_item(),
+            EndpointId('dtn://src/svc').encode_item(),
             EndpointId('dtn://src/').encode_item(),
             [0, 40],
             1000000
@@ -39,7 +39,7 @@ class BaseTest(unittest.TestCase):
     def _get_aad_scope(self):
         ''' Get the AAD-scope parameter value.
         '''
-        return { 0: 0b01, 1: 0b01 }
+        return { 0: 0b01, -1: 0b01 }
 
     def _get_aad_array(self, addl_protected:bytes=b''):
         ''' Get the AAD-list array.
@@ -47,6 +47,7 @@ class BaseTest(unittest.TestCase):
         :param addl_protected: The additional-protected parameters encoded.
         '''
         return [
+            EndpointId('dtn://src/').encode_item(),
             self._get_aad_scope(),  # scope
             self._get_primary_item(),  # primary-ctx
         ] + self._block_identity(self._get_target_item()) + [  # target-ctx

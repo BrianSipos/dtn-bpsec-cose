@@ -1178,7 +1178,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
   0, / flags /
   0, / CRC type /
   [1, "//dst/svc"], / destination /
-  [1, "//src/"], / source /
+  [1, "//src/svc"], / source /
   [1, "//src/"], / report-to /
   [0, 40], / timestamp /
   1000000 / lifetime /
@@ -1201,38 +1201,39 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
 All of the block integrity block examples operate within the context of the "frame" block of <xref target="fig-ex-bib-frame"/>, and block confidentiality block examples within the frame block of <xref target="fig-ex-bcb-frame"/>.
       </t>
       <figure anchor="fig-ex-bib-frame">
-        <name>Block integrity block frame CBOR diagnostic</name>
+        <name>Block integrity frame block CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
   11, / type code: BIB /
   3, / block num /
   0, / flags /
   0, / CRC type /
-  '' / BTSD to be replaced /
+  '' / BTSD to be replaced with ASB /
 ]
         </sourcecode>
       </figure>
       <figure anchor="fig-ex-bcb-frame">
-        <name>Block confidentiality block CBOR diagnostic</name>
+        <name>Block confidentiality frame block CBOR diagnostic</name>
         <sourcecode type="cbor">
 [
   12, / type code: BCB /
   3, / block num /
   0, / flags /
   0, / CRC type /
-  '' / BTSD to be replaced /
+  '' / BTSD to be replaced with ASB /
 ]
         </sourcecode>
       </figure>
       <t>
-All of the examples also operate within a security block containing the AAD Scope parameter with only <tt>has-primary-ctx</tt> and <tt>has-target-ctx</tt> flags set.
+All of the examples also operate within a security block containing the AAD Scope parameter with value <tt>{0:0b1,-1:0b1}</tt> indicating the primary block and target block metadata are included.
 This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-AAD-list"/>, which is encoded as the byte string for COSE <tt>external_aad</tt> in all of the examples.
       </t>
       <figure anchor="fig-ex-AAD-list">
         <name>Example scope AAD-list CBOR-sequence diagnostic</name>
         <sourcecode type="cborseq">
-{ 0: 0b01, 1: 0b01 }, / AAD-scope /
-[ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/" ], [ 1, "//src/" ],
+[ 1, "//src/" ], / security source /
+{ 0:0b1, -1:0b1 }, / AAD-scope /
+[ 7, 0, 0, [ 1, "//dst/svc" ], [ 1, "//src/svc" ], [ 1, "//src/" ],
   [ 0, 40 ], 1000000 ], / primary-block /
 1, 1, 0, / target block-metadata /
 '' / additional-protected /
@@ -1288,8 +1289,9 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [
   "MAC0", / context /
   h'a10105', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040', / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
           </sourcecode>
@@ -1304,7 +1306,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1319,8 +1321,8 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           / kid / 4: 'ExampleMAC'
         },
         null, / payload detached /
-        h'5cf66fcdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d59
-35ae64' / tag /
+        h'30a7741346bce07dcb2debbd294daff24fe445c84cb1957c1949c39f3b
+d1f971' / tag /
       ]&gt;&gt;
     ]
   ]
@@ -1328,14 +1330,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 144 octets in base-16:
+The final bundle is encoded as the following 147 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850b0300005850810103018201662f2f7372632f818205a2
-000101018181821158358443a10105a1044a4578616d706c654d4143f658205cf66f
-cdb1ae9514594c8854b30cec67898b12fb19bdb068dcb6e78d5935ae648501010000
-466568656c6c6fff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850b0300005850810103018201662f2f7372632f81
+8205a2000120018181821158358443a10105a1044a4578616d706c654d4143f65820
+30a7741346bce07dcb2debbd294daff24fe445c84cb1957c1949c39f3bd1f9718501
+010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -1374,8 +1376,9 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [
   "Signature1", / context /
   h'a10126', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040', / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
           </sourcecode>
@@ -1390,7 +1393,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1405,9 +1408,9 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'5552647e6fa90156b908a84eddd2f631ed7005147afa1437d792fa5508
-586c20b5134c469ccacc44c4a3c26bef952823d789eb70eeecf4393d8c6818245651
-4c' / signature /
+        h'dbf785c42bbe2956b33094621d1a98a81cd17869bebebb6d8f436a9db5
+a0cbf39fb9982b9b5daab79f6ce6fb4fb5bf4d5b9b1a7c40c011a9f036c39e14fe4e
+07' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1415,15 +1418,15 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 176 octets in base-16:
+The final bundle is encoded as the following 179 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850b0300005870810103018201662f2f7372632f818205a2
-000101018181821258558443a10126a1044a4578616d706c65454332f65840555264
-7e6fa90156b908a84eddd2f631ed7005147afa1437d792fa5508586c20b5134c469c
-cacc44c4a3c26bef952823d789eb70eeecf4393d8c68182456514c85010100004665
-68656c6c6fff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850b0300005870810103018201662f2f7372632f81
+8205a2000120018181821258558443a10126a1044a4578616d706c65454332f65840
+e3abbfa0f281994ef528624e64248ad4d02ef7890a61d4092fe914e988d0549895ac
+4f48b87df4394da6aac2b8cb989e5cb472574af48ce28b417c3f9006d32c85010100
+00466568656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -1485,8 +1488,9 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [
   "Signature1", / context /
   h'a1013824', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040', / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
           </sourcecode>
@@ -1501,7 +1505,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1516,11 +1520,11 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           / kid / 4: 'ExampleRSA'
         },
         null, / payload detached /
-        h'38aab98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98
-162dd5325ac06d7daa8a7d4c2903c4f4c6e47e707581a45056240a6393294c96845e
-d5b6ba3b4ff8ea0bd52ed33e082d0b683d67644de88216cc291ee24aaa84d712dae1
-e6830bdf18017ac3903d418a779be32bc927315fe57ca7da5bad4d95241a
-4c' / signature /
+        h'1f67546f1b8fd70c1a2dfb0fea0141d09c9ccd73a7d63985a4e92f5c8c
+4b08371c09113fa8a4928dbc57188a4c2d0154c121c285798c93f4072836b38110e5
+4e41ab5fbd5da54aa1074f174414298805b1da892b40f737cc962ee2ba60aa07dde9
+b7c027bf1869719efaa4d9c98e26770945a6ff33fc61e52af78e9a6b8319
+e5' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1528,17 +1532,17 @@ e6830bdf18017ac3903d418a779be32bc927315fe57ca7da5bad4d95241a
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 241 octets in base-16:
+The final bundle is encoded as the following 244 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850b03000058b1810103018201662f2f7372632f818205a2
-000101018181821258968444a1013824a1044a4578616d706c65525341f6588038aa
-b98a3681ba9d4ac014d1d70509447310e4d2d55ed450c8c0e17e98162dd5325ac06d
-7daa8a7d4c2903c4f4c6e47e707581a45056240a6393294c96845ed5b6ba3b4ff8ea
-0bd52ed33e082d0b683d67644de88216cc291ee24aaa84d712dae1e6830bdf18017a
-c3903d418a779be32bc927315fe57ca7da5bad4d95241a4c8501010000466568656c
-6c6fff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850b03000058b1810103018201662f2f7372632f81
+8205a2000120018181821258968444a1013824a1044a4578616d706c65525341f658
+801f67546f1b8fd70c1a2dfb0fea0141d09c9ccd73a7d63985a4e92f5c8c4b08371c
+09113fa8a4928dbc57188a4c2d0154c121c285798c93f4072836b38110e54e41ab5f
+bd5da54aa1074f174414298805b1da892b40f737cc962ee2ba60aa07dde9b7c027bf
+1869719efaa4d9c98e26770945a6ff33fc61e52af78e9a6b8319e585010100004665
+68656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -1572,8 +1576,9 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 [
   "Encrypt0", / context /
   h'a10103', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040' / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1591,7 +1596,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1621,18 +1626,18 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   0, / CRC type /
-  h'1fd25f64a2ee75a86f4dfe2690a09b79f97e0572fa2b' / ciphertext /
+  h'1fd25f64a2eea0ae74443c0aeba967dd5d90fef18266' / ciphertext /
 ]
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 129 octets in base-16:
+The final bundle is encoded as the following 132 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850c0300005831810103018201662f2f7372632f818205a2
-0001010181818210578343a10103a2044a4578616d706c6543454b0642484af68501
-010000561fd25f64a2ee75a86f4dfe2690a09b79f97e0572fa2bff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850c0300005831810103018201662f2f7372632f81
+8205a20001200181818210578343a10103a2044a4578616d706c6543454b0642484a
+f68501010000561fd25f64a2eea0ae74443c0aeba967dd5d90fef18266ff
         </sourcecode>
       </section>
       <section>
@@ -1673,8 +1678,9 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040' / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1691,7 +1697,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1724,15 +1730,15 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 189 octets in base-16:
+The final bundle is encoded as the following 192 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850c030000586d810103018201662f2f7372632f818205a2
-00010101818182186058518443a10103a1054c6f3093eba5d85143c3dc484af68183
-40a20124044a4578616d706c654b454b5828917f2045e1169502756252bf119a94cd
-ac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561fd25f64
-a2ee1152e3e33a3b4ad83d6b368a8949addeff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850c030000586d810103018201662f2f7372632f81
+8205a200012001818182186058518443a10103a1054c6f3093eba5d85143c3dc484a
+f6818340a20124044a4578616d706c654b454b5828917f2045e1169502756252bf11
+9a94cdac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d8501010000561f
+d25f64a2ee38dff4ce3de23867891d1983882dca76ff
         </sourcecode>
       </section>
       <section>
@@ -1788,8 +1794,9 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040' / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1806,7 +1813,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1847,17 +1854,17 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 266 octets in base-16:
+The final bundle is encoded as the following 269 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850c03000058ba810103018201662f2f7372632f818205a2
-000101018181821860589e8443a10103a1054c6f3093eba5d85143c3dc484af68183
-40a301381e044a4578616d706c6545433220a401022001215820fedaba748882050d
-1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7ff4751a
-4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03f1e4b0
-9ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0275685
-01010000561fd25f64a2ee1152e3e33a3b4ad83d6b368a8949addeff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850c03000058ba810103018201662f2f7372632f81
+8205a2000120018181821860589e8443a10103a1054c6f3093eba5d85143c3dc484a
+f6818340a301381e044a4578616d706c6545433220a401022001215820fedaba7488
+82050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7f
+f4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03
+f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0
+27568501010000561fd25f64a2ee38dff4ce3de23867891d1983882dca76ff
         </sourcecode>
       </section>
       <section>
@@ -1926,8 +1933,9 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 [
   "Encrypt", / context /
   h'a10103', / protected /
-  h'a200010101880700008201692f2f6473742f7376638201662f2f7372632f8201
-662f2f7372632f820018281a000f424001010040' / external_aad /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f820018281a000f42400101
+0040' / external_aad /
 ]
           </sourcecode>
         </figure>
@@ -1944,7 +1952,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
 [ / parameters /
   [
     5, / AAD-scope /
-    {0: 0b01, 1: 0b01} / primary metadata, target metadata /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
@@ -1966,11 +1974,11 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
               / alg / 1: -41, / RSAES-OAEP w SHA-256 /
               / kid / 4: 'ExampleRSA'
             },
-            h'08ae2d939e1d16d0be9f2ff6fc51a7b5c1701359930212f0a3154c
-acf20d1eadf81896f6cb124457d8ffef207568f1050a21b3ebc5030fab0cdc202d77
-ea1dece4cbf6730ce28b98e0090d72d28f45209c6f3df086a94a9f91fb44795f152d
-59f70c38eccd5b7463d3e71a340b16b6a0644cf781f125fce829410d851dda34
-b3' / key-wrapped /
+            h'6894d010add6acd8d363064220a3d08ddc699d573f46b2fcee0f4b
+ca9c37b86cee974526d551e42e142781410f63b4e13cdd220efdc93a8e380f8f7cc4
+a807a56ed1fdd86a598c1d66078b8baeb5662f87a59137e5938a2c28c456ee9913e0
+ae5305e9b60cf4df3213d55aac77d9212d2a3ddc8966bfb3520562e102b2249e
+fa' / key-wrapped /
           ]
         ]
       ]&gt;&gt;
@@ -1980,18 +1988,18 @@ b3' / key-wrapped /
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 278 octets in base-16:
+The final bundle is encoded as the following 281 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201662f2f7372632f8201662f2f737263
-2f820018281a000f4240850c03000058c6810103018201662f2f7372632f818205a2
-00010101818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484af68183
-40a2013828044a4578616d706c65525341588008ae2d939e1d16d0be9f2ff6fc51a7
-b5c1701359930212f0a3154cacf20d1eadf81896f6cb124457d8ffef207568f1050a
-21b3ebc5030fab0cdc202d77ea1dece4cbf6730ce28b98e0090d72d28f45209c6f3d
-f086a94a9f91fb44795f152d59f70c38eccd5b7463d3e71a340b16b6a0644cf781f1
-25fce829410d851dda34b38501010000561fd25f64a2ee1152e3e33a3b4ad83d6b36
-8a8949addeff
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f820018281a000f4240850c03000058c6810103018201662f2f7372632f81
+8205a200012001818182186058aa8443a10103a1054c6f3093eba5d85143c3dc484a
+f6818340a2013828044a4578616d706c6552534158806894d010add6acd8d3630642
+20a3d08ddc699d573f46b2fcee0f4bca9c37b86cee974526d551e42e142781410f63
+b4e13cdd220efdc93a8e380f8f7cc4a807a56ed1fdd86a598c1d66078b8baeb5662f
+87a59137e5938a2c28c456ee9913e0ae5305e9b60cf4df3213d55aac77d9212d2a3d
+dc8966bfb3520562e102b2249efa8501010000561fd25f64a2ee38dff4ce3de23867
+891d1983882dca76ff
         </sourcecode>
       </section>
     </section>
