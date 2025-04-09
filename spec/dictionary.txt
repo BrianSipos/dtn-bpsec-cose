@@ -43,6 +43,7 @@ dtn
 DTN
 ECDH
 EdDSA
+eid
 encodings
 endian
 GCM
