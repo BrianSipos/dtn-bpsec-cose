@@ -92,6 +92,7 @@ TCPCL
 tstr
 uint
 unencoded
+untrusted
 Untrusted
 URI
 UTF
