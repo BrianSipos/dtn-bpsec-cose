@@ -7,6 +7,7 @@ acknowledgement
 acknowledgements
 AEAD
 ASB
+Baumgaertner
 BCB
 BCP
 BIB
@@ -46,6 +47,7 @@ EdDSA
 eid
 encodings
 endian
+ESA
 GCM
 HKDF
 HMAC
@@ -65,6 +67,7 @@ KeySet
 kp
 LLC
 LSbit
+Lukas
 NIST
 nonRepudiation
 OAEP
