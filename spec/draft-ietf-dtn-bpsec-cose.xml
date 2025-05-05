@@ -2013,7 +2013,10 @@ dc8966bfb3520562e102b2249efa8501010000561fd25f64a2ee38dff4ce3de23867
     <section anchor="sec-doc-ack" numbered="false">
       <name>Acknowledgments</name>
       <t>
-The interoperability minimum algorithms and parameters are based on those available in <xref target="RFC9173"/>.
+Thanks to Lars Baumgaertner and Lukas Holst at ESA for review and prototyping feedback.
+      </t>
+      <t>
+The interoperability minimum algorithms and their parameters are based on those available in the Default Security Contexts of <xref target="RFC9173"/>.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
