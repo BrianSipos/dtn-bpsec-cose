@@ -1693,6 +1693,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-symm-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+The recipient does not have any protected header parameters because AES Key Wrap does not allow any AAD.
         </t>
         <figure anchor="fig-ex-encrypt-symm-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
@@ -1837,9 +1838,10 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
         null, / payload detached /
         [
           [ / recipient /
-            h'', / protected /
+            &lt;&lt;{ / protected /
+              / alg / 1: -31 / ECDH-ES + A256KW /
+            }&gt;&gt;,
             { / unprotected /
-              / alg / 1: -31, / ECDH-ES + A256KW /
               / kid / 4: 'ExampleEC2',
               / ephemeral key / -1: {
                 1: 2,
@@ -1861,17 +1863,17 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 269 octets in base-16:
+The final bundle is encoded as the following 270 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f820018281a000f4240850c03000058ba810103018201662f2f7372632f81
-8205a2000120018181821860589e8443a10103a1054c6f3093eba5d85143c3dc484a
-f6818340a301381e044a4578616d706c6545433220a401022001215820fedaba7488
-82050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e7f
-f4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828cb530b03
-f1e4b09ec1a0ca19afafbf280284106ab407aaf9bfed6e666c8f2f9ab5465cf11ef0
-27568501010000561fd25f64a2ee38dff4ce3de23867891d1983882dca76ff
+7372632f820018281a000f4240850c03000058bb810103018201662f2f7372632f81
+8205a2000120018181821860589f8443a10103a1054c6f3093eba5d85143c3dc484a
+f6818344a101381ea2044a4578616d706c6545433220a401022001215820fedaba74
+8882050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc225820ceaa8e
+7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d625828a5ed54
+991baa90af6aa7f272e7fd456fc0ba36a507842aa1d0a57765386ab04d0fba5c4547
+03366a8501010000561fd25f64a2ee38dff4ce3de23867891d1983882dca76ff
         </sourcecode>
       </section>
       <section>
@@ -1948,6 +1950,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-rsa-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+The recipient does not have any protected header parameters because RSA OAEP does not allow any AAD.
         </t>
         <figure anchor="fig-ex-encrypt-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>

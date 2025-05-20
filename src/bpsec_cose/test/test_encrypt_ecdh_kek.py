@@ -82,8 +82,10 @@ class TestExample(BaseTest):
             payload=content_plaintext,
             recipients=[
                 KeyAgreementWithKeyWrap(
-                    uhdr={
+                    phdr={
                         headers.Algorithm: algorithms.EcdhEsA256KW,
+                    },
+                    uhdr={
                         headers.KID: private_key.kid,
                         headers.EphemeralKey: sender_public,
                     },
