@@ -176,7 +176,7 @@ The Security Results are also not included directly, but these are the COSE mess
           </dd>
         </dl>
         <t>
-Because of the above, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added ().
+Because of the above, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
 By using a minimal AAD scope it is also possible for an integrity operation to cover only the BTSD of a single target block independently of the block metadata or bundle primary block associated with the target at the time the BIB is added.
         </t>
       </section>
