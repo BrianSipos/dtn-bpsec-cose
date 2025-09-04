@@ -1018,16 +1018,16 @@ Because of this, if any block within the AAD coverage is modified (by any node a
         <t>
 One reason why such a modification would be made is that the other block has an expected lifetime shorter than the security operation.
 For example, a Previous Node block (<xref section="4.4.1" target="RFC9171"/>) is expected to be removed or replaced at each hop.
-The AAD Scope parameter <bcp14>SHOULD NOT</bcp14> reference any other block with an expected lifetime shorter than the containing security operation.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block with an expected lifetime shorter than the containing security operation.
         </t>
         <t>
 Another reason for a modification is that the other block is designed to be updated along the forwarding path.
 For example, a Hop Count block (<xref section="4.4.3" target="RFC9171"/>) is expected to be modified as the bundle is forwarded by each node.
-The AAD Scope parameter <bcp14>SHOULD NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to be modified by intermediate nodes during the lifetime of the containing security operation.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to be modified by intermediate nodes during the lifetime of the containing security operation.
         </t>
         <t>
 One reason for a block to be removed is if it has its block processing control flags (<xref section="4.2.4" target="RFC9171"/>) have the bit set indicating "Discard block if it can't be processed" and the block type or type-specific data cannot be handled by any node along the forwarding path.
-The AAD Scope parameter <bcp14>SHOULD NOT</bcp14> reference any other block having block processing control flags with the bit set indicating "Discard block if it can't be processed" unless it is known that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block having block processing control flags with the bit set indicating "Discard block if it can't be processed" unless it is known that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
         </t>
       </section>
     </section>
