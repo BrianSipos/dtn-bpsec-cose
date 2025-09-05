@@ -214,7 +214,7 @@ Each security block <bcp14>SHALL</bcp14> contain no more than one of each parame
           </tbody>
         </table>
         <t>
-When a parameter is not present and a default value is defined below, the security acceptor <bcp14>SHALL</bcp14> use that default value to process the target:
+When a parameter is not present and a default value is defined below, a security verifier or acceptor <bcp14>SHALL</bcp14> use that default value to process the target:
         </t>
         <ul>
           <li>The default <tt>additional-protected</tt> is <tt>''</tt> (an empty byte string).</li>
@@ -596,21 +596,21 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> NOT assume that a validate
           <section anchor="sec-context-auth-valid-cert">
             <name>Certificate Validation</name>
             <t>
-For each end-entity certificate contained in or identified by by a COSE result, the security acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref section="6" target="RFC5280"/> up to one of the acceptor's trusted CA certificates.
-When evaluating a certificate Validity period, the security acceptor <bcp14>SHALL</bcp14> use the bundle Creation Timestamp time (if not unknown) as the reference instead of the current time.
+For each end-entity certificate contained in or identified by by a COSE result, a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref section="6" target="RFC5280"/> up to one of the acceptor's trusted CA certificates.
+When evaluating a certificate Validity time interval, a security verifier or acceptor <bcp14>SHALL</bcp14> use the Bundle Creation Time of the primary block as the reference instead of the current time.
 If enabled by local policy, the entity <bcp14>SHALL</bcp14> perform an OCSP check of each certificate providing OCSP authority information in accordance with <xref target="RFC6960"/>.
 If certificate validation fails or if security policy disallows a certificate for any reason, the acceptor <bcp14>SHALL</bcp14> treat the associated security result as failed.
 Leaving out part of the certification chain can cause the entity to fail to validate a certificate if the left-out certificates are unknown to the entity (see <xref target="sec-threat-untrust-cert"/>).
             </t>
             <t>
-For each end-entity certificate contained in or identified by a COSE context result, the security acceptor <bcp14>SHALL</bcp14> apply security policy to the Key Usage extension (if present) and Extended Key Usage extension (if present) in accordance with <xref section="4.2.1.12" target="RFC5280"/> and the profile in <xref target="sec-pkix-profile"/>.
+For each end-entity certificate contained in or identified by a COSE context result, a security verifier or acceptor <bcp14>SHALL</bcp14> apply security policy to the Key Usage extension (if present) and Extended Key Usage extension (if present) in accordance with <xref section="4.2.1.12" target="RFC5280"/> and the profile in <xref target="sec-pkix-profile"/>.
             </t>
           </section>
           <section anchor="sec-context-auth-valid-nodeid">
             <name>Node ID Authentication</name>
             <t>
-If required by security policy, for each end-entity certificate referenced by a COSE context integrity result the security acceptor <bcp14>SHALL</bcp14> validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from the Security Source of the containing security block.
-If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, the security acceptor <bcp14>SHALL</bcp14> treat the result as failed.
+If required by security policy, for each end-entity certificate referenced by a COSE context integrity result a security verifier or acceptor <bcp14>SHALL</bcp14> validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from the Security Source of the containing security block.
+If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, a security verifier or acceptor <bcp14>SHALL</bcp14> treat the result as failed.
             </t>
           </section>
         </section>
@@ -806,7 +806,7 @@ When generating a BCB result from an EC public key, implementations <bcp14>SHALL
 When a COSE_Encrypt is used with an EC public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
 When a COSE_Encrypt is used with an EC public key, the security source <bcp14>SHALL</bcp14> either generate an ephemeral EC keypair or choose a unique HKDF "salt" for each security operation.
 When a COSE_Encrypt is used with an EC public key and a single recipient, the direct HKDF algorithms (code -25 and -27) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -31 and -34) to reduce message size.
-When processing a COSE_Encrypt with an EC public key, the security acceptor <bcp14>SHALL</bcp14> process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+When processing a COSE_Encrypt with an EC public key, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
             </dd>
           <dt>RSA Keypair Confidentiality:</dt>
           <dd>
@@ -853,8 +853,8 @@ The <bcp14>RECOMMENDED</bcp14> priority policy for including PKIX material for B
             <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
           </ol>
           <t>
-When PKIX certificates are used by security verifiers and acceptors and the end-entity certificate is not explicitly trusted (i.e. pinned), the security acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
-Leaving out part of the certification chain can cause the security acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
+When PKIX certificates are used for public key data and the end-entity certificate is not explicitly trusted (i.e. pinned), a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
+Leaving out part of the certification chain can cause a security verifier or acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
           </t>
           <t>
 Any end-entity certificate associated with a BPSec security source <bcp14>SHALL</bcp14> adhere to the profile of <xref target="sec-pkix-profile"/>.
@@ -879,7 +879,7 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> accept certificates that c
 Identity information in end-entity certificates <bcp14>SHALL</bcp14> be contained in the Subject Alternative Name extension in accordance with <xref section="4.2.1.6" target="RFC5280"/>.
       </t>
       <t>
-A BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a NODE-ID in its Subject Alternative Name extension which authenticates the Node ID of the security source (for integrity) or the security acceptor (for confidentiality).
+A BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a NODE-ID in its Subject Alternative Name extension which authenticates the Node ID of the security source (for integrity) or a security verifier or acceptor (for confidentiality).
 The identifier type NODE-ID is defined in <xref section="4.4.1" target="RFC9174"/>.
       </t>
       <t>
@@ -941,9 +941,17 @@ If an agent mistakenly allows the use of non-AEAD encryption when decrypting and
       <section anchor="sec-threat-untrust-cert">
         <name>Threat: Untrusted End-Entity Certificate</name>
         <t>
-The profile in <xref target="sec-context-auth"/> uses end-entity certificates chained up to a trusted root CA.
+The profile in <xref target="sec-context-auth"/> uses end-entity certificates chained up to a trusted root CA, where each certificate has a specific validity time interval.
+        </t>
+        <t>
+A security verifier or acceptor needs to assemble an entire certificate chain in order to validate the use of an end-entity certificate.
 A security source can include a certificate set which does not contain the full chain, possibly excluding intermediate or root CAs.
-In an environment where security verifiers and acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs, but this has a risk of an acceptor not actually having one of the needed CAs.
+In an environment where security verifiers and acceptors are known to already contain needed root and intermediate CAs there is no need to include those CAs, but this has a risk of a relying node not actually having one of the needed CAs.
+        </t>
+        <t>
+A security verifier or acceptor needs to use the bundle creation time when assembling a certificate chain and and validating it.
+Because of this, a security source needs to use the bundle creation time as the specific instant for choosing appropriate certificate(s) based on their validity time interval.
+The selection of a certificate outside of its valdiity time period will cause the entire security operation to be unusable.
         </t>
       </section>
       <section>
@@ -953,13 +961,13 @@ Even when a security acceptor is operating properly an attacker can attempt to e
 An invalid certificate exploit could lead to higher-level security issues and/or denial of service to the Node ID being impersonated.
         </t>
         <t>
-There are many reasons, described in <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its valid time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
+There are many reasons, described in <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
 Validating a certificate is a complex task and can require network connectivity outside of the primary BP convergence layer network path(s) if a mechanism such as OCSP <xref target="RFC6960"/> is used by the CA.
 The configuration and use of particular certificate validation methods are outside of the scope of this document.
         </t>
       </section>
       <section anchor="sec-threat-node-impersonation">
-        <name>Threat: BP Node Impersonation</name>
+        <name>Threat: Security Source Impersonation</name>
         <t>
 When certificates are referenced by BIB results it is possible that the certificate does not contain a NODE-ID or does contain one but has a mismatch with the actual security source (see <xref target="sec-pkix-env"/>).
 Having a CA-validated certificate does not alone guarantee the identity of the security source from which the certificate is provided; additional validation procedures in <xref target="sec-context-auth"/> bind the Node ID based on the contents of the certificate.
@@ -969,12 +977,12 @@ Having a CA-validated certificate does not alone guarantee the identity of the s
         <name>Threat: Unidentifiable Key</name>
         <t>
 The profile in <xref target="sec-interop-alg"/> recommends key identifiers when possible and the parameters in section <xref target="sec-ASB-parameters"/> allow encoding public keys where available.
-If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), the security acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
+If the application using a COSE Integrity or COSE Confidentiality context leaves out key identification data (in a COSE recipient structure), a security verifier or acceptor for those BPSec blocks only has the primary block available to use when verifying or decrypting the target block.
 This leads to a situation, identified in BPSec Security Considerations, where a signature is verified to be valid but not from the expected Security Source.
         </t>
         <t>
 Because the key identifier headers are unprotected (see <xref target="sec-asym-keys"/>), there is still the possibility that an active attacker removes or alters key identifier(s) in the result.
-This can cause the security acceptor to not be able to properly verify a valid signature or not use the correct private key to decrypt valid ciphertext.
+This can cause a security verifier or acceptor to not be able to properly verify a valid signature or not use the correct private key to decrypt valid ciphertext.
         </t>
       </section>
       <section anchor="sec-threat-notrust-key">
@@ -986,7 +994,7 @@ In an environment where security verifiers and acceptors are known to already co
         </t>
         <t>
 Because the security parameters are not included as AAD, there is still the possibility that an active attacker removes or alters certification chain data in the parameters.
-This can cause the security acceptor to be able to verify a valid signature but not trust the public key used to perform the verification.
+This can cause a security verifier or acceptor to be able to verify a valid signature but not trust the public key used to perform the verification.
         </t>
       </section>
       <section>
