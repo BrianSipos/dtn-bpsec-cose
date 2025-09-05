@@ -951,7 +951,7 @@ In an environment where security verifiers and acceptors are known to already co
         <t>
 A security verifier or acceptor needs to use the bundle creation time when assembling a certificate chain and and validating it.
 Because of this, a security source needs to use the bundle creation time as the specific instant for choosing appropriate certificate(s) based on their validity time interval.
-The selection of a certificate outside of its valdiity time period will cause the entire security operation to be unusable.
+The selection of a certificate outside of its validity time period will cause the entire security operation to be unusable.
         </t>
       </section>
       <section>
