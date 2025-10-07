@@ -659,19 +659,26 @@ The requirements of this profile still allow the use of potentially not-easily-i
       <section anchor="sec-interop-alg">
         <name>Interoperability Algorithms</name>
         <t>
-The set of integrity algorithms needed for interoperability is listed here.
+The set of COSE algorithms needed for interoperability is listed in this section.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the symmetric keyed and key-encryption algorithms marked as "required" in <xref target="tab-interop"/>.
-Implementations capable of doing so <bcp14>SHOULD</bcp14> support the asymmetric keyed and key-encryption algorithms marked as "recommended" in <xref target="tab-interop"/>.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the symmetric keyed and key-encryption algorithms marked as "required" in <xref target="tab-interop-algs"/>.
+Implementations capable of doing so <bcp14>SHOULD</bcp14> support the asymmetric keyed and key-encryption algorithms marked as "recommended" in <xref target="tab-interop-algs"/>.
         </t>
         <aside>
           <t>
+All of these algorithms in this table are compatible with FIPS-140-3 <xref target="FIPS-140"/>.
+          </t>
+          <t>
 The required algorithms are identical to the capability of the <xref target="RFC9173"/> contexts.
           </t>
+          <t>
+The EC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
+The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+          </t>
         </aside>
-        <table anchor="tab-interop">
+        <table anchor="tab-interop-algs">
           <name>Interoperability Algorithms</name>
           <thead>
             <tr>
@@ -680,36 +687,105 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <th>Name</th>
               <th>Code</th>
               <th>Implementation Requirements</th>
+              <th>Conformance</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Integrity</td>
-              <td>0</td>
+              <td>0 or 1</td>
               <td>HMAC 256/256</td>
               <td>5</td>
               <td>Required</td>
+              <td/>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>0</td>
+              <td>0 or 1</td>
+              <td>HMAC 384/384</td>
+              <td>6</td>
+              <td>Required</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>HMAC 512/512</td>
+              <td>7</td>
+              <td>Required</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
               <td>ES256</td>
               <td>-7</td>
               <td>Recommended</td>
+              <td/>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>0</td>
+              <td>0 or 1</td>
+              <td>ES384</td>
+              <td>-35</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>ES512</td>
+              <td>-36</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
               <td>EdDSA</td>
               <td>-8</td>
               <td>Recommended</td>
+              <td/>
             </tr>
             <tr>
               <td>Integrity</td>
-              <td>0</td>
+              <td>0 or 1</td>
               <td>PS256</td>
               <td>-37</td>
               <td>Recommended</td>
+              <td/>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>PS384</td>
+              <td>-38</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>PS512</td>
+              <td>-39</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>0</td>
+              <td>A128GCM</td>
+              <td>1</td>
+              <td>Required</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>0</td>
+              <td>A192GCM</td>
+              <td>2</td>
+              <td>Required</td>
+              <td></td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -717,6 +793,23 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>A256GCM</td>
               <td>3</td>
               <td>Required</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>A128KW</td>
+              <td>-3</td>
+              <td>Required</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>A192KW</td>
+              <td>-4</td>
+              <td>Required</td>
+              <td></td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -724,6 +817,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>A256KW</td>
               <td>-5</td>
               <td>Required</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -731,6 +825,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>direct</td>
               <td>-6</td>
               <td>Recommended with caveats</td>
+              <td/>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -738,6 +833,15 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>ECDH-ES + HKDF-256</td>
               <td>-25</td>
               <td>Recommended</td>
+              <td/>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>ECDH-ES + HKDF-512</td>
+              <td>-26</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -745,6 +849,15 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>ECDH-SS + HKDF-256</td>
               <td>-27</td>
               <td>Recommended</td>
+              <td/>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>ECDH-SS + HKDF-512</td>
+              <td>-28</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -752,6 +865,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>ECDH-ES + A256KW</td>
               <td>-31</td>
               <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -759,6 +873,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>ECDH-SS + A256KW</td>
               <td>-34</td>
               <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -766,6 +881,47 @@ The required algorithms are identical to the capability of the <xref target="RFC
               <td>RSAES-OAEP w/ SHA-256</td>
               <td>-41</td>
               <td>Recommended</td>
+              <td/>
+            </tr>
+            <tr>
+              <td>Confidentiality</td>
+              <td>1</td>
+              <td>RSAES-OAEP w/ SHA-512</td>
+              <td>-42</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t or c5t parameters</td>
+              <td>SHA-256/64</td>
+              <td>-15</td>
+              <td>Recommended</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t or c5t parameters</td>
+              <td>SHA-256</td>
+              <td>-16</td>
+              <td>Recommended</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t or c5t parameters</td>
+              <td>SHA-384</td>
+              <td>-43</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t or c5t parameters</td>
+              <td>SHA-512</td>
+              <td>-44</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
           </tbody>
         </table>
@@ -775,18 +931,18 @@ The following are recommended key and recipient uses within COSE/BPSec:
         <dl newline="true">
           <dt>Symmetric Key Integrity:</dt>
           <dd>
-When generating a BIB result from a symmetric key, implementations <bcp14>SHALL</bcp14> use a COSE_Mac0 using the private key directly.
-When a COSE_Mac0 is used with a direct key, the headers <bcp14>SHALL</bcp14> include a key identifier ("kid" header and possibly "kid context" header).
+When generating a BIB result from a symmetric key, implementations <bcp14>SHALL</bcp14> use a COSE_Mac or COSE_Mac0 using the private key directly.
+When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
           </dd>
           <dt>EC Keypair Integrity:</dt>
           <dd>
-When generating a BIB result from an EC keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign1 using the private key directly.
-When a COSE_Sign1 is used with an EC keypair, the headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When generating a BIB result from an EC keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an EC keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
           </dd>
           <dt>RSA Keypair Integrity:</dt>
           <dd>
-When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign1 using the private key directly.
-When a COSE_Sign1 is used with an RSA keypair, the headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
 When a COSE signature is generated with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
           </dd>
           <dt>Symmetric Key Confidentiality:</dt>
@@ -796,7 +952,7 @@ When generating a BCB result from a symmetric key-encryption key (KEK), implemen
 When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
             </t>
             <t>
-When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt0 or COSE_Encrypt with direct CEK.
+When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
             </t>
           </dd>
@@ -815,21 +971,194 @@ When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>S
             </dd>
         </dl>
         <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" identifier.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" or "c5t" identifier.
+Implementations <bcp14>SHOULD</bcp14> support the hash algorithms SHA-384 (code -43) and SHA-512 (code -44).
+        </t>
+      </section>
+      <section>
+        <name>Needed Header Parameters</name>
+        <t>
+The set of COSE header parameters needed for interoperability is listed in this section.
+The full set of COSE header parameters available is managed at <xref target="IANA-COSE"/>.
+        </t>
+        <t>
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the header parameters in <xref target="tab-interop-hdrs"/>.
+This support means required-to-implement not required-to-use for any particular COSE message.
+        </t>
+        <t>
+Specific COSE algorithms have their own requirements about which header parameters are mandatory or optional to use in the associated COSE message layer.
+The phrasing in <xref target="tab-interop-hdrs"/> uses the term "optional" where the need for a parameter is determined by the specific end use, and "conditional" for cases where one parameter of several options is needed by this profile.
+For example, a choice of specific <xref target="sec-sym-keys">symmetric key identifier</xref> or <xref target="sec-asym-keys">asymmetric key identifier</xref> among several options.
+        </t>
+        <table anchor="tab-interop-hdrs">
+          <name>Interoperability Header Parameters</name>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Label</th>
+              <th>Need</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>alg</td>
+              <td>1</td>
+              <td>Required by COSE <xref target="RFC9052"/></td>
+            </tr>
+            <tr>
+              <td>crit</td>
+              <td>2</td>
+              <td>Conditional for COSE <xref target="RFC9052"/></td>
+            </tr>
+            <tr>
+              <td>content type</td>
+              <td>3</td>
+              <td>Optional for COSE <xref target="RFC9052"/></td>
+            </tr>
+            <tr>
+              <td>kid</td>
+              <td>4</td>
+              <td>Conditional for this COSE profile</td>
+            </tr>
+            <tr>
+              <td>IV</td>
+              <td>5</td>
+              <td>Conditional for symmetric encryption algorithms</td>
+            </tr>
+            <tr>
+              <td>Partial IV</td>
+              <td>6</td>
+              <td>Conditional for symmetric encryption algorithms</td>
+            </tr>
+            <tr>
+              <td>kid context</td>
+              <td>10</td>
+              <td>Optional for this COSE profile</td>
+            </tr>
+            <tr>
+              <td>c5t</td>
+              <td>22</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>c5b</td>
+              <td>24</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>c5c</td>
+              <td>25</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>x5bag</td>
+              <td>32</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>x5chain</td>
+              <td>33</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>x5t</td>
+              <td>34</td>
+              <td>Conditional for public key algorithms</td>
+            </tr>
+            <tr>
+              <td>ephemeral key</td>
+              <td>-1</td>
+              <td>Required for ECDH-ES algorithms</td>
+            </tr>
+            <tr>
+              <td>static key</td>
+              <td>-2</td>
+              <td>Conditional for ECDH-SS algorithms</td>
+            </tr>
+            <tr>
+              <td>static key id</td>
+              <td>-3</td>
+              <td>Conditional for ECDH-SS algorithms</td>
+            </tr>
+            <tr>
+              <td>salt</td>
+              <td>-20</td>
+              <td>Conditional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyU identity</td>
+              <td>-21</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyU nonce</td>
+              <td>-22</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyU other</td>
+              <td>-23</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyV identity</td>
+              <td>-24</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyV nonce</td>
+              <td>-25</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>PartyV other</td>
+              <td>-26</td>
+              <td>Optional for HKDF and ECDH algorithms</td>
+            </tr>
+            <tr>
+              <td>x5t-sender</td>
+              <td>-27</td>
+              <td>Optional for ECDH-SS algorithms</td>
+            </tr>
+            <tr>
+              <td>x5chain-sender</td>
+              <td>-29</td>
+              <td>Optional for ECDH-SS algorithms</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section anchor="sec-sym-keys">
+        <name>Symmetric Keys and Identifiers</name>
+        <t>
+This section applies when a BIB or BCB uses a shared symmetric key for MAC, encryption, or key-wrap.
+When using symmetric keyed algorithms, the security source <bcp14>SHALL</bcp14> include a symmetric key identifier as a signature or recipient header.
+The symmetric key identifier <bcp14>SHALL</bcp14> be either a "kid" of <xref target="RFC9052"/> (possibly with "kid context" of <xref target="RFC8613"/>), or an equivalent identifier.
+This requirement makes the selection of keys by verifiers and acceptors unambiguous.
+        </t>
+        <t>
+When present, a "kid" parameter is used to uniquely identify a single shared key known to the security source and all expected security verifiers and acceptors.
+Specific strategies or mechanisms to generate or ensure uniqueness of "kid" values within some domain of use is outside the scope of this profile.
+Specific users of this profile can define such mechanisms specific to their abilities and needs.
+        </t>
+        <t>
+When present, a "kid context" parameter <bcp14>SHALL</bcp14> be used as a correlator with a larger scope than an individual "kid" value.
+The use of a "kid context" allows security verifiers and acceptors to correlate using that larger scope even if they cannot match the sibling "kid" value.
+For example, a "kid context" can be used to identify a long-lived security association between two entities while an individual "kid" identifies a single shared key agreed within that larger association.
         </t>
       </section>
       <section anchor="sec-asym-keys">
         <name>Asymmetric Key Types and Identifiers</name>
         <t>
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
-When using asymmetric keyed algorithms, the security source <bcp14>SHALL</bcp14> include a public key container or public key identifier as a recipient header.
-The public key identifier <bcp14>SHALL</bcp14> be either an "x5t" or "x5chain" of <xref target="RFC9360"/>, or "kid" of <xref target="RFC9052"/> and possibly "kid context" of <xref target="RFC8613"/>, or an equivalent identifier.
+When using asymmetric keyed algorithms, the security source <bcp14>SHALL</bcp14> include a public key container or public key identifier as a signature or recipient header.
+The public key identifier <bcp14>SHALL</bcp14> be either an "x5t" or "x5chain" of <xref target="RFC9360"/>, "c5t" or "c5c" of <xref target="I-D.ietf-cose-cbor-encoded-cert"/>, or "kid" (possibly with "kid context"), or an equivalent identifier.
         </t>
         <t>
-When BIB result contains a "x5t" identifier, the security source <bcp14>MAY</bcp14> include an appropriate PKIX certificate container ("x5chain" or "x5bag" of <xref target="RFC9360"/>) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
-When a BIB result contains an "x5chain", the security source <bcp14>SHOULD NOT</bcp14> also include an "x5t" as the first certificate in the chain is implicitly the applicable end-entity certificate.
+When BIB result contains a "x5t" or "c5t" identifier, the security source <bcp14>MAY</bcp14> include an appropriate certificate container ("x5chain" or "x5bag" for "x5t", or "c5c" or "c5b" for "c5t" respectively) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
+When a BIB result contains an "x5chain" or "c5c", the security source <bcp14>SHOULD NOT</bcp14> also include an "x5t" or "c5t" because the first certificate in the chain is implicitly the applicable end-entity certificate.
 For a BIB, if all potential security verifiers and acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
-Risks of not including related data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
+Risks of not including related credential data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
         </t>
         <t>
 When present, public keys and certificates <bcp14>SHOULD</bcp14> be included as additional header parameters rather than within result COSE messages.
@@ -840,26 +1169,26 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> still process public keys 
 Security verifiers and acceptors <bcp14>SHALL</bcp14> aggregate all COSE_Key objects from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
 Because each context contains a single set of security parameters which apply to all results in the same context, security verifiers and acceptors <bcp14>SHALL</bcp14> treat all public keys as being related to the security source itself and potentially applying to every result.
         </t>
-        <section anchor="sec-asym-keys-policy-rec">
-          <name>Policy Recommendations</name>
-          <t>
-The <bcp14>RECOMMENDED</bcp14> priority policy for including PKIX material for BIB results is as follows:
-          </t>
-          <ol>
-            <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain").</li>
-            <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain").</li>
-            <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").</li>
-            <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").</li>
-            <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
-          </ol>
-          <t>
-When PKIX certificates are used for public key data and the end-entity certificate is not explicitly trusted (i.e. pinned), a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
+      </section>
+      <section anchor="sec-asym-keys-policy-rec">
+        <name>Policy Recommendations</name>
+        <t>
+The <bcp14>RECOMMENDED</bcp14> priority policy for including public key certificate material for BIB results is as follows:
+        </t>
+        <ol>
+          <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain").</li>
+          <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain").</li>
+          <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").</li>
+          <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").</li>
+          <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
+        </ol>
+        <t>
+When certificates are used for public key data and the end-entity certificate is not explicitly trusted (i.e. pinned), a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
 Leaving out part of the certification chain can cause a security verifier or acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
-          </t>
-          <t>
+        </t>
+        <t>
 Any end-entity certificate associated with a BPSec security source <bcp14>SHALL</bcp14> adhere to the profile of <xref target="sec-pkix-profile"/>.
-          </t>
-        </section>
+        </t>
       </section>
     </section>
     <section anchor="sec-pkix-profile">
@@ -868,7 +1197,7 @@ Any end-entity certificate associated with a BPSec security source <bcp14>SHALL<
 This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
       </t>
       <t>
-All end-entity certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
+All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
       </t>
       <t>
 This profile requires Version 3 certificates due to the extensions used by this profile.
@@ -916,7 +1245,7 @@ A <bcp14>RECOMMENDED</bcp14> security policy is to limit asymmetric keys (and th
           <dd>With key use <tt>keyEncipherment</tt> and/or <tt>keyAgreement</tt>.</dd>
         </dl>
         <t>
-This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="NIST-SP800-57"/> more generally.
+This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="SP800-57"/> more generally.
 Effectively this means that a BP node uses separate certificates for transport (e.g., as a TCPCL entity), BIB signing (as a security source), and BCB encryption (as a security acceptor).
         </t>
       </section>
@@ -1157,20 +1486,41 @@ The value range is unsigned 64-bit integer.
       </references>
       <references>
         <name>Informative References</name>
-        <reference anchor="NIST-SP800-57" target="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">
+        <reference anchor="SP800-57" target="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">
           <front>
             <title>Recommendation for Key Management - Part 1: General</title>
+            <seriesInfo name="NIST SP" value="800-57"/>
             <author>
-              <organization>National Institute of Standards and Technology</organization>
+              <organization>US National Institute of Standards and Technology</organization>
             </author>
             <date month="May" year="2020"/>
           </front>
-          <refcontent>NIST Special Publication 800-57 Revision 4, DOI 10.6028/NIST.SP.800-57pt1r5</refcontent>
+        </reference>
+        <reference anchor="FIPS-140" target="https://doi.org/10.6028/NIST.FIPS.140-3">
+          <front>
+            <title>Security Requirements for Cryptographic Modules</title>
+            <seriesInfo name="FIPS" value="140-3"/>
+            <author>
+              <organization>US National Institute of Standards and Technology</organization>
+            </author>
+            <date month="March" year="2019"/>
+          </front>
+        </reference>
+        <reference anchor="CNSA1" target="">
+          <front>
+            <title>Use of Public Standards for Secure Information Sharing</title>
+            <seriesInfo name="CNSS Policy" value="15"/>
+            <author>
+              <organization>US Committee on National Security Systems</organization>
+            </author>
+            <date day="20" month="October" year="2016"/>
+          </front>
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
+        <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-cbor-encoded-cert.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>DTN Bundle Protocol Security COSE Security Context</title>
@@ -1280,7 +1630,7 @@ This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-
         </sourcecode>
       </figure>
       <t>
-The only differences between these examples which use EC or RSA keypairs and a use of a PKIX public key certificate are: the parameters would have an x5chain parameter instead of a COSE_Key type, and the recipient would contain an "x5t" value instead of a "kid" value.
+The only differences between these examples which use EC or RSA keypairs and a use of a PKIX public key certificate are: the parameters would have an "x5chain" parameter instead of a COSE_Key type, and the recipient would contain an "x5t" value instead of a "kid" value.
 Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
