@@ -1,15 +1,14 @@
 ''' Bundle Protocol Version 7 structures.
 '''
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import enum
 import re
-from typing import Optional
 
 
 @dataclass
 class EndpointId():
-    _re_dtn = re.compile(r'dtn:(//.+)')
-    _re_ipn = re.compile(r'ipn:(\d+).(\d+)')
+    _re_dtn = re.compile(r'dtn:(.+)')
+    _re_ipn = re.compile(r'ipn:(\d+).(\d+).(\d+)')
 
     @enum.unique
     class Scheme(enum.IntEnum):
@@ -23,13 +22,17 @@ class EndpointId():
         if match_dtn is not None:
             scheme_val = EndpointId.Scheme.dtn
             ssp_item = match_dtn.group(1)
+            # well-known
+            if ssp_item == 'none':
+                ssp_item = 0
         else:
             match_ipn = EndpointId._re_ipn.match(self.url)
             if match_ipn is not None:
                 scheme_val = EndpointId.Scheme.ipn
                 ssp_item = [
                     int(match_ipn.group(1)),
-                    int(match_ipn.group(2))
+                    int(match_ipn.group(2)),
+                    int(match_ipn.group(3)),
                 ]
             else:
                 raise ValueError('Invalid EID: {}'.format(self.url))

@@ -2,15 +2,20 @@
 '''
 import unittest
 import cbor2
+import datetime
 import textwrap
 from bpsec_cose.bp import EndpointId
 from bpsec_cose.bpsec import SecurityBlockData
 from bpsec_cose.util import decode_protected, encode_diagnostic
 
+DTN_EPOCH = datetime.datetime(2000, 1, 1, 0, 0, 0)
+
 
 class BaseTest(unittest.TestCase):
 
     def _get_primary_item(self):
+        # arbitrary nonzero time
+        delta = datetime.datetime(2025, 10, 7, 0, 0, 0) - DTN_EPOCH
         return [
             7,
             0,
@@ -18,7 +23,7 @@ class BaseTest(unittest.TestCase):
             EndpointId('dtn://dst/svc').encode_item(),
             EndpointId('dtn://src/svc').encode_item(),
             EndpointId('dtn://src/').encode_item(),
-            [0, 40],
+            [delta // datetime.timedelta(milliseconds=1), 0],
             1000000
         ]
 
@@ -39,9 +44,9 @@ class BaseTest(unittest.TestCase):
     def _get_aad_scope(self):
         ''' Get the AAD-scope parameter value.
         '''
-        return { 0: 0b01, -1: 0b01 }
+        return {0: 0b01, -1: 0b01}
 
-    def _get_aad_array(self, addl_protected:bytes=b''):
+    def _get_aad_array(self, addl_protected: bytes=b''):
         ''' Get the AAD-list array.
 
         :param addl_protected: The additional-protected parameters encoded.
