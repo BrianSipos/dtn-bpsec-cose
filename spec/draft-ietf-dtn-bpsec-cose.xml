@@ -1173,12 +1173,12 @@ Because each context contains a single set of security parameters which apply to
       <section anchor="sec-asym-keys-policy-rec">
         <name>Policy Recommendations</name>
         <t>
-The <bcp14>RECOMMENDED</bcp14> priority policy for including public key certificate material for BIB results is as follows:
+The <bcp14>RECOMMENDED</bcp14> priority policy for including public key identifiers for BIB results is as follows:
         </t>
         <ol>
-          <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain").</li>
-          <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain").</li>
-          <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").</li>
+          <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain" or "c5c").</li>
+          <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain" or "c5c").</li>
+          <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t" or "c5t").</li>
           <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").</li>
           <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
         </ol>
@@ -1187,7 +1187,14 @@ When certificates are used for public key data and the end-entity certificate is
 Leaving out part of the certification chain can cause a security verifier or acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
         </t>
         <t>
-Any end-entity certificate associated with a BPSec security source <bcp14>SHALL</bcp14> adhere to the profile of <xref target="sec-pkix-profile"/>.
+The <bcp14>RECOMMENDED</bcp14> priority policy for including public key identifiers for BCB results is as follows:
+        </t>
+        <ol>
+          <li>When receivers are known to possess associated end-entity certificates, a certificate thumbnail (as an "x5t" or "c5t").</li>
+          <li>Some arbitrary identifier is used to correlate to the private key (as a "kid" with an optional "kid context").</li>
+        </ol>
+        <t>
+Any end-entity certificate associated with a BIB security source or BCB result recipient <bcp14>SHALL</bcp14> adhere to the profile of <xref target="sec-pkix-profile"/>.
         </t>
       </section>
     </section>
