@@ -25,7 +25,9 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install libgirepository1.0-dev
     - name: Install
-      run: pip3 install -e .
+      run: |
+        pip3 install -e .
+        pip3 install git+https://github.com/BrianSipos/pycose.git@126-fully-specified-dsa
     - name: Lint with flake8
       run: |
         pip3 install .[flake8]

@@ -718,34 +718,34 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             <tr>
               <td>Integrity</td>
               <td>0 or 1</td>
-              <td>ES256</td>
-              <td>-7</td>
+              <td>ESP256</td>
+              <td>-9</td>
               <td>Recommended</td>
               <td/>
             </tr>
             <tr>
               <td>Integrity</td>
               <td>0 or 1</td>
-              <td>ES384</td>
-              <td>-35</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>ES512</td>
-              <td>-36</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>EdDSA</td>
-              <td>-8</td>
+              <td>Ed25519</td>
+              <td>-19</td>
               <td>Recommended</td>
               <td/>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>ESP384</td>
+              <td>-51</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>ESP512</td>
+              <td>-52</td>
+              <td>Recommended</td>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Integrity</td>
@@ -770,6 +770,14 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>-39</td>
               <td>Recommended</td>
               <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>Ed448</td>
+              <td>-53</td>
+              <td>Recommended</td>
+              <td/>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -904,6 +912,14 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>x5t or c5t parameters</td>
               <td>SHA-256</td>
               <td>-16</td>
+              <td>Recommended</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t or c5t parameters</td>
+              <td>SHA-512/256</td>
+              <td>-17</td>
               <td>Recommended</td>
               <td></td>
             </tr>
@@ -1750,7 +1766,7 @@ The associated public key is included as a security parameter.
   { / signing private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -7, / ES256 /
+    / alg / 3: -9, / ES256 /
     / ops / 4: [1, 2], / sign, verify /
     / crv / -1: 1, / P-256 /
     / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
@@ -1799,15 +1815,13 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -7 / ES256 /
+           / alg / 1: -9 / ESP256 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'dbf785c42bbe2956b33094621d1a98a81cd17869bebebb6d8f436a9db5
-a0cbf39fb9982b9b5daab79f6ce6fb4fb5bf4d5b9b1a7c40c011a9f036c39e14fe4e
-07' / signature /
+        h'TBD' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1818,12 +1832,7 @@ a0cbf39fb9982b9b5daab79f6ce6fb4fb5bf4d5b9b1a7c40c011a9f036c39e14fe4e
 The final bundle is encoded as the following 179 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f820018281a000f4240850b0300005870810103018201662f2f7372632f81
-8205a2000120018181821258558443a10126a1044a4578616d706c65454332f65840
-e3abbfa0f281994ef528624e64248ad4d02ef7890a61d4092fe914e988d0549895ac
-4f48b87df4394da6aac2b8cb989e5cb472574af48ce28b417c3f9006d32c85010100
-00466568656c6c6fff
+TBD
         </sourcecode>
       </section>
       <section>
