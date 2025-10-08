@@ -1361,8 +1361,8 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           / kid / 4: 'ExampleMAC'
         },
         null, / payload detached /
-        h'c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9
-f87c052606' / tag /
+        h'c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9f87c
+052606' / tag /
       ]&gt;&gt;
     ]
   ]
