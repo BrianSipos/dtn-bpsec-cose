@@ -893,7 +893,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tr>
             <tr>
               <td>Any</td>
-              <td>x5t or c5t parameters</td>
+              <td>x5t parameters</td>
               <td>SHA-256/64</td>
               <td>-15</td>
               <td>Recommended</td>
@@ -901,7 +901,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tr>
             <tr>
               <td>Any</td>
-              <td>x5t or c5t parameters</td>
+              <td>x5t parameters</td>
               <td>SHA-256</td>
               <td>-16</td>
               <td>Recommended</td>
@@ -909,7 +909,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tr>
             <tr>
               <td>Any</td>
-              <td>x5t or c5t parameters</td>
+              <td>x5t parameters</td>
               <td>SHA-384</td>
               <td>-43</td>
               <td>Recommended</td>
@@ -917,7 +917,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tr>
             <tr>
               <td>Any</td>
-              <td>x5t or c5t parameters</td>
+              <td>x5t parameters</td>
               <td>SHA-512</td>
               <td>-44</td>
               <td>Recommended</td>
@@ -971,7 +971,7 @@ When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>S
             </dd>
         </dl>
         <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" or "c5t" identifier.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" identifier.
 Implementations <bcp14>SHOULD</bcp14> support the hash algorithms SHA-384 (code -43) and SHA-512 (code -44).
         </t>
       </section>
@@ -1034,21 +1034,6 @@ For example, a choice of specific <xref target="sec-sym-keys">symmetric key iden
               <td>kid context</td>
               <td>10</td>
               <td>Optional for this COSE profile</td>
-            </tr>
-            <tr>
-              <td>c5t</td>
-              <td>22</td>
-              <td>Conditional for public key algorithms</td>
-            </tr>
-            <tr>
-              <td>c5b</td>
-              <td>24</td>
-              <td>Conditional for public key algorithms</td>
-            </tr>
-            <tr>
-              <td>c5c</td>
-              <td>25</td>
-              <td>Conditional for public key algorithms</td>
             </tr>
             <tr>
               <td>x5bag</td>
@@ -1152,11 +1137,11 @@ For example, a "kid context" can be used to identify a long-lived security assoc
         <t>
 This section applies when a BIB uses a public key for verification or key-wrap, or when a BCB uses a public key for encryption or key-wrap.
 When using asymmetric keyed algorithms, the security source <bcp14>SHALL</bcp14> include a public key container or public key identifier as a signature or recipient header.
-The public key identifier <bcp14>SHALL</bcp14> be either an "x5t" or "x5chain" of <xref target="RFC9360"/>, "c5t" or "c5c" of <xref target="I-D.ietf-cose-cbor-encoded-cert"/>, or "kid" (possibly with "kid context"), or an equivalent identifier.
+The public key identifier <bcp14>SHALL</bcp14> be either an "x5t" or "x5chain" of <xref target="RFC9360"/>, or "kid" (possibly with "kid context"), or an equivalent identifier.
         </t>
         <t>
-When BIB result contains a "x5t" or "c5t" identifier, the security source <bcp14>MAY</bcp14> include an appropriate certificate container ("x5chain" or "x5bag" for "x5t", or "c5c" or "c5b" for "c5t" respectively) in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
-When a BIB result contains an "x5chain" or "c5c", the security source <bcp14>SHOULD NOT</bcp14> also include an "x5t" or "c5t" because the first certificate in the chain is implicitly the applicable end-entity certificate.
+When BIB result contains a "x5t" identifier, the security source <bcp14>MAY</bcp14> include an appropriate certificate container ("x5chain" or "x5bag") in a direct COSE header or an additional header security parameter (see <xref target="sec-ASB-param-additional"/>).
+When a BIB result contains an "x5chain", the security source <bcp14>SHOULD NOT</bcp14> also include an "x5t" because the first certificate in the chain is implicitly the applicable end-entity certificate.
 For a BIB, if all potential security verifiers and acceptors are known to possess related public key and/or certificate data then the public key or additional header parameters can be omitted.
 Risks of not including related credential data are described in <xref target="sec-threat-unident-key"/> and <xref target="sec-threat-notrust-key"/>.
         </t>
@@ -1176,9 +1161,9 @@ Because each context contains a single set of security parameters which apply to
 The <bcp14>RECOMMENDED</bcp14> priority policy for including public key identifiers for BIB results is as follows:
         </t>
         <ol>
-          <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain" or "c5c").</li>
-          <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain" or "c5c").</li>
-          <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t" or "c5t").</li>
+          <li>When receivers are not known to possess certificate chains, a full chain is included (as an "x5chain").</li>
+          <li>When receivers are known to possess root and intermediate CAs, just the end-entity certificate is included (again as an "x5chain").</li>
+          <li>When receivers are known to possess associated chains including end-entity certificates, a certificate thumbnail (as an "x5t").</li>
           <li>Some arbitrary identifier is used to correlate to an end-entity certificate (as a "kid" with an optional "kid context").</li>
           <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
         </ol>
@@ -1190,7 +1175,7 @@ Leaving out part of the certification chain can cause a security verifier or acc
 The <bcp14>RECOMMENDED</bcp14> priority policy for including public key identifiers for BCB results is as follows:
         </t>
         <ol>
-          <li>When receivers are known to possess associated end-entity certificates, a certificate thumbnail (as an "x5t" or "c5t").</li>
+          <li>When receivers are known to possess associated end-entity certificates, a certificate thumbnail (as an "x5t").</li>
           <li>Some arbitrary identifier is used to correlate to the private key (as a "kid" with an optional "kid context").</li>
         </ol>
         <t>
@@ -1527,7 +1512,6 @@ The value range is unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
-        <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-cbor-encoded-cert.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>DTN Bundle Protocol Security COSE Security Context</title>
