@@ -5,13 +5,18 @@ import unittest
 class TestEndpointId(unittest.TestCase):
 
     def test_encode_dtn(self):
-        eid = EndpointId('dtn://this/that')
-        expect_item = [1, '//this/that']
+        eid = EndpointId('dtn://example/that')
+        expect_item = [1, '//example/that']
+        self.assertEqual(expect_item, eid.encode_item())
+
+    def test_encode_dtn_none(self):
+        eid = EndpointId('dtn:none')
+        expect_item = [1, 0]
         self.assertEqual(expect_item, eid.encode_item())
 
     def test_encode_ipn(self):
-        eid = EndpointId('ipn:12.34')
-        expect_item = [2, [12, 34]]
+        eid = EndpointId('ipn:974848.12.34')
+        expect_item = [2, [974848, 12, 34]]
         self.assertEqual(expect_item, eid.encode_item())
 
 
