@@ -1280,7 +1280,7 @@ This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-
         </sourcecode>
       </figure>
       <t>
-The only differences between these examples which use EC or RSA keypairs and a use of a public key certificate are: the parameters would have an "x5chain" parameter instead of a COSE_Key type, and the recipient would contain an "x5t" or "c5t" value instead of a "kid" value.
+The only differences between these examples which use EC or RSA keypairs and a use of a public key certificate are: the highest-layer parameters would contain an "x5t" (or equivalent, see <xref target="sec-asym-keys"/>) value instead of a "kid" value.
 Neither of these is a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
