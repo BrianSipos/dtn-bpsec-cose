@@ -9,7 +9,6 @@ authors = [
   { name="Brian Sipos", email="brian.sipos+ietf@gmail.com" },
 ]
 description = "Examples of COSE/BPSEC operations"
-readme = "../README.md"
 license = { text="LGPL-3" }
 requires-python = ">=3.7"
 classifiers = [
