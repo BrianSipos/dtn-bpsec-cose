@@ -1805,7 +1805,9 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'TBD' / signature /
+        h'edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e8260358aa
+ac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d67cfa
+c5' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1816,7 +1818,12 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 The final bundle is encoded as the following 186 octets in base-16:
         </t>
         <sourcecode type="cborhex">
-TBD
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f4240850b030000587081010301820166
+2f2f7372632f818205a2000120018181821258558443a10128a1044a4578616d706c
+65454332f65840edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e82603
+58aaac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d6
+7cfac58501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
