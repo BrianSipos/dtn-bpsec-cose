@@ -1,5 +1,7 @@
 import binascii
 import cbor2
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
 from pycose.keys import EC2Key, curves, keyops, keyparam
 from pycose.messages import Sign1Message
@@ -24,6 +26,22 @@ class TestExample(BaseTest):
             }
         )
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
+
+        ckey = ec.EllipticCurvePrivateNumbers(
+            int.from_bytes(private_key.d, 'big'),
+            ec.EllipticCurvePublicNumbers(
+                x=int.from_bytes(private_key.x, 'big'),
+                y=int.from_bytes(private_key.y, 'big'),
+                curve=private_key.crv.curve_obj
+            )
+        ).private_key()
+        ckey_pem = ckey.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        print('Private PEM:\n{}'.format(ckey_pem.decode('utf-8')))
+        serialization.load_pem_private_key(ckey_pem, password=None)
 
         # Primary block
         prim_dec = self._get_primary_item()
