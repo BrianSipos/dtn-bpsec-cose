@@ -19,7 +19,7 @@ class TestExample(BaseTest):
             d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
             optional_params={
                 keyparam.KpKid: b'ExampleEC2',
-                keyparam.KpAlg: algorithms.Es256,
+                keyparam.KpAlg: algorithms.Esp256,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )
@@ -46,7 +46,7 @@ class TestExample(BaseTest):
 
         msg_obj = Sign1Message(
             phdr={
-                headers.Algorithm: algorithms.Es256,
+                headers.Algorithm: algorithms.Esp256,
             },
             uhdr={
                 headers.KID: private_key.kid,
