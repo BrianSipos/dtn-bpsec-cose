@@ -737,7 +737,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>ES512</td>
               <td>-36</td>
               <td>Recommended</td>
-              <td>CNSA 1.0</td>
+              <td/>
             </tr>
             <tr>
               <td>Integrity</td>
