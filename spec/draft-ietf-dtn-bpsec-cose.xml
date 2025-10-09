@@ -1550,7 +1550,7 @@ The value range is unsigned 64-bit integer.
       </references>
     </references>
     <section anchor="sec-examples">
-      <name>Examples</name>
+      <name>Example Security Operations</name>
       <t>
 These examples are intended to have the correct structure of COSE security blocks but in some cases use simplified algorithm parameters or smaller key sizes than are required by the actual COSE profile defined in this documents.
 Each example indicates how it differs from the actual profile if there is a meaningful difference.
@@ -1586,6 +1586,14 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
 ]
         </sourcecode>
       </figure>
+      <t>
+Together these form an original bundle without any security operations present.
+This bundle is encoded as the following 67 octets in base-16:
+      </t>
+      <sourcecode type="cborhex">
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f42408501010000466568656c6c6fff
+      </sourcecode>
       <t>
 All of the block integrity block examples operate within the context of the "frame" block of <xref target="fig-ex-bib-frame"/>, and block confidentiality block examples within the frame block of <xref target="fig-ex-bcb-frame"/>.
       </t>

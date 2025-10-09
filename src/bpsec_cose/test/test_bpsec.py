@@ -1,5 +1,8 @@
-from bpsec_cose.bpsec import EndpointId, SecurityBlockData
+import cbor2
 import unittest
+from bpsec_cose.bpsec import EndpointId, SecurityBlockData
+from bpsec_cose.util import encode_diagnostic
+from .base import BaseTest
 
 
 class TestEndpointId(unittest.TestCase):
@@ -51,3 +54,23 @@ class TestSecurityBlock(unittest.TestCase):
             ],
         ]
         self.assertEqual(expect_item, asb.encode_item())
+
+
+class TestInputs(BaseTest):
+    def test_original_bundle(self):
+
+        # Primary block
+        prim_dec = self._get_primary_item()
+        prim_enc = cbor2.dumps(prim_dec)
+        print('Primary Block: {}'.format(encode_diagnostic(prim_dec)))
+        print('Encoded: {}'.format(encode_diagnostic(prim_enc)))
+
+        # Security target block
+        target_dec = self._get_target_item()
+        target_enc = cbor2.dumps(target_dec)
+        content_plaintext = target_dec[4]
+        print('Target Block: {}'.format(encode_diagnostic(target_dec)))
+        print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
+
+        bundle = self._assemble_bundle([prim_enc, target_enc])
+        self._print_bundle(bundle)
