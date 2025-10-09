@@ -824,7 +824,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>1</td>
               <td>direct</td>
               <td>-6</td>
-              <td>Recommended with caveats</td>
+              <td>Recommended</td>
               <td/>
             </tr>
             <tr>
@@ -896,7 +896,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>x5t parameters</td>
               <td>SHA-256/64</td>
               <td>-15</td>
-              <td>Recommended</td>
+              <td>Required</td>
               <td></td>
             </tr>
             <tr>
@@ -904,6 +904,14 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>x5t parameters</td>
               <td>SHA-256</td>
               <td>-16</td>
+              <td>Required</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Any</td>
+              <td>x5t parameters</td>
+              <td>SHA-512/256</td>
+              <td>-17</td>
               <td>Recommended</td>
               <td></td>
             </tr>
@@ -971,8 +979,8 @@ When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>S
             </dd>
         </dl>
         <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15) for use with the "x5t" identifier.
-Implementations <bcp14>SHOULD</bcp14> support the hash algorithms SHA-384 (code -43) and SHA-512 (code -44).
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15).
+Implementations <bcp14>SHOULD</bcp14> support the hash algorithms SHA-384 (code -43), SHA-512 (code -44), and SHA-512/256 (code -17).
         </t>
       </section>
       <section>
