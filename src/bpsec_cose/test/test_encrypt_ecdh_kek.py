@@ -4,7 +4,6 @@ from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
 from pycose.messages import EncMessage
 from pycose.messages.recipient import KeyAgreementWithKeyWrap
-from pycose.messages.context import CoseKDFContext, PartyInfo, SuppPubInfo
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest

@@ -3,19 +3,21 @@ import cbor2
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
 from pycose.messages import Enc0Message
-from pycose.messages.recipient import KeyWrap
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
 
+
 def bytes_pad(val: bytes, size: int) -> bytes:
     return b'\x00' * (size - len(val)) + val
+
 
 def bytes_xor(lt: bytes, rt: bytes) -> bytes:
     size = max([len(lt), len(rt)])
     lt = bytes_pad(lt, size)
     rt = bytes_pad(rt, size)
     return bytes(ltp ^ rtp for ltp, rtp in zip(lt, rt))
+
 
 class TestExample(BaseTest):
 
