@@ -21,9 +21,9 @@ classifiers = [
 
 dependencies = [
   "asn1 ~=2.7",
-  "cbor2 ~=4.1",
-  "pycose ~=1.0.1",
-  "cryptography ~=0.9",
+  "cbor2 >=5.6",
+  "pycose", # might be custom
+  "cryptography >=41.0",
   "six",
 ]
 
