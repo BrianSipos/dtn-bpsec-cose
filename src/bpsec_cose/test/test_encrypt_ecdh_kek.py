@@ -1,10 +1,11 @@
 import binascii
 import cbor2
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
 from pycose.messages import EncMessage
 from pycose.messages.recipient import KeyAgreementWithKeyWrap
-from pycose.messages.context import CoseKDFContext, PartyInfo, SuppPubInfo
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
@@ -26,6 +27,23 @@ class TestExample(BaseTest):
             }
         )
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
+
+        ckey = ec.EllipticCurvePrivateNumbers(
+            int.from_bytes(private_key.d, 'big'),
+            ec.EllipticCurvePublicNumbers(
+                x=int.from_bytes(private_key.x, 'big'),
+                y=int.from_bytes(private_key.y, 'big'),
+                curve=private_key.crv.curve_obj
+            )
+        ).private_key()
+        ckey_pem = ckey.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        print('Private PEM:\n{}'.format(ckey_pem.decode('utf-8')))
+        serialization.load_pem_private_key(ckey_pem, password=None)
+
         # 256-bit content encryption key
         cek = SymmetricKey(
             k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
