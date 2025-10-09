@@ -39,4 +39,4 @@ jobs:
         python3 -m pytest . --capture=no
     - name: PKI examples
       run: |
-        ./src/pki/run.py
+        ./src/bpsec_cose/pki/run.py
