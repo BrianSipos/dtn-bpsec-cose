@@ -7,6 +7,7 @@ acknowledgement
 acknowledgements
 AEAD
 AES
+alg
 ASB
 Baumgaertner
 BCB
@@ -27,10 +28,14 @@ CEKs
 ciphersuite
 ciphertext
 clientAuth
+CNSA
 CoAP
+conformant
 CoRE
+correlator
 COSE
 CRC
+crit
 CRLs
 cryptographic
 cryptographically
@@ -49,6 +54,7 @@ eid
 encodings
 endian
 ESA
+FIPS
 GCM
 HKDF
 HMAC
@@ -74,6 +80,7 @@ nonRepudiation
 OAEP
 OCSP
 PartyU
+PartyV
 pkcs
 PKI
 pkix
