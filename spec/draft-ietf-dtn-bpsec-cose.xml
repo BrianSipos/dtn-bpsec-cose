@@ -2440,7 +2440,7 @@ All of the example certificates contain a validity time interval extending a sho
 This root CA certificate and private key are included for completeness in testing <xref target="sec-context-auth-valid-cert">path validation</xref> with a full chain.
 This root CA does not allow any intermediates purely as an example, while a typical deployed PKI would separate a root CA from intermediate signing CA(s).
 It also does not include any Certificate Policies, Name Constraints, or Policy Constraints extensions as an operational CA might do to express or control how its subordinates are validated and used.
-It does, however, include an Extended Key Usage (EKU) value <tt>id-kp-bundleSecurity</tt> which indicates that this certificate tree is authorized for securing BP data and authenticating BP EIDs.
+It does, however, include an Extended Key Usage (EKU) value <tt>id-kp-bundleSecurity</tt> which indicates that this certificate tree is authorized for securing BP data.
         </t>
         <figure>
           <name>CA Certificate Content</name>
