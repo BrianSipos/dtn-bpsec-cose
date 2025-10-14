@@ -82,7 +82,7 @@ class PkiCa:
         ).not_valid_after(
             self._nowtime + datetime.timedelta(days=10)
         ).add_extension(
-            x509.BasicConstraints(ca=True, path_length=1),
+            x509.BasicConstraints(ca=True, path_length=0),
             critical=True,
         ).add_extension(
             x509.KeyUsage(
@@ -251,19 +251,19 @@ def main():
     pca.generate_root_ca(
         certbase=os.path.join(cadir, 'cert'),
         keybase=os.path.join(cadir, 'key'),
-        serial=int.from_bytes(bytes.fromhex('1515ffa740a4bd73f5ba8745370cdbbfd8a3d638'), 'big')
+        serial=int.from_bytes(bytes.fromhex('1515ffa740a4bd73f5ba'), 'big')
     )
 
     nodes = {
         'src': {
             'node_id': 'dtn://src/',
             'modes': {'sign'},
-            'serial': int.from_bytes(bytes.fromhex('6ffe89dcb76ed372ea7aa364e24df48326274daa'), 'big')
+            'serial': int.from_bytes(bytes.fromhex('6ffe89dcb76ed372ea7a'), 'big')
         },
         'dst': {
             'node_id': 'dtn://dst/',
             'modes': {'encrypt'},
-            'serial': int.from_bytes(bytes.fromhex('3f240bcda6f7fc3c29defb2ba6b31f250f405313'), 'big')
+            'serial': int.from_bytes(bytes.fromhex('3f240bcda6f7fc3c29de'), 'big')
         },
     }
 

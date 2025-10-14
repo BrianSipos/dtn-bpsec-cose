@@ -23,11 +23,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Set up OS
-      run: |
-        sudo rm /var/lib/man-db/auto-update
-        sudo apt-get update
-        sudo apt-get install libgirepository1.0-dev
     - name: Install
       run: pip3 install -e .
     - name: Lint with flake8
@@ -44,3 +39,7 @@ jobs:
     - name: PKI examples
       run: |
         python3 -m bpsec_cose.pki.run
+        openssl ec -in src/bpsec_cose/pki/data/ca/key.pem
+        openssl x509 -text -in src/bpsec_cose/pki/data/ca/cert.pem
+        openssl x509 -text -in src/bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem
+        openssl x509 -text -in src/bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem

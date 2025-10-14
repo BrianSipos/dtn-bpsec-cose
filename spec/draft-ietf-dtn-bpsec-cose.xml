@@ -50,7 +50,8 @@ A bare minimum of interoperability algorithms and algorithm parameters is specif
 The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <xref target="sec-pkix-env"/> using a certificate profile defined in <xref target="sec-pkix-profile"/>.
       </t>
       <t>
-Examples of specific uses are provided in <xref target="sec-examples"/> to aid in implementation support of the interoperability algorithms.
+Examples of specific security operations are provided in <xref target="sec-example-ops"/> to aid in implementation support of the interoperability algorithms of <xref target="sec-interop-alg"/>.
+Examples of public key certificates are provided in <xref target="sec-example-pkc"/> which are compatible with the profile in <xref target="sec-pkix-profile"/> and specific corresponding algorithms.
       </t>
       <section>
         <name>Scope</name>
@@ -1549,7 +1550,7 @@ The value range is unsigned 64-bit integer.
         </reference>
       </references>
     </references>
-    <section anchor="sec-examples">
+    <section anchor="sec-example-ops">
       <name>Example Security Operations</name>
       <t>
 These examples are intended to have the correct structure of COSE security blocks but in some cases use simplified algorithm parameters or smaller key sizes than are required by the actual COSE profile defined in this documents.
@@ -2405,6 +2406,84 @@ b676cc19ccb7ff3db97af8a4057d458f0a1d7b21ee8d55eaadb26fb2cba54e77b18e
         </sourcecode>
       </section>
     </section>
+    <section anchor="sec-example-pkc">
+      <name>Example Public Key Certificates</name>
+      <t>
+
+      </t>
+      <section>
+        <name>Root CA Certificate</name>
+        <t>
+
+        </t>
+        <sourcecode type="x509dump">
+Version: 3 (0x2)
+Serial Number:
+    15:15:ff:a7:40:a4:bd:73:f5:ba:87:45:37:0c:db:bf:d8:a3:d6:38
+Signature Algorithm: ecdsa-with-SHA256
+Issuer: CN = Certificate Authority
+Validity
+    Not Before: Oct  6 00:00:00 2025 GMT
+    Not After : Oct 16 00:00:00 2025 GMT
+Subject: CN = Certificate Authority
+Subject Public Key Info:
+    Public Key Algorithm: id-ecPublicKey
+        Public-Key: (256 bit)
+        pub:
+            04:be:8f:38:92:c4:7a:7d:e8:1a:78:e9:89:99:8f:
+            ab:e3:c2:02:31:46:d8:0f:20:84:ee:7d:c3:6b:66:
+            1b:ad:15:65:74:51:5c:ad:1a:aa:c9:0a:08:f3:a8:
+            86:0c:8f:50:71:76:0c:b8:1f:1a:fa:d6:f2:db:60:
+            9d:ce:c7:68:82
+        ASN1 OID: prime256v1
+        NIST CURVE: P-256
+X509v3 extensions:
+    X509v3 Basic Constraints: critical
+        CA:TRUE, pathlen:0
+    X509v3 Key Usage: critical
+        Certificate Sign, CRL Sign
+    X509v3 Extended Key Usage: 
+        1.3.6.1.5.5.7.3.35
+    X509v3 Subject Key Identifier: 
+        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+    X509v3 Authority Key Identifier: 
+        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+        </sourcecode>
+        <figure>
+          <name>Example CA Certificate PEM</name>
+          <sourcecode type="pem">
+-----BEGIN CERTIFICATE-----
+MIIBvTCCAWOgAwIBAgIUFRX/p0CkvXP1uodFNwzbv9ij1jgwCgYIKoZIzj0EAwIw
+IDEeMBwGA1UEAwwVQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTI1MTAwNjAwMDAw
+MFoXDTI1MTAxNjAwMDAwMFowIDEeMBwGA1UEAwwVQ2VydGlmaWNhdGUgQXV0aG9y
+aXR5MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvo84ksR6fegaeOmJmY+r48IC
+MUbYDyCE7n3Da2YbrRVldFFcrRqqyQoI86iGDI9QcXYMuB8a+tby22CdzsdogqN7
+MHkwEgYDVR0TAQH/BAgwBgEB/wIBATAOBgNVHQ8BAf8EBAMCAQYwEwYDVR0lBAww
+CgYIKwYBBQUHAyMwHQYDVR0OBBYEFLhoDTCUapkg40NWEqoFAxDkzayQMB8GA1Ud
+IwQYMBaAFLhoDTCUapkg40NWEqoFAxDkzayQMAoGCCqGSM49BAMCA0gAMEUCIA+z
+u/VsVTwBbIt9wa985zjdeyAPzUo2zfhL9J8TWQOSAiEA63J42cqmjHhzf9OT1WjM
+dE7tk4U/rNgosOxrHQMXyuY=
+-----END CERTIFICATE-----
+          </sourcecode>
+        </figure>
+        <figure>
+          <name>Example CA Private Key PEM</name>
+          <sourcecode type="pem">
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIMvwM7fudPlsFOJDJGuG2HAlfg+MaFFisxBkicaPrYLBoAoGCCqGSM49
+AwEHoUQDQgAEvo84ksR6fegaeOmJmY+r48ICMUbYDyCE7n3Da2YbrRVldFFcrRqq
+yQoI86iGDI9QcXYMuB8a+tby22Cdzsdogg==
+-----END EC PRIVATE KEY-----
+          </sourcecode>
+        </figure>
+      </section>
+      <section>
+        <name>Signing Source End-Entity Certificate</name>
+      </section>
+      <section>
+        <name>Recipient End-Entity Certificate</name>
+      </section>
+    </section>
     <section anchor="sec-doc-ack" numbered="false">
       <name>Acknowledgments</name>
       <t>
@@ -2442,7 +2521,7 @@ As of the time of writing a COSE Context dissector has been accepted to the defa
 That dissector integrates the full-featured COSE dissector on top of BPSec, so will scale with any future additions to COSE itself.
       </t>
       <t>
-An example implementation of this COSE Context has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a source of data for the examples in <xref target="sec-examples"/>.
+An example implementation of this COSE Context has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a source of data for the examples in <xref target="sec-example-ops"/>.
 This example implementation only handles CBOR encoding/decoding and cryptographic functions, it does not construct actual BIB or BCB and does not integrate with a BP Agent.
       </t>
     </section>
