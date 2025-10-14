@@ -23,9 +23,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Set up OS
-      run: |
-        sudo apt-get update && sudo apt-get install libgirepository1.0-dev
     - name: Install
       run: |
         pip3 install git+https://github.com/BrianSipos/pycose.git@126-fully-specified-dsa
