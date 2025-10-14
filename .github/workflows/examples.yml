@@ -43,6 +43,6 @@ jobs:
         openssl verify \
           -attime $(date -d '2025-10-07T00:00:00Z' +'%s') \
           -x509_strict -show_chain \
-          -CAfile src/bpsec_cose/pki/data/ca/cert.pem \
-          src/bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem \
-          src/bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
+          -CAfile bpsec_cose/pki/data/ca/cert.pem \
+          bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem \
+          bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
