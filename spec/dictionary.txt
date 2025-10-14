@@ -51,6 +51,7 @@ DTN
 ECDH
 EdDSA
 eid
+EKU
 encodings
 endian
 ESA
@@ -81,6 +82,7 @@ OAEP
 OCSP
 PartyU
 PartyV
+PEM
 pkcs
 PKI
 pkix

@@ -1570,7 +1570,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
   [1, "//dst/svc"], / destination /
   [1, "//src/svc"], / source /
   [1, "//src/"], / report-to /
-  [813110400000, 0], / timestamp /
+  [813110400000, 0], / timestamp: creation time, seq. no. /
   1000000 / lifetime /
 ]
         </sourcecode>
@@ -1738,7 +1738,7 @@ The final bundle is encoded as the following 154 octets in base-16:
 f87c0526068501010000466568656c6c6fff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-ec-sign">
         <name>EC Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with a recipient having a P-256 curve EC keypair identified by a "kid".
@@ -2141,7 +2141,7 @@ d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e116
 8501010000561fd25f64a2ee886e97ecfde7667371214f5add54a089ff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-ec-recip">
         <name>EC Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with an P-256 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
@@ -2409,14 +2409,19 @@ b676cc19ccb7ff3db97af8a4057d458f0a1d7b21ee8d55eaadb26fb2cba54e77b18e
     <section anchor="sec-example-pkc">
       <name>Example Public Key Certificates</name>
       <t>
-
+This section contains example public key certificates corresponding to end-entity private keys and identities used in examples of <xref target="sec-example-ops"/> with structure and extensions conforming to the profile of <xref target="sec-pkix-profile"/>.
+All of the example certificates contain a validity time interval extending a short amount around the original bundle creation time of the <xref target="fig-ex-primary-block">original bundle</xref>.
       </t>
       <section>
         <name>Root CA Certificate</name>
         <t>
-
+This root CA certificate and private key are included for completeness in testing <xref target="sec-context-auth-valid-cert">path validation</xref> with a full chain.
+This root CA does not allow any intermediates purely as an example, while a typical deployed PKI would separate a root CA from intermediate signing CA(s).
+It also does not include any Certificate Policies, Name Constraints, or Policy Constraints extensions as an operational CA might do to express or control how its subordinates are validated and used.
         </t>
-        <sourcecode type="x509dump">
+        <figure>
+          <name>CA Certificate Content</name>
+          <sourcecode type="x509dump">
 Version: 3 (0x2)
 Serial Number:
     15:15:ff:a7:40:a4:bd:73:f5:ba:87:45:37:0c:db:bf:d8:a3:d6:38
@@ -2448,9 +2453,10 @@ X509v3 extensions:
         B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
     X509v3 Authority Key Identifier: 
         B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
-        </sourcecode>
+          </sourcecode>
+        </figure>
         <figure>
-          <name>Example CA Certificate PEM</name>
+          <name>CA Certificate PEM</name>
           <sourcecode type="pem">
 -----BEGIN CERTIFICATE-----
 MIIBvTCCAWOgAwIBAgIUFRX/p0CkvXP1uodFNwzbv9ij1jgwCgYIKoZIzj0EAwIw
@@ -2467,7 +2473,7 @@ dE7tk4U/rNgosOxrHQMXyuY=
           </sourcecode>
         </figure>
         <figure>
-          <name>Example CA Private Key PEM</name>
+          <name>CA Private Key PEM</name>
           <sourcecode type="pem">
 -----BEGIN EC PRIVATE KEY-----
 MHcCAQEEIMvwM7fudPlsFOJDJGuG2HAlfg+MaFFisxBkicaPrYLBoAoGCCqGSM49
@@ -2479,9 +2485,127 @@ yQoI86iGDI9QcXYMuB8a+tby22Cdzsdogg==
       </section>
       <section>
         <name>Signing Source End-Entity Certificate</name>
+        <t>
+This end-entity certificate corresponds with the private key used for signing in <xref target="sec-example-ops-ec-sign"/>.
+It contains a SAN authenticating the single security source from that example, an EKU authorizing the identity, and a Key Usage authorizing the signing.
+        </t>
+        <figure>
+          <name>Signing Certificate Content</name>
+          <sourcecode type="x509dump">
+Version: 3 (0x2)
+Serial Number:
+    6f:fe:89:dc:b7:6e:d3:72:ea:7a
+Signature Algorithm: ecdsa-with-SHA256
+Issuer: CN = Certificate Authority
+Validity
+    Not Before: Oct  6 00:00:00 2025 GMT
+    Not After : Oct 16 00:00:00 2025 GMT
+Subject: CN = src
+Subject Public Key Info:
+    Public Key Algorithm: id-ecPublicKey
+        Public-Key: (256 bit)
+        pub:
+            04:44:c1:fa:63:b8:4f:17:2b:50:54:13:39:c5:0b:
+            eb:0e:63:02:41:ec:b4:ee:bb:dd:b8:b5:e4:fe:0a:
+            17:87:a8:05:94:51:c7:63:0d:95:d0:b5:50:ac:bd:
+            02:e9:79:b3:f4:f7:4e:64:5b:74:71:5f:af:bc:16:
+            39:96:0a:0c:7a
+        ASN1 OID: prime256v1
+        NIST CURVE: P-256
+X509v3 extensions:
+    X509v3 Basic Constraints: critical
+        CA:FALSE
+    X509v3 Subject Alternative Name: 
+        othername: 1.3.6.1.5.5.7.8.11::dtn://src/
+    X509v3 Key Usage: critical
+        Digital Signature
+    X509v3 Extended Key Usage: 
+        1.3.6.1.5.5.7.3.35
+    X509v3 Subject Key Identifier: 
+        14:C1:F4:6F:29:03:0D:06:1D:9F:00:B5:52:81:B9:04:5D:DC:99:F0
+    X509v3 Authority Key Identifier: 
+        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+          </sourcecode>
+        </figure>
+        <figure>
+          <name>Signing Certificate PEM</name>
+          <sourcecode type="pem">
+-----BEGIN CERTIFICATE-----
+MIIBwjCCAWigAwIBAgIKb/6J3Ldu03LqejAKBggqhkjOPQQDAjAgMR4wHAYDVQQD
+DBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjUxMDA2MDAwMDAwWhcNMjUxMDE2
+MDAwMDAwWjAOMQwwCgYDVQQDDANzcmMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
+AAREwfpjuE8XK1BUEznFC+sOYwJB7LTuu924teT+CheHqAWUUcdjDZXQtVCsvQLp
+ebP0905kW3RxX6+8FjmWCgx6o4GbMIGYMAwGA1UdEwEB/wQCMAAwIwYDVR0RBBww
+GqAYBggrBgEFBQcIC6AMFgpkdG46Ly9zcmMvMA4GA1UdDwEB/wQEAwIHgDATBgNV
+HSUEDDAKBggrBgEFBQcDIzAdBgNVHQ4EFgQUFMH0bykDDQYdnwC1UoG5BF3cmfAw
+HwYDVR0jBBgwFoAUuGgNMJRqmSDjQ1YSqgUDEOTNrJAwCgYIKoZIzj0EAwIDSAAw
+RQIgPbRxJo6lAW5GWORRp9GJudmjpufPMQRYVMHH0yLS/2wCIQDmSKf8ShVeqry1
+h2qgOWoKRBieE9xP9VZ2Xzt+9tOXxQ==
+-----END CERTIFICATE-----
+          </sourcecode>
+        </figure>
       </section>
       <section>
-        <name>Recipient End-Entity Certificate</name>
+        <name>Encryption Recipient End-Entity Certificate</name>
+        <t>
+This end-entity certificate corresponds with the private key used for decrypting <xref target="sec-example-ops-ec-recip"/>.
+It contains a SAN identifying the single security acceptor from that example, an EKU authorizing the identity, and a Key Usage authorizing the key agreement.
+        </t>
+        <figure>
+          <name>Key-Agreement Certificate Content</name>
+          <sourcecode type="x509dump">
+Version: 3 (0x2)
+Serial Number:
+    3f:24:0b:cd:a6:f7:fc:3c:29:de
+Signature Algorithm: ecdsa-with-SHA256
+Issuer: CN = Certificate Authority
+Validity
+    Not Before: Oct  6 00:00:00 2025 GMT
+    Not After : Oct 16 00:00:00 2025 GMT
+Subject: CN = dst
+Subject Public Key Info:
+    Public Key Algorithm: id-ecPublicKey
+        Public-Key: (256 bit)
+        pub:
+            04:47:f4:03:8f:0a:30:62:81:d6:14:c6:73:c8:a3:
+            7b:88:d9:04:2d:75:77:67:51:a6:8c:dd:69:e1:a6:
+            5e:25:54:38:01:0c:21:85:55:d4:31:e8:07:8f:9a:
+            b8:75:9e:06:b9:bd:17:f5:e2:7e:0b:28:0a:e5:e6:
+            15:e5:9f:a0:bd
+        ASN1 OID: prime256v1
+        NIST CURVE: P-256
+X509v3 extensions:
+    X509v3 Basic Constraints: critical
+        CA:FALSE
+    X509v3 Subject Alternative Name: 
+        othername: 1.3.6.1.5.5.7.8.11::dtn://dst/
+    X509v3 Key Usage: critical
+        Key Agreement
+    X509v3 Extended Key Usage: 
+        1.3.6.1.5.5.7.3.35
+    X509v3 Subject Key Identifier: 
+        84:26:AB:FD:B7:9D:BF:EC:CB:2A:80:78:BA:1B:23:36:E4:4B:49:FE
+    X509v3 Authority Key Identifier: 
+        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+          </sourcecode>
+        </figure>
+        <figure>
+          <name>Key-Agreement Certificate PEM</name>
+          <sourcecode type="pem">
+-----BEGIN CERTIFICATE-----
+MIIBwzCCAWigAwIBAgIKPyQLzab3/Dwp3jAKBggqhkjOPQQDAjAgMR4wHAYDVQQD
+DBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjUxMDA2MDAwMDAwWhcNMjUxMDE2
+MDAwMDAwWjAOMQwwCgYDVQQDDANkc3QwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
+AARH9AOPCjBigdYUxnPIo3uI2QQtdXdnUaaM3Wnhpl4lVDgBDCGFVdQx6AePmrh1
+nga5vRf14n4LKArl5hXln6C9o4GbMIGYMAwGA1UdEwEB/wQCMAAwIwYDVR0RBBww
+GqAYBggrBgEFBQcIC6AMFgpkdG46Ly9kc3QvMA4GA1UdDwEB/wQEAwIDCDATBgNV
+HSUEDDAKBggrBgEFBQcDIzAdBgNVHQ4EFgQUhCar/bedv+zLKoB4uhsjNuRLSf4w
+HwYDVR0jBBgwFoAUuGgNMJRqmSDjQ1YSqgUDEOTNrJAwCgYIKoZIzj0EAwIDSQAw
+RgIhALPZGFOfbb2KfYhOO8Y+M8Y0MkccnPgPqgui4XIhAvL6AiEA01ZiFL8lb0Hu
+ym7mD2uqUoxzP8DCX5J7KUAaDQjwVhw=
+-----END CERTIFICATE-----
+          </sourcecode>
+        </figure>
       </section>
     </section>
     <section anchor="sec-doc-ack" numbered="false">
