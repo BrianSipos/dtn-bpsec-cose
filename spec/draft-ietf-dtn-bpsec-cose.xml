@@ -719,34 +719,34 @@ Only some symmetric-keyed algorithms are CNSA 2.0 conformant <xref target="CNSA2
             <tr>
               <td>Integrity</td>
               <td>0 or 1</td>
-              <td>ES256</td>
-              <td>-7</td>
+              <td>ESP256</td>
+              <td>-9</td>
               <td>Recommended</td>
               <td/>
             </tr>
             <tr>
               <td>Integrity</td>
               <td>0 or 1</td>
-              <td>ES384</td>
-              <td>-35</td>
+              <td>Ed25519</td>
+              <td>-19</td>
+              <td>Recommended</td>
+              <td/>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>ESP384</td>
+              <td>-51</td>
               <td>Recommended</td>
               <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Integrity</td>
               <td>0 or 1</td>
-              <td>ES512</td>
-              <td>-36</td>
+              <td>ESP512</td>
+              <td>-52</td>
               <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>EdDSA</td>
-              <td>-8</td>
-              <td>Recommended</td>
-              <td/>
+              <td>CNSA 1.0</td>
             </tr>
             <tr>
               <td>Integrity</td>
@@ -771,6 +771,14 @@ Only some symmetric-keyed algorithms are CNSA 2.0 conformant <xref target="CNSA2
               <td>-39</td>
               <td>Recommended</td>
               <td>CNSA 1.0</td>
+            </tr>
+            <tr>
+              <td>Integrity</td>
+              <td>0 or 1</td>
+              <td>Ed448</td>
+              <td>-53</td>
+              <td>Recommended</td>
+              <td/>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -1761,7 +1769,7 @@ The associated public key is included as a security parameter.
   { / signing private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -7, / ES256 /
+    / alg / 3: -9, / ESP256 /
     / ops / 4: [1, 2], / sign, verify /
     / crv / -1: 1, / P-256 /
     / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
@@ -1810,15 +1818,15 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -7 / ES256 /
+           / alg / 1: -9 / ESP256 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'ffa54a386c42de982982e338c8ed6f962a91c126a411609a3b4b35da94
-70fb56d9862eccaebe14ed5b3f2f2dc6d00bfed1566184c0462677d66adc78ccd3ca
-6e' / signature /
+        h'edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e8260358aa
+ac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d67cfa
+c5' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1831,10 +1839,10 @@ The final bundle is encoded as the following 186 octets in base-16:
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850b030000587081010301820166
-2f2f7372632f818205a2000120018181821258558443a10126a1044a4578616d706c
-65454332f65840ffa54a386c42de982982e338c8ed6f962a91c126a411609a3b4b35
-da9470fb56d9862eccaebe14ed5b3f2f2dc6d00bfed1566184c0462677d66adc78cc
-d3ca6e8501010000466568656c6c6fff
+2f2f7372632f818205a2000120018181821258558443a10128a1044a4578616d706c
+65454332f65840edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e82603
+58aaac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d6
+7cfac58501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
