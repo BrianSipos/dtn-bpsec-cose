@@ -676,6 +676,7 @@ The required algorithms are identical to the capability of the <xref target="RFC
           <t>
 The EC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
 The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+Only some symmetric-keyed algorithms are CNSA 2.0 conformant <xref target="CNSA2"/>, as no quantum resistant public key algorithms are included in this profile.
           </t>
         </aside>
         <table anchor="tab-interop-algs">
@@ -793,7 +794,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>A256GCM</td>
               <td>3</td>
               <td>Required</td>
-              <td>CNSA 1.0</td>
+              <td>CNSA 1.0 and 2.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -817,7 +818,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>A256KW</td>
               <td>-5</td>
               <td>Required</td>
-              <td>CNSA 1.0</td>
+              <td>CNSA 1.0 and 2.0</td>
             </tr>
             <tr>
               <td>Confidentiality</td>
@@ -921,7 +922,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>SHA-384</td>
               <td>-43</td>
               <td>Recommended</td>
-              <td>CNSA 1.0</td>
+              <td>CNSA 1.0 and 2.0</td>
             </tr>
             <tr>
               <td>Any</td>
@@ -929,7 +930,7 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <td>SHA-512</td>
               <td>-44</td>
               <td>Recommended</td>
-              <td>CNSA 1.0</td>
+              <td>CNSA 2.0</td>
             </tr>
           </tbody>
         </table>
@@ -1514,6 +1515,16 @@ The value range is unsigned 64-bit integer.
               <organization>US Committee on National Security Systems</organization>
             </author>
             <date day="20" month="October" year="2016"/>
+          </front>
+        </reference>
+        <reference anchor="CNSA2" target="">
+          <front>
+            <title>Use of Public Standards for Secure Information Sharing</title>
+            <seriesInfo name="CNSS Policy" value="15"/>
+            <author>
+              <organization>US Committee on National Security Systems</organization>
+            </author>
+            <date month="December" year="2024"/>
           </front>
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
