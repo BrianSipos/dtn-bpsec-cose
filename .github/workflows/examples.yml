@@ -6,17 +6,14 @@ jobs:
   build:
     permissions:
       contents: read
-
-    runs-on: ubuntu-24.04
     strategy:
       max-parallel: 4
       matrix:
         python-version: ['3.8', '3.10', '3.12']
-
     defaults:
       run:
         working-directory: src
-
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -39,7 +36,7 @@ jobs:
     - name: PKI examples
       run: |
         python3 -m bpsec_cose.pki.run
-        openssl ec -in src/bpsec_cose/pki/data/ca/key.pem
-        openssl x509 -text -in src/bpsec_cose/pki/data/ca/cert.pem
-        openssl x509 -text -in src/bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem
-        openssl x509 -text -in src/bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
+        openssl ec -in bpsec_cose/pki/data/ca/key.pem
+        openssl x509 -text -in bpsec_cose/pki/data/ca/cert.pem
+        openssl x509 -text -in bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem
+        openssl x509 -text -in bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
