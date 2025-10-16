@@ -205,9 +205,6 @@ class PkiCa:
             x509.ExtendedKeyUsage(ekus),
             critical=False,
         ).add_extension(
-            x509.SubjectKeyIdentifier.from_public_key(node_key.public_key()),
-            critical=False,
-        ).add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(self._ca_key.public_key()),
             critical=False,
         ).sign(self._ca_key, hashes.SHA256(), backend=default_backend())
