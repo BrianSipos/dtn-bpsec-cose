@@ -1215,24 +1215,27 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> reject as invalid Version 
       </t>
       <t>
 Security verifiers and acceptors <bcp14>SHALL</bcp14> accept certificates that contain an empty Subject field or contain a Subject without a Common Name.
-Identity information in end-entity certificates <bcp14>SHALL</bcp14> be contained in the Subject Alternative Name extension in accordance with <xref section="4.2.1.6" target="RFC5280"/>.
+Security verifiers and acceptors <bcp14>SHALL</bcp14> use the Subject Alternative Name extension for identity information in end-entity certificates.
       </t>
       <t>
+All BPSec end-entity certificates <bcp14>SHALL</bcp14> contain a Subject Alternative Name extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
 A BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a NODE-ID in its Subject Alternative Name extension which authenticates the Node ID of the security source (for integrity) or a security verifier or acceptor (for confidentiality).
 The identifier type NODE-ID is defined in <xref section="4.4.1" target="RFC9174"/>.
       </t>
       <t>
-All end-entity and CA certificates used for BPSec <bcp14>SHOULD</bcp14> contain both a Subject Key Identifier extension in accordance with <xref section="4.2.1.2" target="RFC5280"/> and an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
+All BPSec CA certificates <bcp14>SHOULD</bcp14> contain both a Subject Key Identifier extension in accordance with <xref section="4.2.1.2" target="RFC5280"/> and an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
+All BPSec end-entity certificates <bcp14>SHOULD</bcp14> contain an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
 Security verifiers and acceptors <bcp14>SHOULD NOT</bcp14> rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
 Including key identifiers simplifies the work of an entity needing to assemble a certification chain.
       </t>
       <t>
-When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHOULD</bcp14> contain a PKIX Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
+All BPSec CA certificates <bcp14>SHOULD</bcp14> contain an Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
+When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHALL</bcp14> contain an Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
 When the PKIX Extended Key Usage extension is present, it <bcp14>SHALL</bcp14> contain a key purpose <tt>id-kp-bundleSecurity</tt> of <xref target="IANA-SMI"/>.
 The <tt>id-kp-bundleSecurity</tt> purpose <bcp14>MAY</bcp14> be combined with other purposes in the same certificate.
       </t>
       <t>
-When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a PKIX Key Usage extension in accordance with <xref section="4.2.1.3" target="RFC5280"/>.
+When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a Key Usage extension in accordance with <xref section="4.2.1.3" target="RFC5280"/>.
 The PKIX Key Usage bits which are consistent with COSE security are: digitalSignature, nonRepudiation, keyEncipherment, and keyAgreement.
 The specific algorithms used by COSE messages in security results determine which of those key uses are exercised.
 See <xref target="sec-pkix-multiple-certs"/> for discussion of key use policies across multiple certificates.
