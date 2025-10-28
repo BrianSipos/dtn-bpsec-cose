@@ -48,6 +48,7 @@ digitalSignature
 DOI
 dtn
 DTN
+ECC
 ECDH
 EdDSA
 eid
