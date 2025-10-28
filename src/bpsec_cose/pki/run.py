@@ -197,15 +197,12 @@ class PkiCa:
             critical=True,
         ).add_extension(
             x509.SubjectAlternativeName(sans),
-            critical=False,
+            critical=True,
         ).add_extension(
             x509.KeyUsage(**key_usage),
             critical=True,
         ).add_extension(
             x509.ExtendedKeyUsage(ekus),
-            critical=False,
-        ).add_extension(
-            x509.SubjectKeyIdentifier.from_public_key(node_key.public_key()),
             critical=False,
         ).add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(self._ca_key.public_key()),
