@@ -660,338 +660,319 @@ The requirements of this profile still allow the use of potentially not-easily-i
       <section anchor="sec-interop-alg">
         <name>Interoperability Algorithms</name>
         <t>
-The set of COSE algorithms needed for interoperability is listed in this section.
+The set of COSE algorithms needed for interoperability is listed in this section and organized by the type of associated key material.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the symmetric keyed and key-encryption algorithms marked as "required" in <xref target="tab-interop-algs"/>.
-Implementations capable of doing so <bcp14>SHOULD</bcp14> support the asymmetric keyed and key-encryption algorithms marked as "recommended" in <xref target="tab-interop-algs"/>.
+Each algorithm in this profile is marked as being CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
         </t>
         <aside>
           <t>
-All of these algorithms in this table are compatible with FIPS-140-3 <xref target="FIPS-140"/>.
-          </t>
-          <t>
-The required algorithms are identical to the capability of the <xref target="RFC9173"/> contexts.
-          </t>
-          <t>
-The EC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
-The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
-Only some symmetric-keyed algorithms are CNSA 2.0 conformant <xref target="CNSA2"/>, as no quantum resistant public key algorithms are included in this profile.
+All of these algorithms in this profile are compatible with FIPS-140-3 <xref target="FIPS-140"/>.
           </t>
         </aside>
-        <table anchor="tab-interop-algs">
-          <name>Interoperability Algorithms</name>
-          <thead>
-            <tr>
-              <th>BPSec Block</th>
-              <th>COSE Layer</th>
-              <th>Name</th>
-              <th>Code</th>
-              <th>Implementation Requirements</th>
-              <th>Conformance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>HMAC 256/256</td>
-              <td>5</td>
-              <td>Required</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>HMAC 384/384</td>
-              <td>6</td>
-              <td>Required</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>HMAC 512/512</td>
-              <td>7</td>
-              <td>Required</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>ESP256</td>
-              <td>-9</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>Ed25519</td>
-              <td>-19</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>ESP384</td>
-              <td>-51</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>ESP512</td>
-              <td>-52</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>PS256</td>
-              <td>-37</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>PS384</td>
-              <td>-38</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>PS512</td>
-              <td>-39</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Integrity</td>
-              <td>0 or 1</td>
-              <td>Ed448</td>
-              <td>-53</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>0</td>
-              <td>A128GCM</td>
-              <td>1</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>0</td>
-              <td>A192GCM</td>
-              <td>2</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>0</td>
-              <td>A256GCM</td>
-              <td>3</td>
-              <td>Required</td>
-              <td>CNSA 1.0 and 2.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>A128KW</td>
-              <td>-3</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>A192KW</td>
-              <td>-4</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>A256KW</td>
-              <td>-5</td>
-              <td>Required</td>
-              <td>CNSA 1.0 and 2.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>direct</td>
-              <td>-6</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-ES + HKDF-256</td>
-              <td>-25</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-ES + HKDF-512</td>
-              <td>-26</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-SS + HKDF-256</td>
-              <td>-27</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-SS + HKDF-512</td>
-              <td>-28</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-ES + A256KW</td>
-              <td>-31</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>ECDH-SS + A256KW</td>
-              <td>-34</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>RSAES-OAEP w/ SHA-256</td>
-              <td>-41</td>
-              <td>Recommended</td>
-              <td/>
-            </tr>
-            <tr>
-              <td>Confidentiality</td>
-              <td>1</td>
-              <td>RSAES-OAEP w/ SHA-512</td>
-              <td>-42</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0</td>
-            </tr>
-            <tr>
-              <td>Any</td>
-              <td>x5t parameters</td>
-              <td>SHA-256/64</td>
-              <td>-15</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Any</td>
-              <td>x5t parameters</td>
-              <td>SHA-256</td>
-              <td>-16</td>
-              <td>Required</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Any</td>
-              <td>x5t parameters</td>
-              <td>SHA-512/256</td>
-              <td>-17</td>
-              <td>Recommended</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Any</td>
-              <td>x5t parameters</td>
-              <td>SHA-384</td>
-              <td>-43</td>
-              <td>Recommended</td>
-              <td>CNSA 1.0 and 2.0</td>
-            </tr>
-            <tr>
-              <td>Any</td>
-              <td>x5t parameters</td>
-              <td>SHA-512</td>
-              <td>-44</td>
-              <td>Recommended</td>
-              <td>CNSA 2.0</td>
-            </tr>
-          </tbody>
-        </table>
-        <t>
-The following are recommended key and recipient uses within COSE/BPSec:
-        </t>
-        <dl newline="true">
-          <dt>Symmetric Key Integrity:</dt>
-          <dd>
+        <section>
+          <name>Hashing Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/>.
+          </t>
+          <table anchor="tab-interop-algs-hash">
+            <name>Hash Algorithms</name>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SHA-256/64</td>
+                <td>-15</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>SHA-256</td>
+                <td>-16</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>SHA-512/256</td>
+                <td>-17</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>SHA-384</td>
+                <td>-43</td>
+                <td>CNSA 1.0 and 2.0</td>
+              </tr>
+              <tr>
+                <td>SHA-512</td>
+                <td>-44</td>
+                <td>CNSA 2.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
+These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
+The truncated algorithms are useful for certificate filtering using shorter thumbprints.
+          </t>
+        </section>
+        <section>
+          <name>Symmetric Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the symmetric keyed algorithms in <xref target="tab-interop-algs-sym"/>.
+          </t>
+          <aside>
+            <t>
+The symmetric keyed algorithms here have been reduced from those in <xref target="RFC9173"/> to only those which are CNSA 1.0 or 2.0 conformant.
+The "direct" algorithm is really just a recipient placeholder to allow using a direct key identifier.
+            </t>
+          </aside>
+          <table anchor="tab-interop-algs-sym">
+            <name>Symmetric Algorithms</name>
+            <thead>
+              <tr>
+                <th>BPSec Block</th>
+                <th>COSE Layer</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>HMAC 384/384</td>
+                <td>6</td>
+                <td>CNSA 1.0 and 2.0</td>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>HMAC 512/512</td>
+                <td>7</td>
+                <td>CNSA 2.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>0</td>
+                <td>A256GCM</td>
+                <td>3</td>
+                <td>CNSA 1.0 and 2.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>A256KW</td>
+                <td>-5</td>
+                <td>CNSA 1.0 and 2.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>direct</td>
+                <td>-6</td>
+                <td><em>N/A</em></td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
 When generating a BIB result from a symmetric key, implementations <bcp14>SHALL</bcp14> use a COSE_Mac or COSE_Mac0 using the private key directly.
 When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
-          </dd>
-          <dt>EC Keypair Integrity:</dt>
-          <dd>
-When generating a BIB result from an EC keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
-When a COSE_Sign or COSE_Sign1 is used with an EC keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-          </dd>
-          <dt>RSA Keypair Integrity:</dt>
-          <dd>
+          </t>
+          <t>
+When generating a BCB result from a symmetric key-encryption key (KEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
+When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
+          </t>
+          <t>
+When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
+Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+          </t>
+        </section>
+        <section>
+          <name>ECC Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the elliptic curve cryptography (ECC) algorithms using NIST curves and Edwards curves in <xref target="tab-interop-algs-ecc"/>.
+          </t>
+          <aside>
+            <t>
+The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
+            </t>
+          </aside>
+          <table anchor="tab-interop-algs-ecc">
+            <name>ECC Algorithms</name>
+            <thead>
+              <tr>
+                <th>BPSec Block</th>
+                <th>COSE Layer</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>ESP256</td>
+                <td>-9</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>Ed25519</td>
+                <td>-19</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>ESP384</td>
+                <td>-51</td>
+                <td>CNSA 1.0</td>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>ESP512</td>
+                <td>-52</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>Ed448</td>
+                <td>-53</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-ES + HKDF-256</td>
+                <td>-25</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-ES + HKDF-512</td>
+                <td>-26</td>
+                <td>CNSA 1.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-SS + HKDF-256</td>
+                <td>-27</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-SS + HKDF-512</td>
+                <td>-28</td>
+                <td>CNSA 1.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-ES + A256KW</td>
+                <td>-31</td>
+                <td>CNSA 1.0</td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>ECDH-SS + A256KW</td>
+                <td>-34</td>
+                <td>CNSA 1.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
+When generating a BIB result from an ECC private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an ECC private key, the top-layer headers <bcp14>SHALL</bcp14> include a corresponding public key identifier (see <xref target="sec-asym-keys"/>).
+          </t>
+          <t>
+When generating a BCB result from an ECC public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
+When a COSE_Encrypt is used with an ECC public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE_Encrypt is used with an ECC public key, the security source <bcp14>SHALL</bcp14> either generate an ephemeral ECC keypair or choose a unique HKDF "salt" for each security operation.
+When a COSE_Encrypt is used with an ECC public key and a single recipient, the direct HKDF algorithms (code -25 and -27) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -31 and -34) to reduce message size.
+When processing a COSE_Encrypt with an ECC public key, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+          </t>
+        </section>
+        <section>
+          <name>RSA Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/>.
+          </t>
+          <aside>
+            <t>
+The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+            </t>
+          </aside>
+          <table anchor="tab-interop-algs-rsa">
+            <name>RSA Algorithms</name>
+            <thead>
+              <tr>
+                <th>BPSec Block</th>
+                <th>COSE Layer</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>PS256</td>
+                <td>-37</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>PS384</td>
+                <td>-38</td>
+                <td>CNSA 1.0</td>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>PS512</td>
+                <td>-39</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>RSAES-OAEP w/ SHA-256</td>
+                <td>-41</td>
+                <td/>
+              </tr>
+              <tr>
+                <td>Confidentiality</td>
+                <td>1</td>
+                <td>RSAES-OAEP w/ SHA-512</td>
+                <td>-42</td>
+                <td>CNSA 1.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
 When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
 When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
 When a COSE signature is generated with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
-          </dd>
-          <dt>Symmetric Key Confidentiality:</dt>
-          <dd>
-            <t>
-When generating a BCB result from a symmetric key-encryption key (KEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
-When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
-            </t>
-            <t>
-When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
-Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
-            </t>
-          </dd>
-          <dt>EC Keypair Confidentiality:</dt>
-          <dd>
-When generating a BCB result from an EC public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
-When a COSE_Encrypt is used with an EC public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE_Encrypt is used with an EC public key, the security source <bcp14>SHALL</bcp14> either generate an ephemeral EC keypair or choose a unique HKDF "salt" for each security operation.
-When a COSE_Encrypt is used with an EC public key and a single recipient, the direct HKDF algorithms (code -25 and -27) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -31 and -34) to reduce message size.
-When processing a COSE_Encrypt with an EC public key, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF and HMAC context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
-            </dd>
-          <dt>RSA Keypair Confidentiality:</dt>
-          <dd>
+          </t>
+          <t>
 When generating a BCB result from an RSA public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-            </dd>
-        </dl>
-        <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the hash algorithms SHA-256 (code -16) and SHA-256/64 (code -15).
-Implementations <bcp14>SHOULD</bcp14> support the hash algorithms SHA-384 (code -43), SHA-512 (code -44), and SHA-512/256 (code -17).
-        </t>
+          </t>
+        </section>
       </section>
       <section>
         <name>Needed Header Parameters</name>
@@ -1660,7 +1641,7 @@ This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-
         </sourcecode>
       </figure>
       <t>
-The only differences between these examples which use EC or RSA keypairs and a use of a public key certificate are: the highest-layer parameters would contain an "x5t" (or equivalent, see <xref target="sec-asym-keys"/>) value instead of a "kid" value.
+The only differences between these examples which use ECC or RSA keypairs and a use of a public key certificate are: the highest-layer parameters would contain an "x5t" (or equivalent, see <xref target="sec-asym-keys"/>) value instead of a "kid" value.
 This would not be a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
@@ -1761,9 +1742,9 @@ f87c0526068501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-sign">
-        <name>EC Keypair COSE_Sign1</name>
+        <name>ECC Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with a recipient having a P-256 curve EC keypair identified by a "kid".
+This is an example of a signature with a recipient having a P-256 curve ECC keypair identified by a "kid".
 The associated public key is included as a security parameter.
         </t>
         <figure>
@@ -2164,7 +2145,7 @@ d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e116
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-recip">
-        <name>EC Keypair COSE_Encrypt</name>
+        <name>ECC Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with an P-256 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
 The keys used are shown in <xref target="fig-ex-encrypt-ec2-keys"/>.
@@ -2635,9 +2616,6 @@ F3x71sqspvbkQjp2SoLSA3loW73K2jw=
       <name>Acknowledgments</name>
       <t>
 Thanks to Lars Baumgaertner and Lukas Holst at ESA for review and prototyping feedback.
-      </t>
-      <t>
-The interoperability minimum algorithms and their parameters are based on those available in the Default Security Contexts of <xref target="RFC9173"/>.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
