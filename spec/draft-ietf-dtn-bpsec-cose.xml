@@ -986,8 +986,8 @@ This support means required-to-implement not required-to-use for any particular 
         </t>
         <t>
 Specific COSE algorithms have their own requirements about which header parameters are mandatory or optional to use in the associated COSE message layer.
-The phrasing in <xref target="tab-interop-hdrs"/> uses the term "optional" where the need for a parameter is determined by the specific end use, and "conditional" for cases where one parameter of several options is needed by this profile.
-For example, a choice of specific <xref target="sec-sym-keys">symmetric key identifier</xref> or <xref target="sec-asym-keys">asymmetric key identifier</xref> among several options.
+The phrasing in <xref target="tab-interop-hdrs"/> uses the term "required" where the parameter needs to be understood by all message processors, "optional" where the need for a parameter is determined by the specific end use, and "conditional" for cases where one parameter of several options is needed by this profile.
+For example, a choice of specific <xref target="sec-sym-keys">symmetric key identifier</xref> or <xref target="sec-asym-keys">asymmetric key identifier</xref> is conditional and chosen by the source.
         </t>
         <table anchor="tab-interop-hdrs">
           <name>Interoperability Header Parameters</name>
@@ -1002,12 +1002,12 @@ For example, a choice of specific <xref target="sec-sym-keys">symmetric key iden
             <tr>
               <td>alg</td>
               <td>1</td>
-              <td>Required by COSE <xref target="RFC9052"/></td>
+              <td>Required for COSE <xref target="RFC9052"/></td>
             </tr>
             <tr>
               <td>crit</td>
               <td>2</td>
-              <td>Conditional for COSE <xref target="RFC9052"/></td>
+              <td>Required for COSE <xref target="RFC9052"/></td>
             </tr>
             <tr>
               <td>content type</td>
