@@ -54,7 +54,7 @@ class TestExample(BaseTest):
 
         msg_obj = Sign1Message(
             phdr={
-                headers.Algorithm: algorithms.Ps256,
+                headers.Algorithm: private_key.alg,
             },
             uhdr={
                 headers.KID: private_key.kid,

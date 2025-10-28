@@ -58,7 +58,7 @@ class TestExample(BaseTest):
 
         msg_obj = Enc0Message(
             phdr={
-                headers.Algorithm: algorithms.A256GCM,
+                headers.Algorithm: cek.alg,
             },
             uhdr={
                 headers.KID: cek.kid,
