@@ -2061,12 +2061,12 @@ a3f1ff
         </sourcecode>
       </section>
       <section>
-        <name>Symmetric KEK COSE_Encrypt</name>
+        <name>Symmetric Key COSE_Encrypt with Key Wrap</name>
         <t>
 This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a "kid".
-The keys used are shown in <xref target="fig-ex-encrypt-symm-keys"/>.
+The keys used are shown in <xref target="fig-ex-encrypt-sym-kw-keys"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-symm-keys">
+        <figure anchor="fig-ex-encrypt-sym-kw-keys">
           <name>Example Keys</name>
           <sourcecode type="cbor">
 [
@@ -2078,11 +2078,9 @@ The keys used are shown in <xref target="fig-ex-encrypt-symm-keys"/>.
     / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
 ae38ad7a972e'
   },
-  {
+  { / wrapped CEK /
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleCEK',
     / alg / 3: 3, / A256GCM /
-    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -2092,7 +2090,7 @@ ae38ad7a972e'
         <t>
 The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-symm-struct">
+        <figure anchor="fig-ex-encrypt-sym-kw-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
@@ -2105,10 +2103,10 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
           </sourcecode>
         </figure>
         <t>
-The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-symm-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-sym-kw-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
 The recipient does not have any protected header parameters because AES Key Wrap does not allow any AAD.
         </t>
-        <figure anchor="fig-ex-encrypt-symm-asb">
+        <figure anchor="fig-ex-encrypt-sym-kw-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
@@ -2162,13 +2160,126 @@ d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e116
 8501010000561fd25f64a2ee886e97ecfde7667371214f5add54a089ff
         </sourcecode>
       </section>
-      <section anchor="sec-example-ops-ec-recip">
-        <name>ECC Keypair COSE_Encrypt</name>
+      <section>
+        <name>Symmetric Key COSE_Encrypt with HKDF</name>
+        <t>
+This is an example of an encryption with a derived CEK and an explicit key-derivation key (KDK) identified by a "kid".
+The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where the second key is the CEK derived from the KDK via a salt value in the recipient header.
+        </t>
+        <figure anchor="fig-ex-encrypt-sym-hkdf-keys">
+          <name>Example Keys</name>
+          <sourcecode type="cbor">
+[
+  {
+    / kty / 1: 4, / symmetric /
+    / kid / 2: 'ExampleKDK',
+    / alg / 3: -11, / direct+HKDF-SHA-512 /
+    / ops / 4: [7], / derive key /
+    / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
+ae38ad7a972e'
+  },
+  { / derived CEK /
+    / kty / 1: 4, / symmetric /
+    / alg / 3: 3, / A256GCM /
+    / k / -1: h'b0f3604f54d3f15e272357d1df75b50ede1475b0cdb17fef0fd1
+46b9bbcda3a3'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-sym-hkdf-struct">
+          <name><tt>Enc_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f7376638201
+692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
+4001010040' / external_aad /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-sym-hkdf-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-sym-hkdf-target-final"/>.
+This ciphertext is different than the common one in <xref target="fig-ex-encrypt-target-final"/> because of the different derived CEK in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-sym-hkdf-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[1], / targets /
+3, / security context /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
+  [
+    5, / AAD-scope /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      96, / COSE_Encrypt tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1: 3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null, / payload detached /
+        [
+          [ / recipient /
+            &lt;&lt;{ / protected /
+              / alg / 1: -11 / direct+HKDF-SHA-512 /
+            }&gt;&gt;,
+            { / unprotected /
+              / kid / 4: 'ExampleKDK',
+              / salt / -20: h'2fa8c8352aea17faf7407271a5e90eb8'
+            },
+            h'' / empty /
+          ]
+        ]
+      ]&gt;&gt;
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-sym-hkdf-target-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  1, / type code: payload /
+  1, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'7443d510ee5ce1280ac6639b2256c98015ebfa8a8eb4' / ciphertext /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 176 octets in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f4240850c030000585681010301820166
+2f2f7372632f818205a2000120018181821860583a8443a10103a1054c6f3093eba5
+d85143c3dc484af6818340a3012a044a4578616d706c654b454b33502fa8c8352aea
+17faf7407271a5e90eb840850101000056f8faf5e48112dad5c246f92a97b50e4231
+c882fde56cff
+        </sourcecode>
+      </section>
+      <section anchor="sec-example-ops-ec-recip-wrap">
+        <name>ECC Keypair COSE_Encrypt with Key Wrap</name>
         <t>
 This is an example of an encryption with an P-256 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
-The keys used are shown in <xref target="fig-ex-encrypt-ec2-keys"/>.
+The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-ec2-keys">
+        <figure anchor="fig-ex-encrypt-ecc-kw-keys">
           <name>Example Keys</name>
           <sourcecode type="cbor">
 [
@@ -2195,11 +2306,9 @@ e4fe0a1787a8',
     / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
 89786ea63842'
   },
-  {
+  { / wrapped CEK /
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleCEK',
     / alg / 3: 3, / A256GCM /
-    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -2209,7 +2318,7 @@ e4fe0a1787a8',
         <t>
 The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-ec2-struct">
+        <figure anchor="fig-ex-encrypt-ecc-kw-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
           <sourcecode type="cbor">
 [
@@ -2222,9 +2331,9 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
           </sourcecode>
         </figure>
         <t>
-The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-ec2-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-ecc-kw-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
         </t>
-        <figure anchor="fig-ex-encrypt-ec2-asb">
+        <figure anchor="fig-ex-encrypt-ecc-kw-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor">
 [1], / targets /
@@ -2291,6 +2400,138 @@ dd54a089ff
         </sourcecode>
       </section>
       <section>
+        <name>ECC Keypair COSE_Encrypt with HKDF</name>
+        <t>
+This is an example of an encryption with an P-256 curve static sender keypair and a static recipient keypair each identified by a "kid".
+The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where the third key is the CEK derived from the ECDH secret via a salt value in the recipient header.
+        </t>
+        <figure anchor="fig-ex-encrypt-ecc-hkdf-keys">
+          <name>Example Keys</name>
+          <sourcecode type="cbor">
+[
+  {
+    / kty / 1: 2, / EC2 /
+    / kid / 2: 'SenderEC2',
+    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / ops / 4: [7], / derive key /
+    / crv / -1: 1, / P-256 /
+    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
+e4fe0a1787a8',
+    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
+1639960a0c7a',
+    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
+89786ea63842'
+  },
+  { / recipient private key /
+    / kty / 1: 2, / EC2 /
+    / kid / 2: 'ExampleEC2',
+    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / ops / 4: [7], / derive key /
+    / crv / -1: 1, / P-256 /
+    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
+e4fe0a1787a8',
+    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
+1639960a0c7a',
+    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
+89786ea63842'
+  },
+  { / derived CEK /
+    / kty / 1: 4, / symmetric /
+    / alg / 3: 3, / A256GCM /
+    / k / -1: h'f5af7b0693bd1c4459b7af31b562d1c77733b0eaacfb6a599123
+34b7bb8866ef'
+  }
+]
+          </sourcecode>
+        </figure>
+        <t>
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-ecc-hkdf-struct">
+          <name><tt>Enc_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  "Encrypt", / context /
+  h'a10103', / protected /
+  h'8201662f2f7372632fa200012001880700008201692f2f6473742f7376638201
+692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
+4001010040' / external_aad /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-ecc-hkdf-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-ecc-hkdf-target-final"/>.
+This ciphertext is different than the common one in <xref target="fig-ex-encrypt-target-final"/> because of the different derived CEK in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>.
+        </t>
+        <figure anchor="fig-ex-encrypt-ecc-hkdf-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[1], / targets /
+3, / security context /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
+  [
+    5, / AAD-scope /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      96, / COSE_Encrypt tag /
+      &lt;&lt;[
+        &lt;&lt;{ / protected /
+           / alg / 1: 3 / A256GCM /
+        }&gt;&gt;,
+        { / unprotected /
+          / iv / 5: h'6f3093eba5d85143c3dc484a'
+        },
+        null, / payload detached /
+        [
+          [ / recipient /
+            &lt;&lt;{ / protected /
+              / alg / 1: -27 / ECDH-SS + HKDF-256 /
+            }&gt;&gt;,
+            { / unprotected /
+              / kid / 4: 'ExampleEC2',
+              / sender kid / -3: 'SenderEC2',
+              / salt / -20: h'2fa8c8352aea17faf7407271a5e90eb8'
+            },
+            h'' / empty /
+          ]
+        ]
+      ]&gt;&gt;
+    ]
+  ]
+]
+          </sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-ecc-hkdf-target-final">
+          <name>Encrypted Target block CBOR diagnostic</name>
+          <sourcecode type="cbor">
+[
+  1, / type code: payload /
+  1, / block num /
+  0, / flags /
+  0, / CRC type /
+  h'4e46163230082b455c73c021b59b2ef9e64d9032a29a' / ciphertext /
+]
+          </sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 189 octets in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f4240850c030000586381010301820166
+2f2f7372632f818205a200012001818182186058478443a10103a1054c6f3093eba5
+d85143c3dc484af6818344a101381aa3044a4578616d706c65454332224953656e64
+657245433233502fa8c8352aea17faf7407271a5e90eb8408501010000564e461632
+30082b455c73c021b59b2ef9e64d9032a29aff
+        </sourcecode>
+      </section>
+      <section>
         <name>RSA Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with a recipient having a 1024-bit RSA keypair identified by a "kid".
@@ -2336,11 +2577,9 @@ c3d00e75',
 d9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65
 f4f92865ca3'
   },
-  {
+  { / encapsulated CEK /
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleCEK',
     / alg / 3: 3, / A256GCM /
-    / ops / 4: [3, 4], / encrypt, decrypt /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
   }
@@ -2570,7 +2809,7 @@ hZ50V8OpuCMOz800PMREjFgSwQga5g==
       <section>
         <name>Encryption Recipient End-Entity Certificate</name>
         <t>
-This end-entity certificate corresponds with the private key used for decrypting <xref target="sec-example-ops-ec-recip"/>.
+This end-entity certificate corresponds with the private key used for decrypting <xref target="sec-example-ops-ec-recip-wrap"/>.
 It contains a SAN identifying the single security acceptor from that example, an EKU authorizing the identity, and a Key Usage authorizing the key agreement.
         </t>
         <figure>

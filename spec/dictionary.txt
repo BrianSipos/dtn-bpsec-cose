@@ -67,6 +67,7 @@ interoperable
 interoperation
 IPPT
 KDF
+KDK
 KEK
 keyAgreement
 keyEncipherment
