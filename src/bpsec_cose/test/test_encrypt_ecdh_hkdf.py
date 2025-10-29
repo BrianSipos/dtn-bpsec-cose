@@ -5,7 +5,7 @@ from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
 from pycose.messages import EncMessage
-from pycose.messages.recipient import KeyAgreementWithKeyWrap
+from pycose.messages.recipient import DirectKeyAgreement
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
@@ -22,7 +22,7 @@ class TestExample(BaseTest):
             d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
             optional_params={
                 keyparam.KpKid: b'ExampleEC2',
-                keyparam.KpAlg: algorithms.EcdhEsA256KW,
+                keyparam.KpAlg: algorithms.EcdhSsHKDF256,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         )
@@ -32,6 +32,8 @@ class TestExample(BaseTest):
             x=recipient_key.x,
             y=recipient_key.y
         )
+        kdf_salt = binascii.unhexlify('2fa8c8352aea17faf7407271a5e90eb8')
+        print('KDF salt: {}'.format(binascii.hexlify(kdf_salt)))
 
         ckey = ec.EllipticCurvePrivateNumbers(
             int.from_bytes(recipient_key.d, 'big'),
@@ -49,16 +51,6 @@ class TestExample(BaseTest):
         print('Private PEM:\n{}'.format(ckey_pem.decode('utf-8')))
         serialization.load_pem_private_key(ckey_pem, password=None)
 
-        # 256-bit content encryption key
-        cek = SymmetricKey(
-            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
-            optional_params={
-                keyparam.KpKid: b'ExampleCEK',
-                keyparam.KpAlg: algorithms.A256GCM,
-                keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
-            }
-        )
-        print('CEK: {}'.format(encode_diagnostic(cbor2.loads(cek.encode()))))
         # session IV
         iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(binascii.hexlify(iv)))
@@ -71,7 +63,7 @@ class TestExample(BaseTest):
             d=binascii.unhexlify('a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c20880f9d9c3b122a'),
             optional_params={
                 keyparam.KpKid: b'SenderEC2',
-                keyparam.KpAlg: algorithms.EcdhEsA256KW,
+                keyparam.KpAlg: algorithms.EcdhSsHKDF256,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         )
@@ -102,22 +94,22 @@ class TestExample(BaseTest):
 
         msg_obj = EncMessage(
             phdr={
-                headers.Algorithm: cek.alg,
+                headers.Algorithm: algorithms.A256GCM,
             },
             uhdr={
                 headers.IV: iv,
             },
             payload=content_plaintext,
             recipients=[
-                KeyAgreementWithKeyWrap(
+                DirectKeyAgreement(
                     phdr={
                         headers.Algorithm: recipient_key.alg,
                     },
                     uhdr={
                         headers.KID: recipient_key.kid,
-                        headers.EphemeralKey: sender_public,
+                        headers.StaticKeyID: sender_key.kid,
+                        headers.Salt: kdf_salt,
                     },
-                    payload=cek.k,
                 ),
             ],
             # Non-encoded parameters
@@ -168,13 +160,15 @@ class TestExample(BaseTest):
         decode_obj.external_aad = ext_aad_enc
 
         recip = decode_obj.recipients[0]
+        # recipient's view of keys
+        recip.uhdr[headers.StaticKey] = sender_public
         recip.key = recipient_key
         decode_plaintext = decode_obj.decrypt(recipient=recip)
         print('Loopback plaintext:', encode_diagnostic(decode_plaintext))
         self.assertEqual(content_plaintext, decode_plaintext)
 
         print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
-        self.assertEqual(cek.k, decode_obj.key.k)
+        self.assertIsNotNone(decode_obj.key.k)
 
         target_dec[4] = content_ciphertext
         target_enc = cbor2.dumps(target_dec)

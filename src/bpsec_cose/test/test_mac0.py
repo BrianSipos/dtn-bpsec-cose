@@ -44,7 +44,7 @@ class TestExample(BaseTest):
 
         msg_obj = Mac0Message(
             phdr={
-                headers.Algorithm: algorithms.HMAC256,
+                headers.Algorithm: key.alg,
             },
             uhdr={
                 headers.KID: key.kid,

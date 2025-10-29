@@ -67,7 +67,7 @@ class TestExample(BaseTest):
 
         msg_obj = EncMessage(
             phdr={
-                headers.Algorithm: algorithms.A256GCM,
+                headers.Algorithm: cek.alg,
             },
             uhdr={
                 headers.IV: iv,
@@ -76,7 +76,7 @@ class TestExample(BaseTest):
             recipients=[
                 KeyWrap(
                     uhdr={
-                        headers.Algorithm: algorithms.RsaesOaepSha256,
+                        headers.Algorithm: private_key.alg,
                         headers.KID: private_key.kid,
                     },
                     payload=cek.k,
