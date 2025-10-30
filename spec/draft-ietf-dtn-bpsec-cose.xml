@@ -644,15 +644,15 @@ When generating a BPSec result, security sources <bcp14>SHALL</bcp14> use only C
 When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp14> handle COSE labels with with a tstr value.
         </t>
         <t>
-When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layers.
-When available and not implied by the bundle source, a COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last (recipient) layer.
-See <xref target="sec-asym-keys"/> for specifics about asymmetric key identifiers.
-When a key identifier is not available, BPSec acceptors <bcp14>SHALL</bcp14> use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
+Each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
+When available, each COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last layer for all signatures or recipients.
+See <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/> for specifics about key identifiers.
+When a key identifier is not available, BPSec verifiers and acceptors <bcp14>SHALL</bcp14> use the Security Source and the Bundle Source to imply which keys can be used for security operations.
 Using implied keys has an interoperability risk, see <xref target="sec-threat-unident-key"/> for details.
 A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
         </t>
         <t>
-The algorithms required by this profile focuses on networks using shared symmetric-keys, with recommended algorithms for Elliptic Curve (EC) keypairs and RSA keypairs.
+The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and RSA keypairs.
 The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
         </t>
@@ -660,17 +660,19 @@ The requirements of this profile still allow the use of potentially not-easily-i
       <section anchor="sec-interop-alg">
         <name>Interoperability Algorithms</name>
         <t>
-The set of COSE algorithms needed for interoperability is listed in this section and organized by the type of associated key material.
+The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
+This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
+It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
 Each algorithm in this profile is marked as being CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
+All of these algorithms in this profile are compatible with FIPS 140-3 <xref target="FIPS-140"/>, for which significantly more software and hardware detail than just algorithm choices are needed for actual certification.
         </t>
-        <aside>
-          <t>
-All of these algorithms in this profile are compatible with FIPS-140-3 <xref target="FIPS-140"/>.
-          </t>
-        </aside>
+        <t>
+The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS data link security rationale described in <xref target="CCSDS-SDLS"/>.
+The breadth of algorithm variety is intended to cover many different current use cases beyond simple symmetric key security and be compatible with current PKIX mechanisms and strategies.
+        </t>
         <section>
           <name>Hashing Algorithms</name>
           <t>
@@ -715,7 +717,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </table>
           <t>
 These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
-The truncated algorithms are useful for certificate filtering using shorter thumbprints.
+The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSA 1.0 minimum strength for protecting data.
           </t>
         </section>
         <section>
@@ -728,11 +730,9 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
 The symmetric keyed algorithms here are not a super-set of those available in <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
             </t>
           </aside>
-          <aside>
-            <t>
-The "direct" algorithm is really just a recipient placeholder to allow using a key-encryption key (KEK) identifier in that layer.
-            </t>
-          </aside>
+          <t>
+The "direct" algorithm is really just a recipient placeholder to allow using a content encryption key (CEK) identifier in a that COSE layer, so has no cryptographic function or effect on security strength.
+          </t>
           <table anchor="tab-interop-algs-sym">
             <name>Symmetric Algorithms</name>
             <thead>
@@ -745,13 +745,6 @@ The "direct" algorithm is really just a recipient placeholder to allow using a k
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
-                <td>HMAC 256/256</td>
-                <td>5</td>
-                <td></td>
-              </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
@@ -769,30 +762,9 @@ The "direct" algorithm is really just a recipient placeholder to allow using a k
               <tr>
                 <td>Confidentiality</td>
                 <td>0</td>
-                <td>A128GCM</td>
-                <td>1</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>0</td>
-                <td>A192GCM</td>
-                <td>2</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>0</td>
                 <td>A256GCM</td>
                 <td>3</td>
                 <td>CNSA 1.0 and 2.0</td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>A128KW</td>
-                <td>-3</td>
-                <td></td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -811,13 +783,6 @@ The "direct" algorithm is really just a recipient placeholder to allow using a k
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
-                <td>direct+HKDF-SHA-256</td>
-                <td>-10</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
                 <td>direct+HKDF-SHA-512</td>
                 <td>-11</td>
                 <td>CNSA 1.0 and 2.0</td>
@@ -829,11 +794,11 @@ When generating a BIB result from a symmetric key, implementations <bcp14>SHALL<
 When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
           </t>
           <t>
-When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
+When generating a BCB result from a symmetric content encryption key (CEK), implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
           </t>
           <t>
-When generating a BCB result from a symmetric KEK, implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
+When generating a BCB result from a symmetric key-encryption key (CEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
           </t>
           <t>
@@ -844,7 +809,7 @@ When processing a COSE_Encrypt with a symmetric KEK, a security verifier or acce
         <section>
           <name>ECC Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the elliptic curve cryptography (ECC) algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
+Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
           </t>
           <aside>
             <t>
@@ -866,13 +831,6 @@ The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
-                <td>ESP256</td>
-                <td>-9</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
                 <td>ESP384</td>
                 <td>-51</td>
                 <td>CNSA 1.0</td>
@@ -887,23 +845,9 @@ The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
-                <td>ECDH-ES + HKDF-256</td>
-                <td>-25</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
                 <td>ECDH-ES + HKDF-512</td>
                 <td>-26</td>
                 <td>CNSA 1.0</td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>ECDH-SS + HKDF-256</td>
-                <td>-27</td>
-                <td/>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -972,13 +916,6 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
-                <td>PS256</td>
-                <td>-37</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
                 <td>PS384</td>
                 <td>-38</td>
                 <td>CNSA 1.0</td>
@@ -989,13 +926,6 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
                 <td>PS512</td>
                 <td>-39</td>
                 <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>RSAES-OAEP w/ SHA-256</td>
-                <td>-41</td>
-                <td/>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -1348,10 +1278,13 @@ It is important that the key requirements of <xref target="sec-ASB-parameters"/>
 Including non-public key material in ASB parameters will expose that material in the bundle data and over the bundle convergence layer during transport.
         </t>
       </section>
-      <section>
+      <section anchor="sec-algo-vuln">
         <name>Threat: Algorithm Vulnerabilities</name>
         <t>
 Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
+        </t>
+        <t>
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been identified in <xref target="CNSA2"/> but are not yet available as COSE code points allocated by published standards.
         </t>
       </section>
       <section>
@@ -1519,6 +1452,16 @@ The value range is unsigned 64-bit integer.
               <organization>US National Institute of Standards and Technology</organization>
             </author>
             <date month="March" year="2019"/>
+          </front>
+        </reference>
+        <reference anchor="CCSDS-SDLS" target="https://public.ccsds.org/Pubs/350x5g2.pdf">
+          <front>
+            <title>Space Data Link Security Protocol - Summary of Concept and Rationale</title>
+            <seriesInfo name="CCSDS" value="350.5-G-2"/>
+            <author>
+              <organization>Consultative Committee for Space Data Systems</organization>
+            </author>
+            <date month="January" year="2024"/>
           </front>
         </reference>
         <reference anchor="CNSA1" target="">
