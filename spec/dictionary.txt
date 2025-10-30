@@ -21,6 +21,7 @@ bundleSecurity
 Canonicalization
 CAs
 CBOR
+CCSDS
 cddl
 CDDL
 CEK
