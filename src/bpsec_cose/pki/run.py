@@ -44,13 +44,13 @@ class PkiCa:
         )
 
     def generate_key(self, key_opts: dict) -> Union[rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey]:
-        keytype = key_opts.get('keytype', 'SECP256R1').upper()
+        keytype = key_opts.get('keytype', 'SECP384R1').upper()
         if keytype == 'RSA':
-            key_size = 2048
+            key_size = 3072
             node_key = rsa.generate_private_key(65537, key_size, backend=default_backend())
         elif keytype.startswith('SECP'):
             curve = getattr(ec, keytype)
-            node_key = ec.generate_private_key(curve, backend=default_backend())  # Curve for COSE ES256
+            node_key = ec.generate_private_key(curve, backend=default_backend())
         else:
             raise ValueError(f'Unknown keytype: {keytype}')
         return node_key
@@ -109,7 +109,7 @@ class PkiCa:
         ).add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
             critical=False,
-        ).sign(ca_key, hashes.SHA256(), backend=default_backend())
+        ).sign(ca_key, hashes.SHA384(), backend=default_backend())
 
         os.makedirs(os.path.dirname(keyfile), exist_ok=True)
         with open(keyfile, 'wb') as outfile:
@@ -207,7 +207,7 @@ class PkiCa:
         ).add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(self._ca_key.public_key()),
             critical=False,
-        ).sign(self._ca_key, hashes.SHA256(), backend=default_backend())
+        ).sign(self._ca_key, hashes.SHA384(), backend=default_backend())
 
         os.makedirs(os.path.dirname(keyfile), exist_ok=True)
         with open(keyfile, 'wb') as outfile:

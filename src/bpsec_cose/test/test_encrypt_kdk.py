@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
@@ -15,7 +14,7 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key derivation key
         kdk = SymmetricKey(
-            k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            k=bytes.fromhex('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
             optional_params={
                 keyparam.KpKid: b'ExampleKEK',
                 keyparam.KpAlg: algorithms.DirectHKDFSHA512,
@@ -23,12 +22,12 @@ class TestExample(BaseTest):
             }
         )
         print('KDK: {}'.format(encode_diagnostic(cbor2.loads(kdk.encode()))))
-        kdf_salt = binascii.unhexlify('2fa8c8352aea17faf7407271a5e90eb8')
-        print('KDF salt: {}'.format(binascii.hexlify(kdf_salt)))
+        kdf_salt = bytes.fromhex('2fa8c8352aea17faf7407271a5e90eb8')
+        print('KDF salt: {}'.format(kdf_salt.hex()))
 
         # session IV
-        iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
-        print('IV: {}'.format(binascii.hexlify(iv)))
+        iv = bytes.fromhex('6F3093EBA5D85143C3DC484A')
+        print('IV: {}'.format(iv.hex()))
 
         # Primary block
         prim_dec = self._get_primary_item()

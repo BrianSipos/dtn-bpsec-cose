@@ -1,9 +1,8 @@
-import binascii
 import cbor2
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
-from pycose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
+from pycose.keys import EC2Key, curves, keyops, keyparam
 from pycose.messages import EncMessage
 from pycose.messages.recipient import DirectKeyAgreement
 from ..util import dump_cborseq, encode_diagnostic
@@ -15,14 +14,15 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
+        # recipient_key = EC2Key.generate_key(curves.P384)
         recipient_key = EC2Key(
-            crv=curves.P256,
-            x=binascii.unhexlify('44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5e4fe0a1787a8'),
-            y=binascii.unhexlify('059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc1639960a0c7a'),
-            d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
+            crv=curves.P384,
+            x=bytes.fromhex('0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8354c234b2970b4ac27e78f38250069d128f98e51ceb1'),
+            y=bytes.fromhex('4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894cc73b2431d4cdc040d66e8eb2dad731f7dca57108545c'),
+            d=bytes.fromhex('7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'),
             optional_params={
                 keyparam.KpKid: b'ExampleEC2',
-                keyparam.KpAlg: algorithms.EcdhSsHKDF256,
+                keyparam.KpAlg: algorithms.EcdhSsHKDF512,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         )
@@ -32,8 +32,8 @@ class TestExample(BaseTest):
             x=recipient_key.x,
             y=recipient_key.y
         )
-        kdf_salt = binascii.unhexlify('2fa8c8352aea17faf7407271a5e90eb8')
-        print('KDF salt: {}'.format(binascii.hexlify(kdf_salt)))
+        kdf_salt = bytes.fromhex('2fa8c8352aea17faf7407271a5e90eb8')
+        print('KDF salt: {}'.format(kdf_salt.hex()))
 
         ckey = ec.EllipticCurvePrivateNumbers(
             int.from_bytes(recipient_key.d, 'big'),
@@ -52,18 +52,18 @@ class TestExample(BaseTest):
         serialization.load_pem_private_key(ckey_pem, password=None)
 
         # session IV
-        iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
-        print('IV: {}'.format(binascii.hexlify(iv)))
+        iv = bytes.fromhex('6F3093EBA5D85143C3DC484A')
+        print('IV: {}'.format(iv.hex()))
 
         # Would be random ephemeral key, but test constant
         sender_key = EC2Key(
-            crv=curves.P256,
-            x=binascii.unhexlify('fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6bcc'),
-            y=binascii.unhexlify('ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f28d62'),
-            d=binascii.unhexlify('a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c20880f9d9c3b122a'),
+            crv=curves.P384,
+            x=bytes.fromhex('2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45'),
+            y=bytes.fromhex('fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'),
+            d=bytes.fromhex('c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520a658b4040a443f8fb3b54fb4ce882510e76017b66261'),
             optional_params={
                 keyparam.KpKid: b'SenderEC2',
-                keyparam.KpAlg: algorithms.EcdhSsHKDF256,
+                keyparam.KpAlg: algorithms.EcdhSsHKDF512,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         )

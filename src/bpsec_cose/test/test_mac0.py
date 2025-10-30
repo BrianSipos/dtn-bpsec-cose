@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
@@ -12,12 +11,12 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        # 256-bit key
+        # 128-bit key (SHA-384 block size)
         key = SymmetricKey(
-            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=bytes.fromhex('13BF9CEAD057C0ACA2C9E52471CA4B19'),
             optional_params={
                 keyparam.KpKid: b'ExampleMAC',
-                keyparam.KpAlg: algorithms.HMAC256,
+                keyparam.KpAlg: algorithms.HMAC384,
                 keyparam.KpKeyOps: [keyops.MacCreateOp, keyops.MacVerifyOp],
             }
         )
