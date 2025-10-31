@@ -676,7 +676,7 @@ The breadth of algorithm variety is intended to cover many different current use
         <section>
           <name>Hashing Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/>.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/> if they will operate with public key certificates.
           </t>
           <table anchor="tab-interop-algs-hash">
             <name>Hash Algorithms</name>
@@ -813,7 +813,7 @@ When processing a COSE_Encrypt with a symmetric KEK, a security verifier or acce
         <section>
           <name>ECC Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
           </t>
           <aside>
             <t>
@@ -898,7 +898,7 @@ ECDH-ES can provide forward secrecy by using the ephemeral key only for single m
         <section>
           <name>RSA Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
           </t>
           <aside>
             <t>
@@ -1616,7 +1616,7 @@ The only differences between these examples which use ECC or RSA keypairs and a 
 This would not be a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
-Because each of the COSE_Encrypt examples use the same CEK within the same AAD, the target ciphertext is also identical.
+Because each of the COSE_Encrypt examples using key wrap or encapsulation (<xref target="sec-example-ops-kek-recip-wrap"/>, <xref target="sec-example-ops-ec-recip-wrap"/>, <xref target="sec-example-ops-rsa-recip"/>) use the same CEK within the same AAD, the target ciphertext is also identical.
 The target block after application of the encryption is shown in <xref target="fig-ex-encrypt-target-final"/>.
       </t>
       <figure anchor="fig-ex-encrypt-target-final">
@@ -2051,7 +2051,7 @@ The final bundle is encoded as the following 139 octets in base-16:
 a3f1ff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-kek-recip-wrap">
         <name>Symmetric Key COSE_Encrypt with Key Wrap</name>
         <t>
 This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a "kid".
@@ -2523,7 +2523,7 @@ d85143c3dc484af6818344a101381ba3044a4578616d706c65454332224953656e64
 6eb8223957ae40693c02d1f6a0cdb71574aaff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-rsa-recip">
         <name>RSA Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with a recipient having a 1024-bit RSA keypair identified by a "kid".
