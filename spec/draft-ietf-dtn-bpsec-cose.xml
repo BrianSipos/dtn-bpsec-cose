@@ -1814,7 +1814,7 @@ This signature uses a random salt, so the full signature output is not determini
   { / signing private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
-    / alg / 3: -37, / PS256 /
+    / alg / 3: -38, / PS384 /
     / ops / 4: [1, 2], / sign, verify /
     / n / -1: h'f47b7c275eff5bf74e9e69d2b50e9a5dc0666147ca2541fce9a2
 53d00840e2481378733797a9db641911937aff7cbc579f16484cea2cd3fbe2db3bbb
@@ -1911,7 +1911,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -37 / PS256 /
+           / alg / 1: -38 / PS384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleRSA'
