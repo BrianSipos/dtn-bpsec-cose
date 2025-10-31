@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
@@ -15,13 +14,13 @@ class TestExample(BaseTest):
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         private_key = EC2Key(
-            crv=curves.P256,
-            x=binascii.unhexlify('44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5e4fe0a1787a8'),
-            y=binascii.unhexlify('059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc1639960a0c7a'),
-            d=binascii.unhexlify('dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf5189786ea63842'),
+            crv=curves.P384,
+            x=bytes.fromhex('02dfc49747f5d3d219fe6185744729fa1672ef7d11cb57ca0320c632be06ca3fdcc118e63140ba3ec57ea7b85d419568'),
+            y=bytes.fromhex('4526e81bf0d9ea0924f05a3453ad75b92806671511544c993f6bd908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d'),
+            d=bytes.fromhex('3494803544d85a84d802400b50f51eea23b72d7d850b53cbf3006e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'),
             optional_params={
                 keyparam.KpKid: b'ExampleEC2',
-                keyparam.KpAlg: algorithms.Esp256,
+                keyparam.KpAlg: algorithms.Esp384,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )

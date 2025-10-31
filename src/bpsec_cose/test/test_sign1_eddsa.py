@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from pycose import headers, algorithms
 from pycose.keys import OKPKey, curves, keyops, keyparam
@@ -13,11 +12,11 @@ class TestExample(BaseTest):
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         private_key = OKPKey(
-            crv=curves.Ed25519,
-            x=binascii.unhexlify('64f38ea84b153c7be87349f78261ca46e90f1613a3ceb2ae02c010193631e07d'),
-            d=binascii.unhexlify('6820977a9be08d676dac7ee19e1595d0552894ee2d71feb1d7b1d2a9f31754fd'),
+            crv=curves.Ed448,
+            x=bytes.fromhex('6fc00a0f3daf529646f0d611f9c50d1fc67a79342e64722f8eda40b2a3ce7a7e2ee0495b0dba419c73749d988e59affc271bb8e071cac42400'),
+            d=bytes.fromhex('28f35ed6e729001539a5acbf48f94002a02a9207beac1f412a2c604837774b36d2d6edd20cd778ac26e98ace24d5256d8cad33863ee8c71a56'),
             optional_params={
-                keyparam.KpKid: b'ExampleEd25519',
+                keyparam.KpKid: b'ExampleEd',
                 keyparam.KpAlg: algorithms.EdDSA,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }

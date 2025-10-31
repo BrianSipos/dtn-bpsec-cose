@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
@@ -15,7 +14,7 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key encryption key
         kek = SymmetricKey(
-            k=binascii.unhexlify('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            k=bytes.fromhex('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
             optional_params={
                 keyparam.KpKid: b'ExampleKEK',
                 keyparam.KpAlg: algorithms.A256KW,
@@ -25,7 +24,7 @@ class TestExample(BaseTest):
         print('KEK: {}'.format(encode_diagnostic(cbor2.loads(kek.encode()))))
         # 256-bit content encryption key
         cek = SymmetricKey(
-            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=bytes.fromhex('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
                 keyparam.KpAlg: algorithms.A256GCM,
@@ -34,8 +33,8 @@ class TestExample(BaseTest):
         )
         print('CEK: {}'.format(encode_diagnostic(cbor2.loads(cek.encode()))))
         # session IV
-        iv = binascii.unhexlify('6F3093EBA5D85143C3DC484A')
-        print('IV: {}'.format(binascii.hexlify(iv)))
+        iv = bytes.fromhex('6F3093EBA5D85143C3DC484A')
+        print('IV: {}'.format(iv.hex()))
 
         # Primary block
         prim_dec = self._get_primary_item()
