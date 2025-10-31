@@ -747,14 +747,14 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
             <tbody>
               <tr>
                 <td>Integrity</td>
-                <td>0 or 1</td>
+                <td>0</td>
                 <td>HMAC 384/384</td>
                 <td>6</td>
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
                 <td>Integrity</td>
-                <td>0 or 1</td>
+                <td>0</td>
                 <td>HMAC 512/512</td>
                 <td>7</td>
                 <td>CNSA 2.0</td>
@@ -767,21 +767,21 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>A256KW</td>
                 <td>-5</td>
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>direct</td>
                 <td>-6</td>
                 <td><em>N/A</em></td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>direct+HKDF-SHA-512</td>
                 <td>-11</td>
@@ -792,6 +792,10 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
           <t>
 When generating a BIB result from a symmetric key, implementations <bcp14>SHALL</bcp14> use a COSE_Mac or COSE_Mac0 using the private key directly.
 When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
+          </t>
+          <t>
+The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the hash function output length.
+This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all keys for HMAC.
           </t>
           <t>
 When generating a BCB result from a symmetric content encryption key (CEK), implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
@@ -1630,7 +1634,7 @@ The target block after application of the encryption is shown in <xref target="f
       <section>
         <name>Symmetric Key COSE_Mac0</name>
         <t>
-This is an example of a MAC with recipient having a 256-bit symmetric key identified by a "kid".
+This is an example of a MAC with recipient having a 384-bit symmetric key (same size of the hash output) identified by a "kid".
         </t>
         <figure>
           <name>Symmetric Key</name>
@@ -1639,10 +1643,10 @@ This is an example of a MAC with recipient having a 256-bit symmetric key identi
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleMAC',
-    / alg / 3: 5, / HMAC 256//256 /
+    / alg / 3: 6, / HMAC 384 384 /
     / ops / 4: [9, 10], / MAC create, MAC verify /
-    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
-99dbae4ce45c'
+    / k / -1: h'3a5c74e32ab4558a99581ec3a816576812aabe895db04494cda2
+5b711d7b5ed4077466e677860648412f1bf8c91d0624'
   }
 ]
           </sourcecode>
@@ -1683,14 +1687,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       17, / COSE_Mac0 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: 5 / HMAC 256//256 /
+           / alg / 1: 6 / HMAC 384 384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleMAC'
         },
         null, / payload detached /
-        h'c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9f87c
-052606' / tag /
+        h'67d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d9498a7b
+fdefa119ba9988a69874a3349b0451b5f2b029' / tag /
       ]&gt;&gt;
     ]
   ]
@@ -1698,14 +1702,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 154 octets in base-16:
+The final bundle is encoded as the following 170 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850b030000585081010301820166
-2f2f7372632f818205a2000120018181821158358443a10105a1044a4578616d706c
-654d4143f65820c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9
-f87c0526068501010000466568656c6c6fff
+7372632f821b000000bd51281400001a000f4240850b030000586081010301820166
+2f2f7372632f818205a2000120018181821158458443a10106a1044a4578616d706c
+654d4143f6583067d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d949
+8a7bfdefa119ba9988a69874a3349b0451b5f2b0298501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-sign">
@@ -1721,15 +1725,15 @@ The associated public key is included as a security parameter.
   { / signing private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -9, / ESP256 /
+    / alg / 3: -51, / ESP384 /
     / ops / 4: [1, 2], / sign, verify /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'02dfc49747f5d3d219fe6185744729fa1672ef7d11cb57ca0320
+c632be06ca3fdcc118e63140ba3ec57ea7b85d419568',
+    / y / -3: h'4526e81bf0d9ea0924f05a3453ad75b92806671511544c993f6b
+d908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d',
+    / d / -4: h'3494803544d85a84d802400b50f51eea23b72d7d850b53cbf300
+6e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'
   }
 ]
           </sourcecode>
@@ -1770,15 +1774,16 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -9 / ESP256 /
+           / alg / 1: -51 / ESP384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e8260358aa
-ac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d67cfa
-c5' / signature /
+        h'd1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908ad1babd
+de44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d720609
+212f435ca36283853803f5bc085192dc5649036611ff0c395b53b06e9d06382a
+2a' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1786,15 +1791,16 @@ c5' / signature /
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 186 octets in base-16:
+The final bundle is encoded as the following 219 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850b030000587081010301820166
-2f2f7372632f818205a2000120018181821258558443a10128a1044a4578616d706c
-65454332f65840edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e82603
-58aaac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d6
-7cfac58501010000466568656c6c6fff
+7372632f821b000000bd51281400001a000f4240850b030000589181010301820166
+2f2f7372632f818205a2000120018181821258768444a1013832a1044a4578616d70
+6c65454332f65860d1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908a
+d1babdde44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d
+720609212f435ca36283853803f5bc085192dc5649036611ff0c395b53b06e9d0638
+2a2a8501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -2271,9 +2277,12 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
   { / sender ephemeral private key /
     / kty / 1: 2, / EC2 /
     / crv / -1: 2, / P-384 /
-    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
-    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d',
-    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520a658b4040a443f8fb3b54fb4ce882510e76017b66261'
+    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
+5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72b
+f3409f68dddf208040a5fcbcbee74545741e2866cb2d',
+    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520
+a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
@@ -2281,9 +2290,12 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
     / alg / 3: -31, / ECDH-ES + A256KW /
     / ops / 4: [7], / derive key /
     / crv / -1: 2, / P-384 /
-    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8354c234b2970b4ac27e78f38250069d128f98e51ceb1',
-    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894cc73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
-    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
+    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8
+354c234b2970b4ac27e78f38250069d128f98e51ceb1',
+    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894c
+c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
+    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e
+4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
   { / wrapped CEK /
     / kty / 1: 4, / symmetric /
