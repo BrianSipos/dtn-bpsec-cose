@@ -2361,34 +2361,34 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where 
   {
     / kty / 1: 2, / EC2 /
     / kid / 2: 'SenderEC2',
-    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
+5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72b
+f3409f68dddf208040a5fcbcbee74545741e2866cb2d',
+    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520
+a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8
+354c234b2970b4ac27e78f38250069d128f98e51ceb1',
+    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894c
+c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
+    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e
+4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'f5af7b0693bd1c4459b7af31b562d1c77733b0eaacfb6a599123
-34b7bb8866ef'
+    / k / -1: h'67bb109aaee51e9616b512d5750139444ca26e6c0eeaa87f3917
+de41dd9ad9f6'
   }
 ]
           </sourcecode>
@@ -2440,7 +2440,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
         [
           [ / recipient /
             &lt;&lt;{ / protected /
-              / alg / 1: -27 / ECDH-SS + HKDF-256 /
+              / alg / 1: -28 / ECDH-SS + HKDF-512 /
             }&gt;&gt;,
             { / unprotected /
               / kid / 4: 'ExampleEC2',
@@ -2464,7 +2464,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   0, / CRC type /
-  h'4e46163230082b455c73c021b59b2ef9e64d9032a29a' / ciphertext /
+  h'925c33206eb8223957ae40693c02d1f6a0cdb71574aa' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -2475,9 +2475,9 @@ The final bundle is encoded as the following 189 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000586381010301820166
 2f2f7372632f818205a200012001818182186058478443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381aa3044a4578616d706c65454332224953656e64
-657245433233502fa8c8352aea17faf7407271a5e90eb8408501010000564e461632
-30082b455c73c021b59b2ef9e64d9032a29aff
+d85143c3dc484af6818344a101381ba3044a4578616d706c65454332224953656e64
+657245433233502fa8c8352aea17faf7407271a5e90eb840850101000056925c3320
+6eb8223957ae40693c02d1f6a0cdb71574aaff
         </sourcecode>
       </section>
       <section>
