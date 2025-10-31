@@ -2211,15 +2211,15 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 176 octets in base-16:
+The final bundle is encoded as the following 177 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850c030000585681010301820166
-2f2f7372632f818205a2000120018181821860583a8443a10103a1054c6f3093eba5
-d85143c3dc484af6818340a3012a044a4578616d706c654b454b33502fa8c8352aea
-17faf7407271a5e90eb840850101000056f8faf5e48112dad5c246f92a97b50e4231
-c882fde56cff
+7372632f821b000000bd51281400001a000f4240850c030000585781010301820166
+2f2f7372632f818205a2000120018181821860583b8443a10103a1054c6f3093eba5
+d85143c3dc484af6818343a1012aa2044a4578616d706c654b454b33502fa8c8352a
+ea17faf7407271a5e90eb8408501010000567443d510ee5ce1280ac6639b2256c980
+15ebfa8a8eb4ff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-recip-wrap">
@@ -2234,26 +2234,20 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
 [
   { / sender ephemeral private key /
     / kty / 1: 2, / EC2 /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'fedaba748882050d1bef8ba992911898f554450952070aeb4788
-ca57d1df6bcc',
-    / y / -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c
-9c0670f28d62',
-    / d / -4: h'a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c2088
-0f9d9c3b122a'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d',
+    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
     / alg / 3: -31, / ECDH-ES + A256KW /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8354c234b2970b4ac27e78f38250069d128f98e51ceb1',
+    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894cc73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
+    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
   { / wrapped CEK /
     / kty / 1: 4, / symmetric /
@@ -2316,15 +2310,15 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
               / kid / 4: 'ExampleEC2',
               / ephemeral key / -1: {
                 1: 2,
-                -1: 1,
-                -2: h'fedaba748882050d1bef8ba992911898f554450952070ae
-b4788ca57d1df6bcc',
-                -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f4
-93c1c9c0670f28d62'
+                -1: 2,
+                -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae8200
+9d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+                -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492
+bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'
               }
             },
-            h'a5ed54991baa90af6aa7f272e7fd456fc0ba36a507842aa1d0a577
-65386ab04d0fba5c454703366a' / key-wrapped /
+            h'0eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01
+ac8d3aefcc12433f9563da401d' / key-wrapped /
           ]
         ]
       ]&gt;&gt;
@@ -2334,18 +2328,19 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 277 octets in base-16:
+The final bundle is encoded as the following 309 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850c03000058bb81010301820166
-2f2f7372632f818205a2000120018181821860589f8443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381ea2044a4578616d706c6545433220a401022001
-215820fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6b
-cc225820ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f2
-8d625828a5ed54991baa90af6aa7f272e7fd456fc0ba36a507842aa1d0a57765386a
-b04d0fba5c454703366a8501010000561fd25f64a2ee886e97ecfde7667371214f5a
-dd54a089ff
+7372632f821b000000bd51281400001a000f4240850c03000058db81010301820166
+2f2f7372632f818205a200012001818182186058bf8443a10103a1054c6f3093eba5
+d85143c3dc484af6818344a101381ea2044a4578616d706c6545433220a401022002
+2158302f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9
+497a4bde513be6c9b0e7dae96033968c45225830fd27656fbb97f789d667f40d73b6
+5ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d
+58280eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01ac8d3aefcc
+12433f9563da401d8501010000561fd25f64a2ee886e97ecfde7667371214f5add54
+a089ff
         </sourcecode>
       </section>
       <section>
