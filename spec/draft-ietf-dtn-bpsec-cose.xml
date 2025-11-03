@@ -1204,6 +1204,8 @@ Any end-entity certificate associated with a BIB security source or BCB result r
       <name>PKIX Certificate Profile</name>
       <t>
 This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
+The profile here mandates specific data to be present in CA and end-entity certificates but does not mandate any specific key types or signing algorithms to be used.
+Such details are left to algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0.
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1359,6 +1361,7 @@ Because this use of COSE leaves the specific algorithms chosen for BIB and BCB u
         <t>
 All of the security considerations of the underlying BPSec <xref target="RFC9172"/> apply to this security context.
 Because this security context uses whole COSE messages and inherits all COSE processing, all of the security considerations of <xref target="RFC9052"/> apply to this security context.
+When public key certificates are used, all of the security considerations of <xref target="RFC5280"/> and any other narrowing PKIX profile apply to this security context.
         </t>
       </section>
       <section>
@@ -1543,6 +1546,7 @@ The value range is unsigned 64-bit integer.
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
