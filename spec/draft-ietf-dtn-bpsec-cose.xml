@@ -802,7 +802,7 @@ When generating a BCB result from a symmetric content encryption key (CEK), impl
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
           </t>
           <t>
-When generating a BCB result from a symmetric key-encryption key (CEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
+When generating a BCB result from a symmetric key-encryption key (KEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
           </t>
           <t>
