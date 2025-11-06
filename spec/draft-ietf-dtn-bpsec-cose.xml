@@ -516,7 +516,7 @@ Because of deterministic encoding, the negative keys will occur after positive k
             </li>
             <li>
               <t>
-For each entry of the AAD Scope map, in ascending block number order followed by the negative sentinel values in descending order, the next items <bcp14>SHALL</bcp14> be one or both of the following:
+For each entry of the AAD Scope map, in ascending block number order followed by the negative special keys in descending order, the next items <bcp14>SHALL</bcp14> be one or both of the following:
               </t>
               <ol type="a">
                 <li>
