@@ -1810,7 +1810,7 @@ d1babdde44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d
       <section>
         <name>RSA Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with a recipient having a 1024-bit RSA keypair identified by a "kid".
+This is an example of a signature with a recipient having a 3072-bit RSA keypair identified by a "kid".
 The associated public key is included as a security parameter.
         </t>
         <t>
