@@ -644,7 +644,7 @@ When generating a BPSec result, security sources <bcp14>SHALL</bcp14> use only C
 When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp14> handle COSE labels with with a tstr value.
         </t>
         <t>
-Each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
+When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
 When available, each COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last layer for all signatures or recipients.
 See <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/> for specifics about key identifiers.
 When a key identifier is not available, BPSec verifiers and acceptors <bcp14>SHALL</bcp14> use the Security Source and the Bundle Source to imply which keys can be used for security operations.
@@ -795,10 +795,10 @@ When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <b
           </t>
           <t>
 The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the hash function output length.
-This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all keys for HMAC.
+This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all keys used for HMAC.
           </t>
           <t>
-When generating a BCB result from a symmetric content encryption key (CEK), implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
+When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
           </t>
           <t>
@@ -1138,6 +1138,8 @@ Any end-entity certificate associated with a BIB security source or BCB result r
       <name>PKIX Certificate Profile</name>
       <t>
 This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
+The profile here mandates specific data to be present in CA and end-entity certificates but does not mandate any specific key types or signing algorithms to be used.
+Such details are left to algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0.
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1296,6 +1298,7 @@ Specifically for the case of vulnerability to a cryptographically relevant quant
         <t>
 All of the security considerations of the underlying BPSec <xref target="RFC9172"/> apply to this security context.
 Because this security context uses whole COSE messages and inherits all COSE processing, all of the security considerations of <xref target="RFC9052"/> apply to this security context.
+When public key certificates are used, all of the security considerations of <xref target="RFC5280"/> and any other narrowing PKIX profile apply to this security context.
         </t>
       </section>
       <section>
@@ -1490,6 +1493,7 @@ The value range is unsigned 64-bit integer.
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
