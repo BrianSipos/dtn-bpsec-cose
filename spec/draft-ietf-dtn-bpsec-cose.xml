@@ -644,10 +644,10 @@ When generating a BPSec result, security sources <bcp14>SHALL</bcp14> use only C
 When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp14> handle COSE labels with with a tstr value.
         </t>
         <t>
-When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layers.
-When available and not implied by the bundle source, a COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last (recipient) layer.
-See <xref target="sec-asym-keys"/> for specifics about asymmetric key identifiers.
-When a key identifier is not available, BPSec acceptors <bcp14>SHALL</bcp14> use the Security Source (if available) and the Bundle Source to imply which keys can be used for security operations.
+When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
+When available, each COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last layer for all signatures or recipients.
+See <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/> for specifics about key identifiers.
+When a key identifier is not available, BPSec verifiers and acceptors <bcp14>SHALL</bcp14> use the Security Source and the Bundle Source to imply which keys can be used for security operations.
 Using implied keys has an interoperability risk, see <xref target="sec-threat-unident-key"/> for details.
 A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
         </t>
@@ -660,7 +660,9 @@ The requirements of this profile still allow the use of potentially not-easily-i
       <section anchor="sec-interop-alg">
         <name>Interoperability Algorithms</name>
         <t>
-The set of COSE algorithms needed for interoperability is listed in this section and organized by the type of associated key material.
+The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
+This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
+It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
@@ -1352,10 +1354,13 @@ It is important that the key requirements of <xref target="sec-ASB-parameters"/>
 Including non-public key material in ASB parameters will expose that material in the bundle data and over the bundle convergence layer during transport.
         </t>
       </section>
-      <section>
+      <section anchor="sec-algo-vuln">
         <name>Threat: Algorithm Vulnerabilities</name>
         <t>
 Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
+        </t>
+        <t>
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been identified in <xref target="CNSA2"/> but are not yet available as COSE code points allocated by published standards.
         </t>
       </section>
       <section>
