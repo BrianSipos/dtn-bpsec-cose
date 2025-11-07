@@ -652,7 +652,7 @@ Using implied keys has an interoperability risk, see <xref target="sec-threat-un
 A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
         </t>
         <t>
-The algorithms required by this profile focuses on networks using shared symmetric-keys, with recommended algorithms for Elliptic Curve (EC) keypairs and RSA keypairs.
+The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and RSA keypairs.
 The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
         </t>
@@ -667,12 +667,12 @@ The full set of COSE algorithms available is managed at <xref target="IANA-COSE"
         </t>
         <t>
 Each algorithm in this profile is marked as being CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
+All of these algorithms in this profile are approved by FIPS 140-3 <xref target="FIPS-140"/>, however FIPS 140 certification involves review of software and hardware design and implementation detail outside the scope of this document.
         </t>
-        <aside>
-          <t>
-All of these algorithms in this profile are compatible with FIPS-140-3 <xref target="FIPS-140"/>.
-          </t>
-        </aside>
+        <t>
+The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS data link security rationale described in <xref target="CCSDS-SDLS"/>.
+The breadth of algorithm variety is intended to cover many different current use cases beyond simple symmetric key security and be compatible with current PKIX mechanisms and strategies.
+        </t>
         <section>
           <name>Hashing Algorithms</name>
           <t>
@@ -717,7 +717,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </table>
           <t>
 These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
-The truncated algorithms are useful for certificate filtering using shorter thumbprints.
+The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSA 1.0 minimum strength for protecting data.
           </t>
         </section>
         <section>
@@ -727,7 +727,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are a super-set of those available in <xref target="RFC9173"/>.
+The symmetric keyed algorithms here are not a super-set of those available in <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
             </t>
           </aside>
           <t>
@@ -747,38 +747,17 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
             <tbody>
               <tr>
                 <td>Integrity</td>
-                <td>0 or 1</td>
-                <td>HMAC 256/256</td>
-                <td>5</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
+                <td>0</td>
                 <td>HMAC 384/384</td>
                 <td>6</td>
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
                 <td>Integrity</td>
-                <td>0 or 1</td>
+                <td>0</td>
                 <td>HMAC 512/512</td>
                 <td>7</td>
                 <td>CNSA 2.0</td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>0</td>
-                <td>A128GCM</td>
-                <td>1</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>0</td>
-                <td>A192GCM</td>
-                <td>2</td>
-                <td></td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -788,35 +767,21 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>A128KW</td>
-                <td>-3</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>A256KW</td>
                 <td>-5</td>
                 <td>CNSA 1.0 and 2.0</td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>direct</td>
                 <td>-6</td>
                 <td><em>N/A</em></td>
               </tr>
               <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>direct+HKDF-SHA-256</td>
-                <td>-10</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
+                <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>direct+HKDF-SHA-512</td>
                 <td>-11</td>
@@ -837,7 +802,7 @@ When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
           </t>
           <t>
-When generating a BCB result from a symmetric KEK, implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) content encryption key (CEK).
+When generating a BCB result from a symmetric key-encryption key (KEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
 When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
           </t>
           <t>
@@ -870,13 +835,6 @@ The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
-                <td>ESP256</td>
-                <td>-9</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
                 <td>ESP384</td>
                 <td>-51</td>
                 <td>CNSA 1.0</td>
@@ -891,23 +849,9 @@ The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
-                <td>ECDH-ES + HKDF-256</td>
-                <td>-25</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
                 <td>ECDH-ES + HKDF-512</td>
                 <td>-26</td>
                 <td>CNSA 1.0</td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>ECDH-SS + HKDF-256</td>
-                <td>-27</td>
-                <td/>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -976,13 +920,6 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
-                <td>PS256</td>
-                <td>-37</td>
-                <td/>
-              </tr>
-              <tr>
-                <td>Integrity</td>
-                <td>0 or 1</td>
                 <td>PS384</td>
                 <td>-38</td>
                 <td>CNSA 1.0</td>
@@ -993,13 +930,6 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
                 <td>PS512</td>
                 <td>-39</td>
                 <td></td>
-              </tr>
-              <tr>
-                <td>Confidentiality</td>
-                <td>1</td>
-                <td>RSAES-OAEP w/ SHA-256</td>
-                <td>-41</td>
-                <td/>
               </tr>
               <tr>
                 <td>Confidentiality</td>
@@ -1531,6 +1461,16 @@ The value range is unsigned 64-bit integer.
             <date month="March" year="2019"/>
           </front>
         </reference>
+        <reference anchor="CCSDS-SDLS" target="https://public.ccsds.org/Pubs/350x5g2.pdf">
+          <front>
+            <title>Space Data Link Security Protocol - Summary of Concept and Rationale</title>
+            <seriesInfo name="CCSDS" value="350.5-G-2"/>
+            <author>
+              <organization>Consultative Committee for Space Data Systems</organization>
+            </author>
+            <date month="January" year="2024"/>
+          </front>
+        </reference>
         <reference anchor="CNSA1" target="">
           <front>
             <title>Use of Public Standards for Secure Information Sharing</title>
@@ -1680,7 +1620,7 @@ The only differences between these examples which use ECC or RSA keypairs and a 
 This would not be a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
-Because each of the COSE_Encrypt examples use the same CEK within the same AAD, the target ciphertext is also identical.
+Because each of the COSE_Encrypt examples using key wrap or encapsulation (<xref target="sec-example-ops-kek-recip-wrap"/>, <xref target="sec-example-ops-ec-recip-wrap"/>, <xref target="sec-example-ops-rsa-recip"/>) use the same CEK within the same AAD, the target ciphertext is also identical.
 The target block after application of the encryption is shown in <xref target="fig-ex-encrypt-target-final"/>.
       </t>
       <figure anchor="fig-ex-encrypt-target-final">
@@ -1698,7 +1638,7 @@ The target block after application of the encryption is shown in <xref target="f
       <section>
         <name>Symmetric Key COSE_Mac0</name>
         <t>
-This is an example of a MAC with recipient having a 256-bit symmetric key identified by a "kid".
+This is an example of a MAC with recipient having a 384-bit symmetric key (same size of the hash output) identified by a "kid".
         </t>
         <figure>
           <name>Symmetric Key</name>
@@ -1707,10 +1647,10 @@ This is an example of a MAC with recipient having a 256-bit symmetric key identi
   {
     / kty / 1: 4, / symmetric /
     / kid / 2: 'ExampleMAC',
-    / alg / 3: 5, / HMAC 256//256 /
+    / alg / 3: 6, / HMAC 384 384 /
     / ops / 4: [9, 10], / MAC create, MAC verify /
-    / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
-99dbae4ce45c'
+    / k / -1: h'3a5c74e32ab4558a99581ec3a816576812aabe895db04494cda2
+5b711d7b5ed4077466e677860648412f1bf8c91d0624'
   }
 ]
           </sourcecode>
@@ -1751,14 +1691,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       17, / COSE_Mac0 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: 5 / HMAC 256//256 /
+           / alg / 1: 6 / HMAC 384 384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleMAC'
         },
         null, / payload detached /
-        h'c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9f87c
-052606' / tag /
+        h'67d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d9498a7b
+fdefa119ba9988a69874a3349b0451b5f2b029' / tag /
       ]&gt;&gt;
     ]
   ]
@@ -1766,14 +1706,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 154 octets in base-16:
+The final bundle is encoded as the following 170 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850b030000585081010301820166
-2f2f7372632f818205a2000120018181821158358443a10105a1044a4578616d706c
-654d4143f65820c2554546bed1e5ed419aab9d4450fc62fb6b64ea454e53ff83eeb9
-f87c0526068501010000466568656c6c6fff
+7372632f821b000000bd51281400001a000f4240850b030000586081010301820166
+2f2f7372632f818205a2000120018181821158458443a10106a1044a4578616d706c
+654d4143f6583067d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d949
+8a7bfdefa119ba9988a69874a3349b0451b5f2b0298501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-sign">
@@ -1789,15 +1729,15 @@ The associated public key is included as a security parameter.
   { / signing private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -9, / ESP256 /
+    / alg / 3: -51, / ESP384 /
     / ops / 4: [1, 2], / sign, verify /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'02dfc49747f5d3d219fe6185744729fa1672ef7d11cb57ca0320
+c632be06ca3fdcc118e63140ba3ec57ea7b85d419568',
+    / y / -3: h'4526e81bf0d9ea0924f05a3453ad75b92806671511544c993f6b
+d908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d',
+    / d / -4: h'3494803544d85a84d802400b50f51eea23b72d7d850b53cbf300
+6e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'
   }
 ]
           </sourcecode>
@@ -1838,15 +1778,16 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -9 / ESP256 /
+           / alg / 1: -51 / ESP384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleEC2'
         },
         null, / payload detached /
-        h'edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e8260358aa
-ac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d67cfa
-c5' / signature /
+        h'd1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908ad1babd
+de44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d720609
+212f435ca36283853803f5bc085192dc5649036611ff0c395b53b06e9d06382a
+2a' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -1854,15 +1795,16 @@ c5' / signature /
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 186 octets in base-16:
+The final bundle is encoded as the following 219 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850b030000587081010301820166
-2f2f7372632f818205a2000120018181821258558443a10128a1044a4578616d706c
-65454332f65840edf16f7619151b530e8ba675556644b07d5a0804ad5762d2e82603
-58aaac221fd2984d03e8a854fd4da63f4e09324944d94367a5912fd7f38dae4362d6
-7cfac58501010000466568656c6c6fff
+7372632f821b000000bd51281400001a000f4240850b030000589181010301820166
+2f2f7372632f818205a2000120018181821258768444a1013832a1044a4578616d70
+6c65454332f65860d1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908a
+d1babdde44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d
+720609212f435ca36283853803f5bc085192dc5649036611ff0c395b53b06e9d0638
+2a2a8501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -1882,34 +1824,63 @@ This signature uses a random salt, so the full signature output is not determini
   { / signing private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
-    / alg / 3: -37, / PS256 /
+    / alg / 3: -38, / PS384 /
     / ops / 4: [1, 2], / sign, verify /
-    / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
-31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
-20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
-d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb29
-25',
+    / n / -1: h'f47b7c275eff5bf74e9e69d2b50e9a5dc0666147ca2541fce9a2
+53d00840e2481378733797a9db641911937aff7cbc579f16484cea2cd3fbe2db3bbb
+26b18e2b95b49b9255f378ee62f806227dd0ddeb48456358bfe1cadd861645e89208
+c5a5b1da34af0e3f0ad1f82633fb6b21b7ef901bffebf1144ed0d4cfcb51e21b820c
+fa6c829ca95cd08f3eb779b31569bb5e64c67f9976df92284ecea085a9a25882707a
+9ba2af769017983e58b48afde78149453ebdcf1bcad76c30c253deaacc21a4a91bce
+2b896776c1c5cfe0aaaae714c0b7e2063542ea81ec27af2746fd402e02e71040e41a
+a23c79179e20a93c921fb26d13e11f802c2836506d0f0be507997aa07454f8b74a80
+7c9342c8697d670fe6b1c2574a18013296cca897c4ddb96215fd30a4c4ee5db5b484
+4c9d1e7bd6923ab0feaa30fe79d821fb63ed391b175837d53db1b207bc984b9a377c
+7b4fb58738cca4254c3273440830cee84552304e8aaed0c0187b59339b28f213076a
+f2c77aa46fe37bef31910ada5e44643ac7b1',
     / e / -2: h'010001',
-    / d / -3: h'9b5d26ad6445ef1aab80b809e4f329684e9912d556c4166f041d
-1b1fb93c04b4037ffd0dbe6f8a8a86e70bab6e0f6344983a9ada27ed9ff7de816fde
-eb5e7be48e607ce5fda4581ca6338a9e019fb3689b28934192b6a190cdda910abb5a
-86a2f7b6f9cd5011049d8de52ddfef73aa06df401c55623ec196720f54920deb4f
-01',
-    / p / -4: h'db22d94e7784a27b568cbf985307ea8d6430ff6b88c18a7086fd
-4f57a326572f2250c39e48a6f8e2201661c2dfe12c7386835b649714d050aa36123e
-c3d00e75',
-    / q / -5: h'ce7016adc5f326b7520397c5978ee2f50e69279983d54c5d76f0
-5bcd61de0879d7056c923540dff9cbae95dcc0e5e86b52b3c902dc9669c8021c6955
-7effb9f1',
-    / dP / -6: h'6a6fcaccea106a3b2e16bf18e57b7ad9a2488a4758ed68a8af6
-86a194f0d585b7477760c738d6665aee0302bcf4237ad0530d83b4b86b887f5a4bdc
-7eea427e1',
-    / dQ / -7: h'28a4cae245b1dcb285142e027a1768b9c4af915b59285a93a04
-22c60e05edd9e57663afd023d169bd0ad3bd62da8563d231840802ebbf271ad70b89
-05ba3af91',
-    / qInv / -8: h'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4e
-d9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65
-f4f92865ca3'
+    / d / -3: h'5a4dfac0d33317ff5b1879ab793db7455f2ce0e596fd5ff1e901
+15a08087b18c413a15d4a007e41d8a71eaa81490a926bd4289d072e6b8102ba25073
+1c02b238b95cc4f1d2d1ece45cb41c66a22bafcd0da48726daf2a20c159136e7d527
+944f46d73ee084184682e4ca0a287d26e92535c532a4790e8bb6589f0bce2f6f693d
+900db994f9fb92a95f01ed077cb667f938ab73f9cc27715bcc357fb4acb20630ad2c
+40893b0a6a9be0ab50b7d4bfbd088e85919e61f325a33b0fc2e709c879c33ab7675a
+395f45c8e5f08c1a7e1871f6bc12eef424566896eca111e42060ea64ea5ea11f693f
+6923525829a0e394434eb0ec1a5586677bcab8a7b8d961b6134236f027d3dd2c0fee
+03e46f534d782d73bf4b1b906dae037c4fc6982082b5c1946418780e3a2a14ba5717
+ddb98df721e42da8b419a7febc06c3948cd0612e2b3d861077d5622af774d6af4f19
+f1d38658174eded20954d45d4c1db848ea3c8805aaf338615ae9e40e3990352c0dfe
+84563b67d2e72638806807e8b56edb41',
+    / p / -4: h'fd804ae7f7499d69cd3d1299879e9645b90e829e92c88d759bf2
+b3d4ed391b592407c2f1f26dd0f345bbe448b21a2248450652aebaa65a6815919dba
+29d66ea2c1d862cab37391190c5e1fb162d7101412588d913fecd0e675785522661a
+ecbbc50e2678e60485080b472e5f5720854a21eb456e1c26de4102d99cc2e08afa13
+d2aa3e7f94d91e2fb43ab400c5e3061c69fcfcf78c7a81cdcc672d0f5630eb08ac90
+86a8c957d4f8c9c71dd75a78efe1e1d764d34d7043f0aac9a0d0beaf8921',
+    / q / -5: h'f6e46eff1e17493b92e379a6ae2594970d6ab3ff43bb84fda781
+0b5feb89d94008fbf8de9ce8584aa95ad759261ce78fd421c26f5c1eaf482792e6fc
+25eeac320a2195db28ab9071182ca4d4d041cfea6d754940248527352337e87e7b44
+14d59b916808e977d97676cf97ee04b7f95aa3611f1fb98b7a341563ca42e9af810b
+67ecd8989deb96ddde66004efdda610c77cd75b9337b5e1993c6d2b3212c64461d61
+334193bad6ebb62ae67325e1157a394c8c7422a3d65ecd0212114d7e9c91',
+    / dP / -6: h'ec2626217f38c17e3d26267c855d1389f2017566b940409f0dd
+e82edd8eb38f1ca61bc95dd0bb5f9d9bd55c4eebcefb0b93451b3d9c67c33b7dc05b
+dd5999f48d92175ae748b34e0cba7a7087d15f1317181b2a75b90856e1a823574acf
+f6a06e563f02cf1c1c6179f41f90df1c126c9cf5d373982da2673136f9adbe38733b
+d61a31c43876ad6f70383280a0c4e177442bbdcffd28a90ff20ea008ce7f2fc10018
+9451859300c02931d7d4c0f48d7d669a758928af209285a4128212d71a261',
+    / dQ / -7: h'a0d29842f294f48d2bd7a56c9fcfb704d626856d67ef8467be6
+edebbf2afeea639b3f89ef9d29780bae483967caf235f9b2d0a7c83a331466d10d20
+9b9a3c8e3279a4d055f6eb23e19232b93bcbcc1f4d0ac2fb4ea9519bf115bdfc4540
+33b1711a91bfd822721ae7b222ab34ebb90602c409d878ad3821cdf3a0b8c9eb045f
+cea0b6be3ae2ac23170273d58371fc34bddd626332787dafa0a3adf10f430f8787bb
+6cf2e8e4e8ca52a1ab3d699fc0e83794395d228a6548398431b05ce570521',
+    / qInv / -8: h'1f1b16da1f590fc9e6b174122d8c78554adee8627c31068ab
+ccf56f8a73c04fd677567d9fe246b1ff972c9b74e238bf4e04b9cef7e0ba76befea4
+3a0e114a0aff45b2cbeff649614281017c1f00be91ba2562453a0a5ee25f6518fcf0
+7dddf2da2c645bc337a51b8108dba1aab223893c7fcbabdb5b9c88b618e858eda994
+b7c04b1bffe2612f743e857707dccea4f7a93d711f818a8e6420890c2e73eb7f4fcc
+3c55c7d83b4d2bbd9bcea0c0668570e9ca7e92e5ca626754180da12a6b85a85'
   }
 ]
           </sourcecode>
@@ -1950,17 +1921,24 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
       18, / COSE_Sign1 tag /
       &lt;&lt;[
         &lt;&lt;{ / protected /
-           / alg / 1: -37 / PS256 /
+           / alg / 1: -38 / PS384 /
         }&gt;&gt;,
         { / unprotected /
           / kid / 4: 'ExampleRSA'
         },
         null, / payload detached /
-        h'863c06655b79b2c9b676d26ea5aa034faa4b765e6ca7516897a3dbf775
-57cfa90f992264757f34b95f3934d736f808b2db1bdba96bc4b17daad8565f5b9652
-44121dd5665c072723b8a3c94de8e287eb95d44d1481a5b1b63fc30237a1d4d87ece
-0495a84393cc49ad377d907b7b38e85beafd5f3a18796809987d1341de034f'
- / signature /
+        h'4cc2a6f01fa33c3b8e7997acc687a166c5b93ea9184b4ee05e01c6f2ac
+612d6d510d5455cdd11732c078c30e2592afeed82bb5c1ab6ddb82505146775a9c35
+cc10ba087e5e80ba2276da12c515bf368115dd21c36b456728b6776365a27f5af9b9
+6256878b3e8bf41bb570dd6f9e3353204e55d133638ed373599769df8871c8e7974c
+497d71f29eae083a87c91d10a221a514d0d1149c1465d24bbdf14fb020f0705c5701
+d27b0440ff1b0ad70f53b6efb37bf9018acb4d152b7f6ab8b9376a9a08891581a19d
+1dbe6b8ae2314b15da60dd95a481f06fa475dadcd40d97a3d77bb5bfb76974e2cf10
+c6915eb0b1ace34ef00a78bd49a7f8c498fc8ec2dee175c1771d44f35627414662d1
+d2a713c9a054eae0b570d70829c0d71c26c93cb8e1391861c561abd14bb34807968d
+082e863f4286c2ea6ac62ae56437391cb1a1d051e35aec357c2c3cb3bbc20861b6dc
+52b05ada8405687335d1b9bf04da9e7a2bda814106dea818f1df435e06be7ad742e1
+5442c975e1f570912697ae045e40e9' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -2077,7 +2055,7 @@ The final bundle is encoded as the following 139 octets in base-16:
 a3f1ff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-kek-recip-wrap">
         <name>Symmetric Key COSE_Encrypt with Key Wrap</name>
         <t>
 This is an example of an encryption with a random CEK and an explicit key-encryption key (KEK) identified by a "kid".
@@ -2279,15 +2257,15 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 176 octets in base-16:
+The final bundle is encoded as the following 177 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850c030000585681010301820166
-2f2f7372632f818205a2000120018181821860583a8443a10103a1054c6f3093eba5
-d85143c3dc484af6818340a3012a044a4578616d706c654b454b33502fa8c8352aea
-17faf7407271a5e90eb840850101000056f8faf5e48112dad5c246f92a97b50e4231
-c882fde56cff
+7372632f821b000000bd51281400001a000f4240850c030000585781010301820166
+2f2f7372632f818205a2000120018181821860583b8443a10103a1054c6f3093eba5
+d85143c3dc484af6818343a1012aa2044a4578616d706c654b454b33502fa8c8352a
+ea17faf7407271a5e90eb8408501010000567443d510ee5ce1280ac6639b2256c980
+15ebfa8a8eb4ff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-recip-wrap">
@@ -2302,26 +2280,26 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
 [
   { / sender ephemeral private key /
     / kty / 1: 2, / EC2 /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'fedaba748882050d1bef8ba992911898f554450952070aeb4788
-ca57d1df6bcc',
-    / y / -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c
-9c0670f28d62',
-    / d / -4: h'a2e4ed4f2e21842999b0e9ebdaad7465efd5c29bd5761f5c2088
-0f9d9c3b122a'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
+5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72b
+f3409f68dddf208040a5fcbcbee74545741e2866cb2d',
+    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520
+a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
     / alg / 3: -31, / ECDH-ES + A256KW /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8
+354c234b2970b4ac27e78f38250069d128f98e51ceb1',
+    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894c
+c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
+    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e
+4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
   { / wrapped CEK /
     / kty / 1: 4, / symmetric /
@@ -2384,15 +2362,15 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
               / kid / 4: 'ExampleEC2',
               / ephemeral key / -1: {
                 1: 2,
-                -1: 1,
-                -2: h'fedaba748882050d1bef8ba992911898f554450952070ae
-b4788ca57d1df6bcc',
-                -3: h'ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f4
-93c1c9c0670f28d62'
+                -1: 2,
+                -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae8200
+9d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+                -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492
+bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'
               }
             },
-            h'a5ed54991baa90af6aa7f272e7fd456fc0ba36a507842aa1d0a577
-65386ab04d0fba5c454703366a' / key-wrapped /
+            h'0eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01
+ac8d3aefcc12433f9563da401d' / key-wrapped /
           ]
         ]
       ]&gt;&gt;
@@ -2402,18 +2380,19 @@ b4788ca57d1df6bcc',
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 277 octets in base-16:
+The final bundle is encoded as the following 309 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850c03000058bb81010301820166
-2f2f7372632f818205a2000120018181821860589f8443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381ea2044a4578616d706c6545433220a401022001
-215820fedaba748882050d1bef8ba992911898f554450952070aeb4788ca57d1df6b
-cc225820ceaa8e7ff4751a4f81c70e98f1713378b0bd82a1414a2f493c1c9c0670f2
-8d625828a5ed54991baa90af6aa7f272e7fd456fc0ba36a507842aa1d0a57765386a
-b04d0fba5c454703366a8501010000561fd25f64a2ee886e97ecfde7667371214f5a
-dd54a089ff
+7372632f821b000000bd51281400001a000f4240850c03000058db81010301820166
+2f2f7372632f818205a200012001818182186058bf8443a10103a1054c6f3093eba5
+d85143c3dc484af6818344a101381ea2044a4578616d706c6545433220a401022002
+2158302f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9
+497a4bde513be6c9b0e7dae96033968c45225830fd27656fbb97f789d667f40d73b6
+5ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d
+58280eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01ac8d3aefcc
+12433f9563da401d8501010000561fd25f64a2ee886e97ecfde7667371214f5add54
+a089ff
         </sourcecode>
       </section>
       <section>
@@ -2429,34 +2408,34 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where 
   {
     / kty / 1: 2, / EC2 /
     / kid / 2: 'SenderEC2',
-    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
+5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45',
+    / y / -3: h'fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72b
+f3409f68dddf208040a5fcbcbee74545741e2866cb2d',
+    / d / -4: h'c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520
+a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
     / kid / 2: 'ExampleEC2',
-    / alg / 3: -27, / ECDH-SS + HKDF-256 /
+    / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
-    / crv / -1: 1, / P-256 /
-    / x / -2: h'44c1fa63b84f172b50541339c50beb0e630241ecb4eebbddb8b5
-e4fe0a1787a8',
-    / y / -3: h'059451c7630d95d0b550acbd02e979b3f4f74e645b74715fafbc
-1639960a0c7a',
-    / d / -4: h'dd6e7d8c4c0e0c0bd3ae1b4a2fa86b9a09b7efee4a233772cf51
-89786ea63842'
+    / crv / -1: 2, / P-384 /
+    / x / -2: h'0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8
+354c234b2970b4ac27e78f38250069d128f98e51ceb1',
+    / y / -3: h'4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894c
+c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
+    / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e
+4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'f5af7b0693bd1c4459b7af31b562d1c77733b0eaacfb6a599123
-34b7bb8866ef'
+    / k / -1: h'67bb109aaee51e9616b512d5750139444ca26e6c0eeaa87f3917
+de41dd9ad9f6'
   }
 ]
           </sourcecode>
@@ -2508,7 +2487,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
         [
           [ / recipient /
             &lt;&lt;{ / protected /
-              / alg / 1: -27 / ECDH-SS + HKDF-256 /
+              / alg / 1: -28 / ECDH-SS + HKDF-512 /
             }&gt;&gt;,
             { / unprotected /
               / kid / 4: 'ExampleEC2',
@@ -2532,7 +2511,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   0, / CRC type /
-  h'4e46163230082b455c73c021b59b2ef9e64d9032a29a' / ciphertext /
+  h'925c33206eb8223957ae40693c02d1f6a0cdb71574aa' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -2543,12 +2522,12 @@ The final bundle is encoded as the following 189 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000586381010301820166
 2f2f7372632f818205a200012001818182186058478443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381aa3044a4578616d706c65454332224953656e64
-657245433233502fa8c8352aea17faf7407271a5e90eb8408501010000564e461632
-30082b455c73c021b59b2ef9e64d9032a29aff
+d85143c3dc484af6818344a101381ba3044a4578616d706c65454332224953656e64
+657245433233502fa8c8352aea17faf7407271a5e90eb840850101000056925c3320
+6eb8223957ae40693c02d1f6a0cdb71574aaff
         </sourcecode>
       </section>
-      <section>
+      <section anchor="sec-example-ops-rsa-recip">
         <name>RSA Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with a recipient having a 1024-bit RSA keypair identified by a "kid".
@@ -2565,34 +2544,63 @@ This padding scheme uses a random salt, so the full Layer 1 ciphertext output is
   { / recipient private key /
     / kty / 1: 3, / RSA /
     / kid / 2: 'ExampleRSA',
-    / alg / 3: -41, / RSAES-OAEP w SHA-256 /
+    / alg / 3: -42, / RSAES-OAEP w SHA-512 /
     / ops / 4: [1, 2], / sign, verify /
-    / n / -1: h'b0b5fd85f52c91844007443c9f9371980025f76d51fc9c676812
-31da610cb291ba637ce813bffdb2e9c653258607389ec97dad3db295fded67744ed6
-20707db36804e74e56a494030a73608fc8d92f2f0578d2d85cc201ef0ff22d7835d2
-d147d3b90a6884276235a01c2be99dfc597f79554362fc1eb03639cac5ccaddb29
-25',
+    / n / -1: h'c257bd2257000620d6c12e7fb988b891c0fa0f8eab597e2c56f0
+ae49da3f24eb9b99f9cc147820bd7f3feffc41cd63aa7a805a454c73d60cee478ac8
+e6be050943a134565c5b84aa619ba674f901314e2007bab3740c3b581720bc89d50c
+81726722d5c6bbb9966285dd66d4524561aadd0d6e8d7d970530a6c30af202e55e4e
+44505ce08ebe5217d2825edfa76397226ef58517abcc2e73873386ef9a0d14306466
+f2ed2c61ce6eaca12a026b62db054379e9f6575e802355f53ce3efd44d58dd9f2ba7
+385130815eed0e4649547fc38ff469a4f098d22214a6adf72c3f6a3b3ee3545835ea
+a9a9ab6467b17a62acb3179f31dc534539ffd21981fe5e5ea088ff4f1cdf051d8d97
+704101e81d8030e2e4863c1571452f94a9f47ec7339536058c287c376b0a6b5c6226
+fdefd716b4438a9f987d50de25a73537d42a54d9d042f8d623f493d1fe0fdea8cd75
+0381796cc9af7fdbac6eb7c8b4aa2e3f227d0fbbfbece7fd707e0f739b23a63b5a51
+18f553e834facda493e276ec9663ba65bf2b',
     / e / -2: h'010001',
-    / d / -3: h'9b5d26ad6445ef1aab80b809e4f329684e9912d556c4166f041d
-1b1fb93c04b4037ffd0dbe6f8a8a86e70bab6e0f6344983a9ada27ed9ff7de816fde
-eb5e7be48e607ce5fda4581ca6338a9e019fb3689b28934192b6a190cdda910abb5a
-86a2f7b6f9cd5011049d8de52ddfef73aa06df401c55623ec196720f54920deb4f
-01',
-    / p / -4: h'db22d94e7784a27b568cbf985307ea8d6430ff6b88c18a7086fd
-4f57a326572f2250c39e48a6f8e2201661c2dfe12c7386835b649714d050aa36123e
-c3d00e75',
-    / q / -5: h'ce7016adc5f326b7520397c5978ee2f50e69279983d54c5d76f0
-5bcd61de0879d7056c923540dff9cbae95dcc0e5e86b52b3c902dc9669c8021c6955
-7effb9f1',
-    / dP / -6: h'6a6fcaccea106a3b2e16bf18e57b7ad9a2488a4758ed68a8af6
-86a194f0d585b7477760c738d6665aee0302bcf4237ad0530d83b4b86b887f5a4bdc
-7eea427e1',
-    / dQ / -7: h'28a4cae245b1dcb285142e027a1768b9c4af915b59285a93a04
-22c60e05edd9e57663afd023d169bd0ad3bd62da8563d231840802ebbf271ad70b89
-05ba3af91',
-    / qInv / -8: h'07b5a61733896270a6bd2bb1654194c54e2bc0e061b543a4e
-d9fa73c4bc79c87148aa92a451c4ab8262b6377a9c7b97f869160ca6f5d853ee4b65
-f4f92865ca3'
+    / d / -3: h'132665ced99cce7dc8e643488c5b37b8b662784afa2bce33874e
+486ba2e9004b2e762c8d0562aaf33bf3ec6d6d2729d02ad45ffb73ce4c442797541f
+cf7634f52b3d5a1f67bd658eb6773473fd4a0bf638a61a546ee07a5932a4e3ff299d
+05afba104ed964e12390f4c392cb8edf2301c7ae22fbd294218ba03b183bd8638aa3
+3d61b52d3428f684e8c0e0f6ba934fd95c440432876d63670de65ac05c6be2813c3b
+8014dfd53416bd7054bd3aa0af42a45a01df12253a8cd62908057be4987462758517
+12623580de4cea4cefb2fbd154874bf13894d2a09ea9f18a9d6fcf66e8fefbf4029c
+e635ac1b60b444bab134ec67e397172a1dc79018ccc5713edaa21917cb34486a2a81
+c9e45ee21eb9bf465e7f42b4dfe17f17505b07d52bcf5233f215d96479201858e238
+b2672c2de6c589107f2877479a39728360a718400b3de94759f4e50049e279677481
+dd9151f82be9fef8289e297123e0ef08479010c4cc98096788857009fa41f8670556
+03491dea29e74d30925b42cceb004e7a371d',
+    / p / -4: h'e49562b275ab259750b010ade9720f0c1e07c42e73d969b9c28d
+f2bb6a72a162c24101a9a97091a935ce5202015e9540971734ceb0f4014fecbaf7f0
+c4a6eeb6d82b46a69b4e5ed9a1099035e6dbfa3686985f8ae9c6a2f1afd2c1a5b60d
+16f4b1d22741bcfb12c103c11a3a68700c93e010906192289774f86400bbd513fad6
+42b32fb7b9ddb05d5c48ce9bbcae48239ce41f7630f6ec6ccf9dbeffc84edc2944f7
+49b16f445b829a7bc5dce644a377fa88035e0756aeca77c71dcb8f87514f',
+    / q / -5: h'd9a6fee7a8e74201b5afe5188b0498fe4f902b7a4fd18fe64c1d
+6344188bb4ac26ccf3ff66f244ab2bb2d87fc94ac9e3e13482799f12585df2b6d556
+233c818853071912bc56c2b4c81ef9674e552af7bf8907f9ff9d318dcf7bc04eb086
+4a6c618468e3005721c1b9de436f81e9f9ae5d54228eba78af72760997e91d6f9481
+a43a5557fce42acf08868b460cfca2f3cdee7f47205f24343bceebb011e4aa80f94c
+c3a65f04dd5810e783d509f2346488338ec9012a046ad92ea9a10589e565',
+    / dP / -6: h'a8b520fd3a1fb144f7069ba8e02d90b18ed08899086424c637b
+3f0bd2699a8476dbbf0f039e09d8157f7094bf59acb69ba9a241d9138e66709000dd
+3243158ea96ad8a1d996ec44eb7ae89435f3a687829eaf8495cb580ba04dcf693c9c
+3eb777a6ef30e6fde973ee1f879d53613cd14af414a6ed9232075f2864c8c557dc39
+ab3ebf08217aa696ade9bd5f1d7d681e3d6fdffc289ed151e5235c92c9bb8a881c52
+706baf0b6711bf9ccf4824f69c584dde1d92a631c3531b629bdf1e9e323bd',
+    / dQ / -7: h'a0fa7a9e2cb69e835535fb63e3ae4ada0d4ebc59829fa4a6d8b
+503ae61d932900142a554c977768283978bb937d030f272a6bbb9e88551066b75fee
+3eebbd9b25276757cfdffcd9298511075efe1de1dcf74328a1d1cce81ec6bc318704
+762d4366c108794c0dd1ec3b2387e48c01d0371d3c09b801fb2e41d998ad9c803b6f
+b0bd4793ad2b88f51012541ed55bda5685d6f8083c2d59b996682ec9f151ce35ef10
+46dd0a786998f81313ab85edadd155e07841bf6d874dbf23629100760ae61',
+    / qInv / -8: h'598da6c558bf08c201b845b2dab3ff00a2ee74ce064d86f18
+af2f8b721205224526b7d8b9c42f6bc7f34a8c8623dcfc28ff800e28f23cd3018148
+57a728b282a121ee6d47d031eef5c14d84d6aadfd2bdf3ef9d10dce7dda11ba466f1
+25d67772b945b79baa5092f86f98dcfd1d8fc946fd24851bc3e49033c29d6509a73d
+64326d3981b165be7bb2fa15d2696200c786fe1098449ded9207af0391caabf617da
+3fd8c777e1ad755bd24855dc6d84933987543f12fba160c3c71de8bff439468'
   },
   { / encapsulated CEK /
     / kty / 1: 4, / symmetric /
@@ -2651,14 +2659,21 @@ The recipient does not have any protected header parameters because RSA OAEP doe
           [ / recipient /
             &lt;&lt;&gt;&gt;, / protected /
             { / unprotected /
-              / alg / 1: -41, / RSAES-OAEP w SHA-256 /
+              / alg / 1: -42, / RSAES-OAEP w SHA-512 /
               / kid / 4: 'ExampleRSA'
             },
-            h'ac5d970e42df409ea9f5d5cd714287fb67284f8c19c691cad2993c
-7418f1605e0369322b5ce34eb676cc19ccb7ff3db97af8a4057d458f0a1d7b21ee8d
-55eaadb26fb2cba54e77b18e9563569bd625f082885540b07577d335e896f0cdcb66
-012b01ef38631006c1761719705a4e2ada4b8f963e78be67a07b8c30bfd4adb2fa'
- / key-wrapped /
+            h'407e01f5fc110dcf186fb9d7b627a45a2cfb230724b55a7b17aba0
+e184688c7913278b505d23d9a0087fc02bc3422b8e12d106741ce1e075fa0346352d
+f5c4a4f7e81c4e2c08003fb1df95f8e1b84b92e06d23b8c23b50e3507635df98841c
+c5ec190b1095919515886476ba674a0fccad15e367a2b7515be59926abf5be8082ff
+68679446c6f95dc05366014d437740e1878396a9e25dfb11000e5f07a45f9e3bebd7
+b4a2f7d28313de67d41b9ac11873285140244aa0df61cdfcc02e4b06e1493814d57d
+4748c035535caccfdd897066c21efc7f79abfd070297b991fb049a86114138c68f46
+47fe9052d8378cff99a7bdbe340041cc272e4d612b62ca4f1892f022164095ff63d6
+32d55b66db7e025ec28374083d933f53d8d9750bfba377c8e0afdc3636960e19703e
+1b65c1c7684b2543c252f086f37792fd65935f6dc942acfea7cad77ae2777ff3f700
+f37dfeb65f3968a4fc7544d2d346e498f8f53737877583387846bae1baaef0aab6dd
+5725e617d0d994cc0c8a1a3a6b659f768a' / key-wrapped /
           ]
         ]
       ]&gt;&gt;
@@ -2668,18 +2683,26 @@ The recipient does not have any protected header parameters because RSA OAEP doe
           </sourcecode>
         </figure>
         <t>
-The final bundle is encoded as the following 288 octets in base-16:
+The final bundle is encoded as the following 547 octets in base-16:
         </t>
         <sourcecode type="cborhex">
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
-7372632f821b000000bd51281400001a000f4240850c03000058c681010301820166
-2f2f7372632f818205a200012001818182186058aa8443a10103a1054c6f3093eba5
-d85143c3dc484af6818340a2013828044a4578616d706c655253415880ac5d970e42
-df409ea9f5d5cd714287fb67284f8c19c691cad2993c7418f1605e0369322b5ce34e
-b676cc19ccb7ff3db97af8a4057d458f0a1d7b21ee8d55eaadb26fb2cba54e77b18e
-9563569bd625f082885540b07577d335e896f0cdcb66012b01ef38631006c1761719
-705a4e2ada4b8f963e78be67a07b8c30bfd4adb2fa8501010000561fd25f64a2ee88
-6e97ecfde7667371214f5add54a089ff
+7372632f821b000000bd51281400001a000f4240850c0300005901c8810103018201
+662f2f7372632f818205a20001200181818218605901ab8443a10103a1054c6f3093
+eba5d85143c3dc484af6818340a2013829044a4578616d706c65525341590180407e
+01f5fc110dcf186fb9d7b627a45a2cfb230724b55a7b17aba0e184688c7913278b50
+5d23d9a0087fc02bc3422b8e12d106741ce1e075fa0346352df5c4a4f7e81c4e2c08
+003fb1df95f8e1b84b92e06d23b8c23b50e3507635df98841cc5ec190b1095919515
+886476ba674a0fccad15e367a2b7515be59926abf5be8082ff68679446c6f95dc053
+66014d437740e1878396a9e25dfb11000e5f07a45f9e3bebd7b4a2f7d28313de67d4
+1b9ac11873285140244aa0df61cdfcc02e4b06e1493814d57d4748c035535caccfdd
+897066c21efc7f79abfd070297b991fb049a86114138c68f4647fe9052d8378cff99
+a7bdbe340041cc272e4d612b62ca4f1892f022164095ff63d632d55b66db7e025ec2
+8374083d933f53d8d9750bfba377c8e0afdc3636960e19703e1b65c1c7684b2543c2
+52f086f37792fd65935f6dc942acfea7cad77ae2777ff3f700f37dfeb65f3968a4fc
+7544d2d346e498f8f53737877583387846bae1baaef0aab6dd5725e617d0d994cc0c
+8a1a3a6b659f768a8501010000561fd25f64a2ee886e97ecfde7667371214f5add54
+a089ff
         </sourcecode>
       </section>
     </section>
@@ -2703,7 +2726,7 @@ It does, however, include an Extended Key Usage (EKU) value <tt>id-kp-bundleSecu
 Version: 3 (0x2)
 Serial Number:
     15:15:ff:a7:40:a4:bd:73:f5:ba
-Signature Algorithm: ecdsa-with-SHA256
+Signature Algorithm: ecdsa-with-SHA384
 Issuer: CN = Certificate Authority
 Validity
     Not Before: Oct  6 00:00:00 2025 GMT
@@ -2711,15 +2734,17 @@ Validity
 Subject: CN = Certificate Authority
 Subject Public Key Info:
     Public Key Algorithm: id-ecPublicKey
-        Public-Key: (256 bit)
+        Public-Key: (384 bit)
         pub:
-            04:be:8f:38:92:c4:7a:7d:e8:1a:78:e9:89:99:8f:
-            ab:e3:c2:02:31:46:d8:0f:20:84:ee:7d:c3:6b:66:
-            1b:ad:15:65:74:51:5c:ad:1a:aa:c9:0a:08:f3:a8:
-            86:0c:8f:50:71:76:0c:b8:1f:1a:fa:d6:f2:db:60:
-            9d:ce:c7:68:82
-        ASN1 OID: prime256v1
-        NIST CURVE: P-256
+            04:cc:7b:ba:7b:04:77:e0:f7:97:30:40:a1:83:fd:
+            0c:8b:44:9f:6f:e2:bd:ab:ec:df:9c:7a:72:e2:2c:
+            b3:55:6a:49:64:89:ca:75:f8:09:f1:1f:73:7e:08:
+            00:71:c0:e6:1c:06:36:15:68:c2:24:be:ab:29:17:
+            54:fd:40:c8:75:b8:be:3f:f7:46:0b:50:d4:28:1b:
+            ec:95:d5:34:b4:4a:f4:97:71:5a:09:52:11:e3:59:
+            28:b2:fb:f4:55:c7:6a
+        ASN1 OID: secp384r1
+        NIST CURVE: P-384
 X509v3 extensions:
     X509v3 Basic Constraints: critical
         CA:TRUE, pathlen:0
@@ -2728,25 +2753,26 @@ X509v3 extensions:
     X509v3 Extended Key Usage: 
         1.3.6.1.5.5.7.3.35
     X509v3 Subject Key Identifier: 
-        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+        1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
     X509v3 Authority Key Identifier: 
-        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+        1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
         <figure>
           <name>CA Certificate PEM</name>
           <sourcecode type="pem">
 -----BEGIN CERTIFICATE-----
-MIIBsjCCAVmgAwIBAgIKFRX/p0CkvXP1ujAKBggqhkjOPQQDAjAgMR4wHAYDVQQD
+MIIB8DCCAXagAwIBAgIKFRX/p0CkvXP1ujAKBggqhkjOPQQDAzAgMR4wHAYDVQQD
 DBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjUxMDA2MDAwMDAwWhcNMjUxMDE2
-MDAwMDAwWjAgMR4wHAYDVQQDDBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwWTATBgcq
-hkjOPQIBBggqhkjOPQMBBwNCAAS+jziSxHp96Bp46YmZj6vjwgIxRtgPIITufcNr
-ZhutFWV0UVytGqrJCgjzqIYMj1Bxdgy4Hxr61vLbYJ3Ox2iCo3sweTASBgNVHRMB
-Af8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjATBgNVHSUEDDAKBggrBgEFBQcD
-IzAdBgNVHQ4EFgQUuGgNMJRqmSDjQ1YSqgUDEOTNrJAwHwYDVR0jBBgwFoAUuGgN
-MJRqmSDjQ1YSqgUDEOTNrJAwCgYIKoZIzj0EAwIDRwAwRAIgBx1VmoLrEcBWij6y
-b4JPdOB198Mr4qQc6qzrvOjLh9kCIGolIBnHp57MW3RNcyTVEcqaSgK7H/UPB2f0
-072iKC7G
+MDAwMDAwWjAgMR4wHAYDVQQDDBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwdjAQBgcq
+hkjOPQIBBgUrgQQAIgNiAATMe7p7BHfg95cwQKGD/QyLRJ9v4r2r7N+cenLiLLNV
+aklkicp1+AnxH3N+CABxwOYcBjYVaMIkvqspF1T9QMh1uL4/90YLUNQoG+yV1TS0
+SvSXcVoJUhHjWSiy+/RVx2qjezB5MBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYDVR0P
+AQH/BAQDAgEGMBMGA1UdJQQMMAoGCCsGAQUFBwMjMB0GA1UdDgQWBBQbdzO+g3Vm
+anWGIvKrChdgP0JWAzAfBgNVHSMEGDAWgBQbdzO+g3VmanWGIvKrChdgP0JWAzAK
+BggqhkjOPQQDAwNoADBlAjBQLyBu8JDNdPcOkHpJZuH9BIbshDBEn3H+SNBubiS9
+sRgqWp+gphgvVUBlo+na0TACMQCv0zQ7tVQHG7n8i3fw6hLNrk4UrwfXX91tcp3M
+a9Z6MI8EU1mRAmqkM63oRHeNGS0=
 -----END CERTIFICATE-----
           </sourcecode>
         </figure>
@@ -2754,9 +2780,10 @@ b4JPdOB198Mr4qQc6qzrvOjLh9kCIGolIBnHp57MW3RNcyTVEcqaSgK7H/UPB2f0
           <name>CA Private Key PEM</name>
           <sourcecode type="pem">
 -----BEGIN EC PRIVATE KEY-----
-MHcCAQEEIMvwM7fudPlsFOJDJGuG2HAlfg+MaFFisxBkicaPrYLBoAoGCCqGSM49
-AwEHoUQDQgAEvo84ksR6fegaeOmJmY+r48ICMUbYDyCE7n3Da2YbrRVldFFcrRqq
-yQoI86iGDI9QcXYMuB8a+tby22Cdzsdogg==
+MIGkAgEBBDBj90cnyONTJ3DqsSBdr4Df0zZ951wOLbQgqDPC8zw0wcrrQ5CT6+Ov
+sA2i87696dWgBwYFK4EEACKhZANiAATMe7p7BHfg95cwQKGD/QyLRJ9v4r2r7N+c
+enLiLLNVaklkicp1+AnxH3N+CABxwOYcBjYVaMIkvqspF1T9QMh1uL4/90YLUNQo
+G+yV1TS0SvSXcVoJUhHjWSiy+/RVx2o=
 -----END EC PRIVATE KEY-----
           </sourcecode>
         </figure>
@@ -2773,7 +2800,7 @@ It contains a SAN authenticating the single security source from that example, a
 Version: 3 (0x2)
 Serial Number:
     6f:fe:89:dc:b7:6e:d3:72:ea:7a
-Signature Algorithm: ecdsa-with-SHA256
+Signature Algorithm: ecdsa-with-SHA384
 Issuer: CN = Certificate Authority
 Validity
     Not Before: Oct  6 00:00:00 2025 GMT
@@ -2781,15 +2808,17 @@ Validity
 Subject: CN = src
 Subject Public Key Info:
     Public Key Algorithm: id-ecPublicKey
-        Public-Key: (256 bit)
+        Public-Key: (384 bit)
         pub:
-            04:44:c1:fa:63:b8:4f:17:2b:50:54:13:39:c5:0b:
-            eb:0e:63:02:41:ec:b4:ee:bb:dd:b8:b5:e4:fe:0a:
-            17:87:a8:05:94:51:c7:63:0d:95:d0:b5:50:ac:bd:
-            02:e9:79:b3:f4:f7:4e:64:5b:74:71:5f:af:bc:16:
-            39:96:0a:0c:7a
-        ASN1 OID: prime256v1
-        NIST CURVE: P-256
+            04:02:df:c4:97:47:f5:d3:d2:19:fe:61:85:74:47:
+            29:fa:16:72:ef:7d:11:cb:57:ca:03:20:c6:32:be:
+            06:ca:3f:dc:c1:18:e6:31:40:ba:3e:c5:7e:a7:b8:
+            5d:41:95:68:45:26:e8:1b:f0:d9:ea:09:24:f0:5a:
+            34:53:ad:75:b9:28:06:67:15:11:54:4c:99:3f:6b:
+            d9:08:a7:a4:23:9d:47:6c:fd:fd:74:d6:c6:88:36:
+            48:8a:d1:e6:0b:0e:7d
+        ASN1 OID: secp384r1
+        NIST CURVE: P-384
 X509v3 extensions:
     X509v3 Basic Constraints: critical
         CA:FALSE
@@ -2800,22 +2829,24 @@ X509v3 extensions:
     X509v3 Extended Key Usage: 
         1.3.6.1.5.5.7.3.35
     X509v3 Authority Key Identifier: 
-        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+        1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
         <figure>
           <name>Signing Certificate PEM</name>
           <sourcecode type="pem">
 -----BEGIN CERTIFICATE-----
-MIIBozCCAUqgAwIBAgIKb/6J3Ldu03LqejAKBggqhkjOPQQDAjAgMR4wHAYDVQQD
+MIIB4TCCAWegAwIBAgIKb/6J3Ldu03LqejAKBggqhkjOPQQDAzAgMR4wHAYDVQQD
 DBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjUxMDA2MDAwMDAwWhcNMjUxMDE2
-MDAwMDAwWjAOMQwwCgYDVQQDDANzcmMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
-AAREwfpjuE8XK1BUEznFC+sOYwJB7LTuu924teT+CheHqAWUUcdjDZXQtVCsvQLp
-ebP0905kW3RxX6+8FjmWCgx6o34wfDAMBgNVHRMBAf8EAjAAMCYGA1UdEQEB/wQc
-MBqgGAYIKwYBBQUHCAugDBYKZHRuOi8vc3JjLzAOBgNVHQ8BAf8EBAMCB4AwEwYD
-VR0lBAwwCgYIKwYBBQUHAyMwHwYDVR0jBBgwFoAUuGgNMJRqmSDjQ1YSqgUDEOTN
-rJAwCgYIKoZIzj0EAwIDRwAwRAIgf6lyVS3JFkPtiDCrZuSOquqNEz7r1Q/m+YWL
-ZRLEkSwCIBkHfL0kzgTeH4QIHzWiL9zk8xGDahrZ7PoW/0E8ERME
+MDAwMDAwWjAOMQwwCgYDVQQDDANzcmMwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAQC
+38SXR/XT0hn+YYV0Ryn6FnLvfRHLV8oDIMYyvgbKP9zBGOYxQLo+xX6nuF1BlWhF
+Jugb8NnqCSTwWjRTrXW5KAZnFRFUTJk/a9kIp6QjnUds/f101saINkiK0eYLDn2j
+fjB8MAwGA1UdEwEB/wQCMAAwJgYDVR0RAQH/BBwwGqAYBggrBgEFBQcIC6AMFgpk
+dG46Ly9zcmMvMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDIzAf
+BgNVHSMEGDAWgBQbdzO+g3VmanWGIvKrChdgP0JWAzAKBggqhkjOPQQDAwNoADBl
+AjBHljyxGGWxBmV5pz6Mgkn2k8MH9Am0+4ZGzRcEvMORA9R6371sJ0OYpuy1pPrd
+rwcCMQDrxYHocIePcAKYQnAAaNbn4pm/GaiTFgoQJWQn1tTMy3CyeocQMB0if57Y
+w6Xw0+Y=
 -----END CERTIFICATE-----
           </sourcecode>
         </figure>
@@ -2832,7 +2863,7 @@ It contains a SAN identifying the single security acceptor from that example, an
 Version: 3 (0x2)
 Serial Number:
     3f:24:0b:cd:a6:f7:fc:3c:29:de
-Signature Algorithm: ecdsa-with-SHA256
+Signature Algorithm: ecdsa-with-SHA384
 Issuer: CN = Certificate Authority
 Validity
     Not Before: Oct  6 00:00:00 2025 GMT
@@ -2840,15 +2871,17 @@ Validity
 Subject: CN = dst
 Subject Public Key Info:
     Public Key Algorithm: id-ecPublicKey
-        Public-Key: (256 bit)
+        Public-Key: (384 bit)
         pub:
-            04:47:f4:03:8f:0a:30:62:81:d6:14:c6:73:c8:a3:
-            7b:88:d9:04:2d:75:77:67:51:a6:8c:dd:69:e1:a6:
-            5e:25:54:38:01:0c:21:85:55:d4:31:e8:07:8f:9a:
-            b8:75:9e:06:b9:bd:17:f5:e2:7e:0b:28:0a:e5:e6:
-            15:e5:9f:a0:bd
-        ASN1 OID: prime256v1
-        NIST CURVE: P-256
+            04:00:57:ea:0e:6f:dc:50:dd:c1:11:1b:d8:10:ea:
+            e7:c0:ba:24:64:5d:44:d4:71:2d:b0:c8:35:4c:23:
+            4b:29:70:b4:ac:27:e7:8f:38:25:00:69:d1:28:f9:
+            8e:51:ce:b1:4b:72:c5:0b:27:26:76:37:c4:0a:dc:
+            d7:8b:d0:25:e4:b6:54:a6:45:d2:ba:7b:a9:89:4c:
+            c7:3b:24:31:d4:cd:c0:40:d6:6e:8e:b2:da:d7:31:
+            f7:dc:a5:71:08:54:5c
+        ASN1 OID: secp384r1
+        NIST CURVE: P-384
 X509v3 extensions:
     X509v3 Basic Constraints: critical
         CA:FALSE
@@ -2859,22 +2892,24 @@ X509v3 extensions:
     X509v3 Extended Key Usage: 
         1.3.6.1.5.5.7.3.35
     X509v3 Authority Key Identifier: 
-        B8:68:0D:30:94:6A:99:20:E3:43:56:12:AA:05:03:10:E4:CD:AC:90
+        1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
         <figure>
           <name>Key-Agreement Certificate PEM</name>
           <sourcecode type="pem">
 -----BEGIN CERTIFICATE-----
-MIIBpDCCAUqgAwIBAgIKPyQLzab3/Dwp3jAKBggqhkjOPQQDAjAgMR4wHAYDVQQD
+MIIB4DCCAWegAwIBAgIKPyQLzab3/Dwp3jAKBggqhkjOPQQDAzAgMR4wHAYDVQQD
 DBVDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwHhcNMjUxMDA2MDAwMDAwWhcNMjUxMDE2
-MDAwMDAwWjAOMQwwCgYDVQQDDANkc3QwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
-AARH9AOPCjBigdYUxnPIo3uI2QQtdXdnUaaM3Wnhpl4lVDgBDCGFVdQx6AePmrh1
-nga5vRf14n4LKArl5hXln6C9o34wfDAMBgNVHRMBAf8EAjAAMCYGA1UdEQEB/wQc
-MBqgGAYIKwYBBQUHCAugDBYKZHRuOi8vZHN0LzAOBgNVHQ8BAf8EBAMCAwgwEwYD
-VR0lBAwwCgYIKwYBBQUHAyMwHwYDVR0jBBgwFoAUuGgNMJRqmSDjQ1YSqgUDEOTN
-rJAwCgYIKoZIzj0EAwIDSAAwRQIgGyWu3B2kcevrEr75+M76kSgX+R8w7D7VRzv+
-dYiqcNwCIQCOefV3OQjiY30iXz8hR9SfSBfkEZiHxtvFOcZ9NL5fnA==
+MDAwMDAwWjAOMQwwCgYDVQQDDANkc3QwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAQA
+V+oOb9xQ3cERG9gQ6ufAuiRkXUTUcS2wyDVMI0spcLSsJ+ePOCUAadEo+Y5RzrFL
+csULJyZ2N8QK3NeL0CXktlSmRdK6e6mJTMc7JDHUzcBA1m6OstrXMffcpXEIVFyj
+fjB8MAwGA1UdEwEB/wQCMAAwJgYDVR0RAQH/BBwwGqAYBggrBgEFBQcIC6AMFgpk
+dG46Ly9kc3QvMA4GA1UdDwEB/wQEAwIDCDATBgNVHSUEDDAKBggrBgEFBQcDIzAf
+BgNVHSMEGDAWgBQbdzO+g3VmanWGIvKrChdgP0JWAzAKBggqhkjOPQQDAwNnADBk
+AjArcmaF95pLvgjxXBYa7mtDhEEgnYVsZytcWFu74yLx/7u/mUEsK0AgOrV+uTTo
+pqoCMAINw25QZUv9t8r+7lEmAo1em5730riu0Axq1yv0jF0LebLSYP6/fWe0cCwt
+/zk1CA==
 -----END CERTIFICATE-----
           </sourcecode>
         </figure>

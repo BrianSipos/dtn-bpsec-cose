@@ -1,4 +1,3 @@
-import binascii
 import cbor2
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
@@ -26,17 +25,17 @@ class TestExample(BaseTest):
 
         # 256-bit content encryption key
         cek = SymmetricKey(
-            k=binascii.unhexlify('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
+            k=bytes.fromhex('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
                 keyparam.KpKid: b'ExampleCEK',
                 keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
-                keyparam.KpBaseIV: binascii.unhexlify('6f3093eba5d85143c3dc0000'),
+                keyparam.KpBaseIV: bytes.fromhex('6f3093eba5d85143c3dc0000'),
             }
         )
         print('CEK: {}'.format(encode_diagnostic(cbor2.loads(cek.encode()))))
         # session IV
-        partial_iv = binascii.unhexlify('484A')
+        partial_iv = bytes.fromhex('484A')
 
         # Primary block
         prim_dec = self._get_primary_item()
@@ -69,7 +68,7 @@ class TestExample(BaseTest):
             external_aad=ext_aad_enc,
             key=cek,
         )
-        print('IV: {}'.format(binascii.hexlify(msg_obj._get_nonce())))
+        print('IV: {}'.format(msg_obj._get_nonce().hex()))
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
