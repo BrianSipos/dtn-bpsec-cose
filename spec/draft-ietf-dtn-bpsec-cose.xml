@@ -667,7 +667,7 @@ The full set of COSE algorithms available is managed at <xref target="IANA-COSE"
         </t>
         <t>
 Each algorithm in this profile is marked as being CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
-All of these algorithms in this profile are compatible with FIPS 140-3 <xref target="FIPS-140"/>, for which significantly more software and hardware detail than just algorithm choices are needed for actual certification.
+All of these algorithms in this profile are approved by FIPS 140-3 <xref target="FIPS-140"/>, however FIPS 140 certification involves review of software and hardware design and implementation detail outside the scope of this document.
         </t>
         <t>
 The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS data link security rationale described in <xref target="CCSDS-SDLS"/>.
