@@ -5,7 +5,7 @@
  <!ENTITY nbhy   "&#8209;">
  <!ENTITY wj     "&#8288;">
 ]>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-11" ipr="trust200902" submissionType="IETF" tocInclude="true" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-11" ipr="trust200902" sortRefs="true" symRefs="true" submissionType="IETF" tocInclude="true" updates="9172" version="3" xml:lang="en">
   <front>
     <title abbrev="BPSec COSE">
       Bundle Protocol Security (BPSec) COSE Context
@@ -90,7 +90,7 @@ The entire CDDL structure can be extracted from the XML version of this document
         </t>
         <sourcecode>'//sourcecode[@type="cddl"]'</sourcecode>
         <t>
-The following initial fragment defines the top-level symbols of this document's CDDL, including the ASB data structure with its parameter/result sockets.
+The following initial fragment defines the top-level rules of this document's CDDL, including the ASB data structure with its parameter/result sockets and rules needed for validating the example CBOR content.
         </t>
         <sourcecode type="cddl">
 start = bpsec-cose-asb / external_aad /
@@ -98,8 +98,10 @@ start = bpsec-cose-asb / external_aad /
   MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
         </sourcecode>
         <t>
-From the document <xref target="RFC9052"/> the definitions are taken for <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt>.
-From the document <xref target="RFC9171"/> the definitions are taken for <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>.
+The definitions for the rules <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt> are taken from COSE <xref target="RFC9052"/>.
+The definition for the rule <tt>COSE_CertHash</tt> is taken from COSE X.509 <xref target="RFC9360"/>.
+The definitions for the rules <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>, the sockets <tt>$extension-block</tt>, and the generic rule <tt>extension-block-use</tt> are taken from BP <xref target="RFC9171"/>.
+The BPSec specification <xref target="RFC9172"/> did not define its extension blocks using CDDL, so a supplementary definition for BPSec is provided in <xref target="sec-cddl-bpsec"/>.
         </t>
       </section>
       <section>
@@ -125,12 +127,12 @@ Both types of security block can use the same parameters, defined in <xref targe
         <name>COSE context declaration CDDL</name>
         <sourcecode type="cddl">
 ; Specialize the ASB for this context
+$ext-data-asb /= bpsec-cose-asb
 bpsec-cose-asb = bpsec-context-use&lt;
   3, ; Context ID COSE
   $bpsec-cose-param,
   $bpsec-cose-result
 &gt;
-$ext-data-asb /= bpsec-cose-asb
         </sourcecode>
       </figure>
       <section>
@@ -411,7 +413,9 @@ The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the p
           </t>
           <t>
 The COSE "protected attributes from the application" used for a signature or MAC result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-context-AAD"/>.
-The COSE payload used for a signature or MAC result <bcp14>SHALL</bcp14> be either the BTSD of the target, if the target is not the primary block, or an empty byte string if the target is the primary block.
+The COSE payload used for a signature or MAC result <bcp14>SHALL</bcp14> be one of the following:
+the encoded form of the primary block if the target is the primary block (block number zero), or
+the BTSD content of the target if the target is not the primary block (block number non-zero).
           </t>
         </section>
         <section anchor="sec-ASB-results-BCB">
@@ -2921,6 +2925,75 @@ pqoCMAINw25QZUv9t8r+7lEmAo1em5730riu0Axq1yv0jF0LebLSYP6/fWe0cCwt
           </sourcecode>
         </figure>
       </section>
+    </section>
+    <section anchor="sec-cddl-bpsec">
+      <name>CDDL Definitions for BPSec</name>
+      <t>
+The normative definitions of BPSec <xref target="RFC9172"/> do not include corresponding CDDL extending the rules defined for BP.
+The following CDDL provides those definitions as an update to that specification.
+These definitions include a new socket <tt>$ext-data-asb</tt> for all possible ASB contents and a generic rule <tt>bpsec-context-use</tt> which allows a security context to define a single rule for the ASB socket to include all of their parameter and result types together.
+      </t>
+      <sourcecode type="cddl"><![CDATA[
+; Generic structure of block-type-specific data for BIB and BCB
+ext-data-asb = $ext-data-asb .within ext-data-asb-structure
+ext-data-asb-structure = [
+  targets: [+ target-block-num],
+  context-id: int,
+  asb-flags,
+  security-source: eid,
+  ; params present if sec-params-present is set in #asb-flags
+  ? parameters: asb-id-value-list,
+  ; One result list per item in #targets
+  target-results: [+ asb-id-value-list]
+]
+target-block-num = uint
+asb-flags = uint .bits asb-flag-bits
+asb-flag-bits = &(
+  sec-params-present: 0
+)
+
+; Alternatives can be added to the sockets for each context ID
+asb-id-value-list = [* asb-id-value-pair]
+; Interpretation of the pair depends on the context-id and whether
+; it is a parameter or a result.
+asb-id-value-pair = [
+  id: uint,
+  value: any
+]
+
+; Provide BPv7 extension block types, they both really embed
+; "ext-data-asb" as a cbor sequence.
+; Block Integrity Block (BIB)
+$extension-block /= extension-block-use<
+  11,
+  bstr .cborseq ext-data-asb
+>
+; Block Confidentiality Block (BCB)
+$extension-block /= extension-block-use<
+  12,
+  bstr .cborseq ext-data-asb
+>
+
+; Specialization of $ext-data-asb for a security context.
+; The ParamPair and ResultPair should be sockets for specializing
+; those structures for the individual security context.
+bpsec-context-use<ContextId, ParamPair, ResultPair> = [
+  targets: [
+    + target-block-num
+  ],
+  context-id: ContextId,
+  asb-flags,
+  ? security-source: eid,
+  ? parameters: [
+    + ParamPair .within asb-id-value-pair
+  ],
+  target-results: [
+    + [
+      + ResultPair .within asb-id-value-pair
+    ]
+  ]
+]
+]]></sourcecode>
     </section>
     <section anchor="sec-doc-ack" numbered="false">
       <name>Acknowledgments</name>

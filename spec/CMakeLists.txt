@@ -151,13 +151,11 @@ add_custom_command(
     DEPENDS "${EXTRACTED_CDDL}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl"
         "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl"
         "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
     COMMAND cat
         "${EXTRACTED_CDDL}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../cose.cddl"
         "${CMAKE_CURRENT_SOURCE_DIR}/../cose_x509.cddl"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../bpsec.cddl"
         "${CMAKE_CURRENT_SOURCE_DIR}/../bpv7.cddl"
         >"${COMBINED_CDDL}"
 )
