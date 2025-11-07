@@ -674,7 +674,7 @@ All of these algorithms in this profile are compatible with FIPS-140-3 <xref tar
         <section>
           <name>Hashing Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/>.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/> if they will operate with public key certificates.
           </t>
           <table anchor="tab-interop-algs-hash">
             <name>Hash Algorithms</name>
@@ -725,14 +725,12 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are not a super-set of those available in <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
+The symmetric keyed algorithms here are a super-set of those available in <xref target="RFC9173"/>.
             </t>
           </aside>
-          <aside>
-            <t>
-The "direct" algorithm is really just a recipient placeholder to allow using a key-encryption key (KEK) identifier in that layer.
-            </t>
-          </aside>
+          <t>
+The "direct" algorithm is really just a recipient placeholder to allow using a content encryption key (CEK) identifier in a that COSE layer, so has no cryptographic function or effect on security strength.
+          </t>
           <table anchor="tab-interop-algs-sym">
             <name>Symmetric Algorithms</name>
             <thead>
@@ -829,6 +827,10 @@ When generating a BIB result from a symmetric key, implementations <bcp14>SHALL<
 When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
           </t>
           <t>
+The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the hash function output length.
+This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all keys used for HMAC.
+          </t>
+          <t>
 When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
 Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
           </t>
@@ -844,7 +846,7 @@ When processing a COSE_Encrypt with a symmetric KEK, a security verifier or acce
         <section>
           <name>ECC Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the elliptic curve cryptography (ECC) algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
           </t>
           <aside>
             <t>
@@ -950,7 +952,7 @@ ECDH-ES can provide forward secrecy by using the ephemeral key only for single m
         <section>
           <name>RSA Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHOULD</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
           </t>
           <aside>
             <t>
