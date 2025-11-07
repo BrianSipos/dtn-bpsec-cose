@@ -461,7 +461,7 @@ The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are compu
           </t>
           <t>
 The COSE "protected attributes from the application" used for an encryption result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-context-AAD"/>.
-The COSE payload used for an encryption result <bcp14>SHALL</bcp14> be the BTSD of the target.
+The COSE payload used for an encryption result <bcp14>SHALL</bcp14> be the BTSD content of the target.
 Because confidentiality of the primary block is disallowed by BPSec, there is no logic here for handling a BCB with a target on the primary block.
           </t>
         </section>
