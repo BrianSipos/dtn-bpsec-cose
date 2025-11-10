@@ -1445,8 +1445,11 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
+        </t>
+        <t>
 The value range is negative 16-bit integer.
-This value range is combined with the positive 64-bit integer block numbers for the AAD Scope key domain (<xref target="sec-ASB-param-AAD-scope"/>).
+This value range is combined with the non-negative 64-bit integer block numbers for the AAD Scope key domain (<xref target="sec-ASB-param-AAD-scope"/>).
         </t>
         <table anchor="tab-iana-aad-scope-keys">
           <name>BPSec COSE AAD Scope Special Keys</name>
@@ -1469,19 +1472,24 @@ This value range is combined with the positive 64-bit integer block numbers for 
               <td>[This specification]</td>
             </tr>
             <tr>
-              <td>-3 to -64384</td>
+              <td>-3 to -238</td>
               <td>Unassigned</td>
               <td></td>
             </tr>
             <tr>
-              <td>-64385 to 64512</td>
+              <td>-239 to -240</td>
               <td>Reserved for Experimental Use</td>
               <td>[This specification]</td>
             </tr>
             <tr>
-              <td>-64513 to -65536</td>
+              <td>-241 to -256</td>
               <td>Reserved for Private Use</td>
               <td>[This specification]</td>
+            </tr>
+            <tr>
+              <td>-257 to -65536</td>
+              <td>Reserved</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -1491,6 +1499,9 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
+        </t>
+        <t>
 The value range is a bit position within an unsigned 64-bit integer.
         </t>
         <table anchor="tab-iana-aad-scope-flags">
