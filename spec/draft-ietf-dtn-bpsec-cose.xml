@@ -270,9 +270,9 @@ The AAD Scope parameter controls what data is included in the AAD for both integ
 The AAD Scope parameter <bcp14>SHALL</bcp14> be encoded as a CBOR map containing keys referencing bundle blocks (as <tt>uint</tt> or <tt>nint</tt> items) and values representing a collection of bit flags (as <tt>uint</tt> items) as defined below.
           </t>
           <t>
-All non-negative AAD Scope keys <bcp14>SHALL</bcp14> correspond with block numbers in the bundle containing the AAD Scope parameter.
-Security verifiers and acceptors <bcp14>SHALL</bcp14> treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
-Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the IANA registry defined in <xref target="sec-iana-bundle"/> with the following initial values from <xref target="tab-AAD-scope-keys"/>.
+Non-negative integer AAD Scope keys <bcp14>SHALL</bcp14> correspond with block numbers in the bundle containing the AAD Scope parameter.
+Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the IANA registry defined in <xref target="sec-iana-bundle"/>.
+That registry contains the following initial values from <xref target="tab-AAD-scope-keys"/> as well as reserved blocks for experimental and private use.
           </t>
           <table anchor="tab-AAD-scope-keys">
             <name>AAD Scope Special Keys</name>
