@@ -272,7 +272,7 @@ The AAD Scope parameter controls what data is included in the AAD for both integ
 The AAD Scope parameter <bcp14>SHALL</bcp14> be encoded as a CBOR map containing keys referencing bundle blocks (as <tt>uint</tt> or <tt>nint</tt> items) and values representing a collection of bit flags (as <tt>uint</tt> items) as defined below.
           </t>
           <t>
-Non-negative integer AAD Scope keys <bcp14>SHALL</bcp14> correspond with block numbers in the bundle containing the AAD Scope parameter.
+Non-negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as block numbers in the bundle containing the AAD Scope parameter.
 Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the IANA registry defined in <xref target="sec-iana-bundle"/>.
 That registry contains the following initial values from <xref target="tab-AAD-scope-keys"/> as well as reserved blocks for experimental and private use.
           </t>
@@ -299,7 +299,7 @@ That registry contains the following initial values from <xref target="tab-AAD-s
             </tbody>
           </table>
           <t>
-AAD Scope keys <bcp14>SHALL</bcp14> be interpreted according to the IANA registry defined in <xref target="sec-iana-bundle"/> with initial values defined in <xref target="tab-AAD-scope-flags"/>.
+AAD Scope values <bcp14>SHALL</bcp14> be interpreted as bit flags according to the IANA registry defined in <xref target="sec-iana-bundle"/> with initial values defined in <xref target="tab-AAD-scope-flags"/>.
 Any AAD Scope value bits <bcp14>SHALL</bcp14> NOT all be set to zero, which would represent the lack of presence in the AAD and serves no purpose.
 When the map key identifies the primary block (block number zero) the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the primary block has no BTSD.
 When the map key identifies the containing security block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the security block BTSD does not yet exist.
