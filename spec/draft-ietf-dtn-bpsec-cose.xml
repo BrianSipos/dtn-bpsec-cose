@@ -700,7 +700,7 @@ Each algorithm in this profile is marked as being US CNSS CNSA 1.0 conformant <x
 All of these algorithms in this profile are approved by US NIST FIPS 140-3 <xref target="NIST-FIPS-140"/>, however FIPS 140 certification involves review of software and hardware design and implementation detail outside the scope of this document.
         </t>
         <t>
-The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS Space Data Link Security rationale described in <xref target="CCSDS-SDLS"/>.
+The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS Space Data Link Security rationale green book <xref target="CCSDS-SDLS"/>.
 The breadth of algorithm variety is intended to cover many different current use cases beyond simple symmetric key security and be compatible with current PKIX mechanisms and strategies.
         </t>
         <section>
