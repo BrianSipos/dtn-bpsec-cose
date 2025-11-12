@@ -1226,7 +1226,7 @@ A <bcp14>RECOMMENDED</bcp14> security policy is to limit asymmetric keys (and th
           <dd>With key use <tt>keyEncipherment</tt> and/or <tt>keyAgreement</tt>.</dd>
         </dl>
         <t>
-This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="SP800-57"/> more generally.
+This policy is the same one recommended by <xref section="6" target="RFC8551"/> for email security and by Section 5.2 of <xref target="NIST-SP800-57"/> more generally.
 Effectively this means that a BP node uses separate certificates for transport (e.g., as a TCPCL entity), BIB signing (as a security source), and BCB encryption (as a security acceptor).
         </t>
       </section>
