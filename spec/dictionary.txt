@@ -30,6 +30,7 @@ ciphersuite
 ciphertext
 clientAuth
 CNSA
+CNSS
 CoAP
 conformant
 CoRE
