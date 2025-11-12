@@ -269,13 +269,43 @@ additional-unprotected = empty_or_serialized_map
           <name>AAD Scope</name>
           <t>
 The AAD Scope parameter controls what data is included in the AAD for both integrity and confidentiality operations.
-The AAD Scope parameter <bcp14>SHALL</bcp14> be encoded as a CBOR map containing keys referencing bundle blocks (as int items) and values representing a collection of bit flags (as uint items) defined in <xref target="tab-AAD-scope-flags"/>.
+The AAD Scope parameter <bcp14>SHALL</bcp14> be encoded as a CBOR map containing keys referencing bundle blocks (as <tt>uint</tt> or <tt>nint</tt> items) and values representing a collection of bit flags (as <tt>uint</tt> items) as defined below.
           </t>
           <t>
-All non-negative AAD Scope keys <bcp14>SHALL</bcp14> correspond with block numbers in the bundle containing the AAD Scope parameter.
-Security verifiers and acceptors <bcp14>SHALL</bcp14> treat any AAD Scope with block numbers not actually present in the containing bundle as invalid.
-The AAD Scope key -1 <bcp14>SHALL</bcp14> be interpreted as corresponding to the target block of the security operation when the AAD is generated from the AAD Scope parameter.
-The AAD Scope key -2 <bcp14>SHALL</bcp14> be interpreted as corresponding to the security block which contains the AAD Scope parameter.
+Non-negative integer AAD Scope keys <bcp14>SHALL</bcp14> correspond with block numbers in the bundle containing the AAD Scope parameter.
+Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the IANA registry defined in <xref target="sec-iana-bundle"/>.
+That registry contains the following initial values from <xref target="tab-AAD-scope-keys"/> as well as reserved blocks for experimental and private use.
+          </t>
+          <table anchor="tab-AAD-scope-keys">
+            <name>AAD Scope Special Keys</name>
+            <thead>
+              <tr>
+                <th>Value</th>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>-1</td>
+                <td>Target block</td>
+                <td>Include the target block of the security operation associated with the AAD.</td>
+              </tr>
+              <tr>
+                <td>-2</td>
+                <td>Security block</td>
+                <td>Include the security block containing the security operation associated with the AAD.</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
+AAD Scope keys <bcp14>SHALL</bcp14> be interpreted according to the IANA registry defined in <xref target="sec-iana-bundle"/> with initial values defined in <xref target="tab-AAD-scope-flags"/>.
+Any AAD Scope value bits <bcp14>SHALL</bcp14> NOT all be set to zero, which would represent the lack of presence in the AAD and serves no purpose.
+When the map key identifies the primary block (block number zero) the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the primary block has no BTSD.
+When the map key identifies the containing security block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the security block BTSD does not yet exist.
+When the map key identifies the target block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the target block BTSD is already part of the security operation (integrity or confidentiality).
+All unassigned bits <bcp14>SHALL</bcp14> be set to zero (which will be elided by CBOR encoding) by security sources.
+All unassigned bits <bcp14>SHALL</bcp14> be ignored by security verifiers and acceptors.
           </t>
           <table anchor="tab-AAD-scope-flags">
             <name>AAD Scope Flags</name>
@@ -300,14 +330,6 @@ The AAD Scope key -2 <bcp14>SHALL</bcp14> be interpreted as corresponding to the
             </tbody>
           </table>
           <t>
-Any AAD Scope value bits <bcp14>SHALL</bcp14> NOT all be set to zero, which would represent the lack of presence in the AAD and serves no purpose.
-When the map key identifies the primary block (block number zero) the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the primary block has no BTSD.
-When the map key identifies the containing security block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the security block BTSD does not yet exist.
-When the map key identifies the target block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the target block BTSD is already part of the security operation (integrity or confidentiality).
-All unassigned bits <bcp14>SHALL</bcp14> be set to zero (which will be elided by CBOR encoding) by security sources.
-All unassigned bits <bcp14>SHALL</bcp14> be ignored by security verifiers and acceptors.
-          </t>
-          <t>
 A CDDL representation of this definition is included in <xref target="fig-AAD-scope-cddl"/> for reference.
           </t>
           <figure anchor="fig-AAD-scope-cddl">
@@ -315,15 +337,16 @@ A CDDL representation of this definition is included in <xref target="fig-AAD-sc
             <sourcecode type="cddl">
 $bpsec-cose-param /= [5, AAD-scope]
 AAD-scope = {
-    *blk-id => (uint .bits AAD-scope-flags)
+    *AAD-scope-key => AAD-scope-val
 }
-blk-id = uint / blk-target / blk-sec
-blk-target = -1
-blk-sec = -2
-AAD-scope-flags = &amp;(
-    AAD-metadata: 0,
-    AAD-btsd: 1,
-)
+; All uint keys are block numbers
+AAD-scope-key = uint / ($blk-id-special .within (-1 .. -65536))
+$blk-id-special /= -1 ; target block
+$blk-id-special /= -2 ; security block
+
+AAD-scope-val = uint .bits $AAD-scope-flags
+$AAD-scope-flags /= 0 ; AAD-metadata
+$AAD-scope-flags /= 1 ; AAD-btsd
             </sourcecode>
           </figure>
           <t>
@@ -484,6 +507,9 @@ The AAD contents and encoding defined in this section are used for both integrit
 The encoding of this AAD is different from AAD of <xref section="4.7.2" target="RFC9173"/> and the front items of IPPT of <xref section="3.7" target="RFC9173"/> due to support for AAD covering the ASB security source field and covering an arbitrary number of blocks in the same bundle.
           </t>
           <t>
+If the AAD Scope map contains any key which is a positive integer (block number) referencing a block which does not exist in the current bundle or any key which is a negative integer (special key) not supported by the processing entity the generation of the AAD <bcp14>SHALL</bcp14> be considered failed.
+          </t>
+          <t>
 When used as the <tt>external_aad</tt> for COSE operations, the AAD <bcp14>SHALL</bcp14> be encoded in accordance with the core deterministic encoding requirements of <xref section="4.2.1" target="RFC8949"/>.
 The AAD byte string <bcp14>SHALL</bcp14> consist of an encoded CBOR sequence, generated by concatenating the following byte string parts:
           </t>
@@ -497,7 +523,7 @@ Because of deterministic encoding, the negative keys will occur after positive k
             </li>
             <li>
               <t>
-For each entry of the AAD Scope map, in ascending block number order followed by the negative sentinel values in descending order, the next items <bcp14>SHALL</bcp14> be one or both of the following:
+For each entry of the AAD Scope map, in ascending block number order followed by the negative special keys in descending order, the next items <bcp14>SHALL</bcp14> be one or both of the following:
               </t>
               <ol type="a">
                 <li>
@@ -1355,16 +1381,71 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the fo
           </tbody>
         </table>
         <t>
-Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags".
-<xref target="tab-iana-aad-scope"/> shows the initial values for this registry.
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Special Keys".
+<xref target="tab-iana-aad-scope-keys"/> shows the initial values for this registry.
         </t>
         <t>
 The registration policy for this registry is Specification Required.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
         </t>
         <t>
-The value range is unsigned 64-bit integer.
+The value range is negative 16-bit integer.
+This value range is combined with the non-negative 64-bit integer block numbers for the AAD Scope key domain (<xref target="sec-ASB-param-AAD-scope"/>).
         </t>
-        <table anchor="tab-iana-aad-scope">
+        <table anchor="tab-iana-aad-scope-keys">
+          <name>BPSec COSE AAD Scope Special Keys</name>
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Name</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>-1</td>
+              <td>Target block</td>
+              <td>[This specification]</td>
+            </tr>
+            <tr>
+              <td>-2</td>
+              <td>Security block</td>
+              <td>[This specification]</td>
+            </tr>
+            <tr>
+              <td>-3 to -238</td>
+              <td>Unassigned</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>-239 to -240</td>
+              <td>Reserved for Experimental Use</td>
+              <td>[This specification]</td>
+            </tr>
+            <tr>
+              <td>-241 to -256</td>
+              <td>Reserved for Private Use</td>
+              <td>[This specification]</td>
+            </tr>
+            <tr>
+              <td>-257 to -65536</td>
+              <td>Reserved</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <t>
+Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IANA has created and now maintains a new registry named "BPSec COSE AAD Scope Flags".
+<xref target="tab-iana-aad-scope-flags"/> shows the initial values for this registry.
+        </t>
+        <t>
+The registration policy for this registry is Specification Required.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
+        </t>
+        <t>
+The value range is a bit position within an unsigned 64-bit integer.
+        </t>
+        <table anchor="tab-iana-aad-scope-flags">
           <name>BPSec COSE AAD Scope Flags</name>
           <thead>
             <tr>
