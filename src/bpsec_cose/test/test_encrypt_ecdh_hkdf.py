@@ -62,7 +62,7 @@ class TestExample(BaseTest):
             y=bytes.fromhex('fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'),
             d=bytes.fromhex('c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520a658b4040a443f8fb3b54fb4ce882510e76017b66261'),
             optional_params={
-                keyparam.KpKid: b'SenderEC2',
+                keyparam.KpKid: b'SenderA.8',
                 keyparam.KpAlg: algorithms.EcdhSsHKDF512,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }

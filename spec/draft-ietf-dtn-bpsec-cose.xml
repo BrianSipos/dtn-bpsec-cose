@@ -1737,7 +1737,7 @@ This is an example of a MAC with recipient having a 384-bit symmetric key (same 
 [
   {
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleMAC',
+    / kid / 2: 'ExampleA.1',
     / alg / 3: 6, / HMAC 384 384 /
     / ops / 4: [9, 10], / MAC create, MAC verify /
     / k / -1: h'3a5c74e32ab4558a99581ec3a816576812aabe895db04494cda2
@@ -1785,7 +1785,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
            / alg / 1: 6 / HMAC 384 384 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4: 'ExampleMAC'
+          / kid / 4: 'ExampleA.1'
         },
         null, / payload detached /
         h'67d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d9498a7b
@@ -1803,7 +1803,7 @@ The final bundle is encoded as the following 170 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850b030000586081010301820166
 2f2f7372632f818205a2000120018181821158458443a10106a1044a4578616d706c
-654d4143f6583067d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d949
+65412e31f6583067d97d8c01c0656d0d2badac112990f05b3b285809cf2bd879d949
 8a7bfdefa119ba9988a69874a3349b0451b5f2b0298501010000466568656c6c6fff
         </sourcecode>
       </section>
@@ -1819,7 +1819,7 @@ The associated public key is included as a security parameter.
 [
   { / signing private key /
     / kty / 1: 2, / EC2 /
-    / kid / 2: 'ExampleEC2',
+    / kid / 2: 'ExampleA.2',
     / alg / 3: -51, / ESP384 /
     / ops / 4: [1, 2], / sign, verify /
     / crv / -1: 2, / P-384 /
@@ -1872,7 +1872,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
            / alg / 1: -51 / ESP384 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4: 'ExampleEC2'
+          / kid / 4: 'ExampleA.2'
         },
         null, / payload detached /
         h'd1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908ad1babd
@@ -1892,7 +1892,7 @@ The final bundle is encoded as the following 219 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850b030000589181010301820166
 2f2f7372632f818205a2000120018181821258768444a1013832a1044a4578616d70
-6c65454332f65860d1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908a
+6c65412e32f65860d1eac4f875e19303a76dacaf9873f8dcfec26e30c573642d908a
 d1babdde44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d
 720609212f435ca36283853803f5bc085192dc5649036611ff0c395b53b06e9d0638
 2a2a8501010000466568656c6c6fff
@@ -1914,7 +1914,7 @@ This signature uses a random salt, so the full signature output is not determini
 [
   { / signing private key /
     / kty / 1: 3, / RSA /
-    / kid / 2: 'ExampleRSA',
+    / kid / 2: 'ExampleA.3',
     / alg / 3: -38, / PS384 /
     / ops / 4: [1, 2], / sign, verify /
     / n / -1: h'f47b7c275eff5bf74e9e69d2b50e9a5dc0666147ca2541fce9a2
@@ -2015,21 +2015,21 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
            / alg / 1: -38 / PS384 /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4: 'ExampleRSA'
+          / kid / 4: 'ExampleA.3'
         },
         null, / payload detached /
-        h'93573a924293bc39714337edebd6bc6ea5a3b8e70f765f1f0cbf1e9410
-e890117d745858b6d63ec85414b7d9e37d5c83cd44b2ba58bb68b9ea5a9d988cb80c
-47b0218f7f4f17427a7707f951703d90505613a5728ac53851cb230fa143fc622661
-d0f2042a4d588ca7e2ba1009943258fe0181de637d8a3a7c0659906f6fbbda5c2941
-81032831a07fe61aedefd862332417c08b4e8c7af6d5239425a6c93eb0d851ec9994
-5ec80d3004eec0d9a129f4f2cc62f29548d429e4a6ea30fe07638e647b2c1b4c06a4
-3af25b318f1d368957c76c1b1e3f60e123e7d51e45a3951a6ee9922343c02666cc51
-852c95a3dee396f650f2b2af3f0e02d92a1793855397a55087e5b3eb25eb78e9493b
-72ae8710069c62e78d3968983a2058c9d1242903bf97d2ffd803a989dcf8a80d514b
-dc84365258fc30d4a29201e115c589664ed7ca27eddb0a5524902bcae2f1cd77ec24
-44971e80596bb1f5b22ef4c53fe493b460d1bb449a95b645b10c1e65e593afea852b
-9e6786ea7edd8b230e4a9c59e4468a' / signature /
+        h'11fca7a4b294f2c811a44cbd5fd95a0ecf6a37c94bbf918c9b229f1d12
+2ad9b7345931d8ee55d32aac09b3eca6bd7ca2c86024c9cd04610dc64ad2a443b0ff
+921d666a1300f8658c3c52418be59fd440be3e854eab94f1e2595e0bf14e586f0c6a
+db755cd17676b2a2cfd7c1878238161fedb361a11fc4661a4bc62a79ed68ec97b1b1
+184eac357c17817559c58d6218a4a031f141d815a370808d65b6470e7b394465048c
+afd3e2f6b5a4eaffd224b3a8956a8294a9b0a89f496102a61f947e582f2a214be41e
+7506f0cf4f13a922c91b18b201747f1ab46ce12780aba5a781c1007ee6adad30a21e
+6ef6d93b93f8f3ab1ffe34b2390dd2baec340fffd11618f2ba53c8af26fedb92c583
+95ad639ad3b7b6b086b6a2c1059ccb5eca29e641a25cec4237b9c18fff813664f215
+db8c9c2054a1223d5c4985d959866570ead8dc83db81841762bd41c359fae32f3087
+93dce2c672bdc92762e7edab1e0f55a8231d78d22f50a8a84b2e41990aeea3ceeb49
+19715b53ee7c29b9e7c8d249b16387' / signature /
       ]&gt;&gt;
     ]
   ]
@@ -2043,18 +2043,18 @@ The final bundle is encoded as the following 510 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850b0300005901b3810103018201
 662f2f7372632f818205a200012001818182125901978444a1013825a1044a457861
-6d706c65525341f659018093573a924293bc39714337edebd6bc6ea5a3b8e70f765f
-1f0cbf1e9410e890117d745858b6d63ec85414b7d9e37d5c83cd44b2ba58bb68b9ea
-5a9d988cb80c47b0218f7f4f17427a7707f951703d90505613a5728ac53851cb230f
-a143fc622661d0f2042a4d588ca7e2ba1009943258fe0181de637d8a3a7c0659906f
-6fbbda5c294181032831a07fe61aedefd862332417c08b4e8c7af6d5239425a6c93e
-b0d851ec99945ec80d3004eec0d9a129f4f2cc62f29548d429e4a6ea30fe07638e64
-7b2c1b4c06a43af25b318f1d368957c76c1b1e3f60e123e7d51e45a3951a6ee99223
-43c02666cc51852c95a3dee396f650f2b2af3f0e02d92a1793855397a55087e5b3eb
-25eb78e9493b72ae8710069c62e78d3968983a2058c9d1242903bf97d2ffd803a989
-dcf8a80d514bdc84365258fc30d4a29201e115c589664ed7ca27eddb0a5524902bca
-e2f1cd77ec2444971e80596bb1f5b22ef4c53fe493b460d1bb449a95b645b10c1e65
-e593afea852b9e6786ea7edd8b230e4a9c59e4468a8501010000466568656c6c6fff
+6d706c65412e33f659018011fca7a4b294f2c811a44cbd5fd95a0ecf6a37c94bbf91
+8c9b229f1d122ad9b7345931d8ee55d32aac09b3eca6bd7ca2c86024c9cd04610dc6
+4ad2a443b0ff921d666a1300f8658c3c52418be59fd440be3e854eab94f1e2595e0b
+f14e586f0c6adb755cd17676b2a2cfd7c1878238161fedb361a11fc4661a4bc62a79
+ed68ec97b1b1184eac357c17817559c58d6218a4a031f141d815a370808d65b6470e
+7b394465048cafd3e2f6b5a4eaffd224b3a8956a8294a9b0a89f496102a61f947e58
+2f2a214be41e7506f0cf4f13a922c91b18b201747f1ab46ce12780aba5a781c1007e
+e6adad30a21e6ef6d93b93f8f3ab1ffe34b2390dd2baec340fffd11618f2ba53c8af
+26fedb92c58395ad639ad3b7b6b086b6a2c1059ccb5eca29e641a25cec4237b9c18f
+ff813664f215db8c9c2054a1223d5c4985d959866570ead8dc83db81841762bd41c3
+59fae32f308793dce2c672bdc92762e7edab1e0f55a8231d78d22f50a8a84b2e4199
+0aeea3ceeb4919715b53ee7c29b9e7c8d249b163878501010000466568656c6c6fff
         </sourcecode>
       </section>
       <section>
@@ -2069,7 +2069,7 @@ The key used is shown in <xref target="fig-ex-encrypt0-symm-keys"/>, which inclu
 [
   {
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleCEK',
+    / kid / 2: 'ExampleA.4',
     / alg / 3: 3, / A256GCM /
     / ops / 4: [3, 4], / encrypt, decrypt /
     / base IV / 5: h'6f3093eba5d85143c3dc0000',
@@ -2120,7 +2120,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
            / alg / 1: 3 / A256GCM /
         }&gt;&gt;,
         { / unprotected /
-          / kid / 4: 'ExampleCEK',
+          / kid / 4: 'ExampleA.4',
           / partial iv / 6: h'484a'
         },
         null / payload detached /
@@ -2149,7 +2149,7 @@ The final bundle is encoded as the following 139 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000583181010301820166
 2f2f7372632f818205a20001200181818210578343a10103a2044a4578616d706c65
-43454b0642484af68501010000561fd25f64a2ee5c93bb884d529bce14cb24bdeaf8
+412e340642484af68501010000561fd25f64a2ee5c93bb884d529bce14cb24bdeaf8
 a3f1ff
         </sourcecode>
       </section>
@@ -2165,7 +2165,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-kw-keys"/>.
 [
   {
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleKEK',
+    / kid / 2: 'ExampleA.5',
     / alg / 3: -5, / A256KW /
     / ops / 4: [5, 6], / wrap, unwrap /
     / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
@@ -2229,7 +2229,7 @@ The recipient does not have any protected header parameters because AES Key Wrap
             &lt;&lt;&gt;&gt;, / protected /
             { / unprotected /
               / alg / 1: -5, / A256KW /
-              / kid / 4: 'ExampleKEK'
+              / kid / 4: 'ExampleA.5'
             },
             h'917f2045e1169502756252bf119a94cdac6a9d8944245b5a9a26d4
 03a6331159e3d691a708e9984d' / key-wrapped /
@@ -2248,7 +2248,7 @@ The final bundle is encoded as the following 199 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000586d81010301820166
 2f2f7372632f818205a200012001818182186058518443a10103a1054c6f3093eba5
-d85143c3dc484af6818340a20124044a4578616d706c654b454b5828917f2045e116
+d85143c3dc484af6818340a20124044a4578616d706c65412e345828917f2045e116
 9502756252bf119a94cdac6a9d8944245b5a9a26d403a6331159e3d691a708e9984d
 8501010000561fd25f64a2ee886e97ecfde7667371214f5add54a089ff
         </sourcecode>
@@ -2265,17 +2265,17 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where 
 [
   {
     / kty / 1: 4, / symmetric /
-    / kid / 2: 'ExampleKDK',
+    / kid / 2: 'ExampleA.6',
     / alg / 3: -11, / direct+HKDF-SHA-512 /
     / ops / 4: [7], / derive key /
-    / k / -1: h'0e8a982b921d1086241798032fedc1f883eab72e4e43bb2d11cf
-ae38ad7a972e'
+    / k / -1: h'6c4e5271e211e0c8329ab8f363097f16516a459f12a4060cf016
+4968fdccbd63'
   },
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'b0f3604f54d3f15e272357d1df75b50ede1475b0cdb17fef0fd1
-46b9bbcda3a3'
+    / k / -1: h'a2db6ff560dfd645999362dc1d39eff1d77336c93e973baf5053
+f4733c19ade4'
   }
 ]
           </sourcecode>
@@ -2330,7 +2330,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
               / alg / 1: -11 / direct+HKDF-SHA-512 /
             }&gt;&gt;,
             { / unprotected /
-              / kid / 4: 'ExampleKDK',
+              / kid / 4: 'ExampleA.6',
               / salt / -20: h'2fa8c8352aea17faf7407271a5e90eb8'
             },
             h'' / empty /
@@ -2350,7 +2350,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   0, / CRC type /
-  h'7443d510ee5ce1280ac6639b2256c98015ebfa8a8eb4' / ciphertext /
+  h'cd3367b96d5b006ba903e2b22d87490d5b87d344b5e2' / ciphertext /
 ]
           </sourcecode>
         </figure>
@@ -2361,9 +2361,9 @@ The final bundle is encoded as the following 177 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000585781010301820166
 2f2f7372632f818205a2000120018181821860583b8443a10103a1054c6f3093eba5
-d85143c3dc484af6818343a1012aa2044a4578616d706c654b454b33502fa8c8352a
-ea17faf7407271a5e90eb8408501010000567443d510ee5ce1280ac6639b2256c980
-15ebfa8a8eb4ff
+d85143c3dc484af6818343a1012aa2044a4578616d706c65412e3633502fa8c8352a
+ea17faf7407271a5e90eb840850101000056cd3367b96d5b006ba903e2b22d87490d
+5b87d344b5e2ff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-ec-recip-wrap">
@@ -2388,7 +2388,7 @@ a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
-    / kid / 2: 'ExampleEC2',
+    / kid / 2: 'ExampleA.7',
     / alg / 3: -31, / ECDH-ES + A256KW /
     / ops / 4: [7], / derive key /
     / crv / -1: 2, / P-384 /
@@ -2457,7 +2457,7 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
               / alg / 1: -31 / ECDH-ES + A256KW /
             }&gt;&gt;,
             { / unprotected /
-              / kid / 4: 'ExampleEC2',
+              / kid / 4: 'ExampleA.7',
               / ephemeral key / -1: {
                 1: 2,
                 -1: 2,
@@ -2484,7 +2484,7 @@ The final bundle is encoded as the following 309 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c03000058db81010301820166
 2f2f7372632f818205a200012001818182186058bf8443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381ea2044a4578616d706c6545433220a401022002
+d85143c3dc484af6818344a101381ea2044a4578616d706c65412e3720a401022002
 2158302f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9
 497a4bde513be6c9b0e7dae96033968c45225830fd27656fbb97f789d667f40d73b6
 5ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d
@@ -2505,7 +2505,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where 
 [
   {
     / kty / 1: 2, / EC2 /
-    / kid / 2: 'SenderEC2',
+    / kid / 2: 'SenderA.8',
     / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
     / crv / -1: 2, / P-384 /
@@ -2518,7 +2518,7 @@ a658b4040a443f8fb3b54fb4ce882510e76017b66261'
   },
   { / recipient private key /
     / kty / 1: 2, / EC2 /
-    / kid / 2: 'ExampleEC2',
+    / kid / 2: 'ExampleA.8',
     / alg / 3: -28, / ECDH-SS + HKDF-512 /
     / ops / 4: [7], / derive key /
     / crv / -1: 2, / P-384 /
@@ -2588,8 +2588,8 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
               / alg / 1: -28 / ECDH-SS + HKDF-512 /
             }&gt;&gt;,
             { / unprotected /
-              / kid / 4: 'ExampleEC2',
-              / sender kid / -3: 'SenderEC2',
+              / kid / 4: 'ExampleA.8',
+              / sender kid / -3: 'SenderA.8',
               / salt / -20: h'2fa8c8352aea17faf7407271a5e90eb8'
             },
             h'' / empty /
@@ -2620,7 +2620,7 @@ The final bundle is encoded as the following 189 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c030000586381010301820166
 2f2f7372632f818205a200012001818182186058478443a10103a1054c6f3093eba5
-d85143c3dc484af6818344a101381ba3044a4578616d706c65454332224953656e64
+d85143c3dc484af6818344a101381ba3044a4578616d706c65412e38224953656e64
 657245433233502fa8c8352aea17faf7407271a5e90eb840850101000056925c3320
 6eb8223957ae40693c02d1f6a0cdb71574aaff
         </sourcecode>
@@ -2641,7 +2641,7 @@ This padding scheme uses a random salt, so the full Layer 1 ciphertext output is
 [
   { / recipient private key /
     / kty / 1: 3, / RSA /
-    / kid / 2: 'ExampleRSA',
+    / kid / 2: 'ExampleA.9',
     / alg / 3: -42, / RSAES-OAEP w SHA-512 /
     / ops / 4: [1, 2], / sign, verify /
     / n / -1: h'c257bd2257000620d6c12e7fb988b891c0fa0f8eab597e2c56f0
@@ -2758,7 +2758,7 @@ The recipient does not have any protected header parameters because RSA OAEP doe
             &lt;&lt;&gt;&gt;, / protected /
             { / unprotected /
               / alg / 1: -42, / RSAES-OAEP w SHA-512 /
-              / kid / 4: 'ExampleRSA'
+              / kid / 4: 'ExampleA.9'
             },
             h'407e01f5fc110dcf186fb9d7b627a45a2cfb230724b55a7b17aba0
 e184688c7913278b505d23d9a0087fc02bc3422b8e12d106741ce1e075fa0346352d
@@ -2787,7 +2787,7 @@ The final bundle is encoded as the following 547 octets in base-16:
 9f880700008201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
 7372632f821b000000bd51281400001a000f4240850c0300005901c8810103018201
 662f2f7372632f818205a20001200181818218605901ab8443a10103a1054c6f3093
-eba5d85143c3dc484af6818340a2013829044a4578616d706c65525341590180407e
+eba5d85143c3dc484af6818340a2013829044a4578616D706C65412E39590180407e
 01f5fc110dcf186fb9d7b627a45a2cfb230724b55a7b17aba0e184688c7913278b50
 5d23d9a0087fc02bc3422b8e12d106741ce1e075fa0346352df5c4a4f7e81c4e2c08
 003fb1df95f8e1b84b92e06d23b8c23b50e3507635df98841cc5ec190b1095919515
