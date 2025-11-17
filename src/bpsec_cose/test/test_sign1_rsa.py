@@ -23,7 +23,7 @@ class TestExample(BaseTest):
             dq=bytes.fromhex('a0d29842f294f48d2bd7a56c9fcfb704d626856d67ef8467be6edebbf2afeea639b3f89ef9d29780bae483967caf235f9b2d0a7c83a331466d10d209b9a3c8e3279a4d055f6eb23e19232b93bcbcc1f4d0ac2fb4ea9519bf115bdfc454033b1711a91bfd822721ae7b222ab34ebb90602c409d878ad3821cdf3a0b8c9eb045fcea0b6be3ae2ac23170273d58371fc34bddd626332787dafa0a3adf10f430f8787bb6cf2e8e4e8ca52a1ab3d699fc0e83794395d228a6548398431b05ce570521'),
             qinv=bytes.fromhex('1f1b16da1f590fc9e6b174122d8c78554adee8627c31068abccf56f8a73c04fd677567d9fe246b1ff972c9b74e238bf4e04b9cef7e0ba76befea43a0e114a0aff45b2cbeff649614281017c1f00be91ba2562453a0a5ee25f6518fcf07dddf2da2c645bc337a51b8108dba1aab223893c7fcbabdb5b9c88b618e858eda994b7c04b1bffe2612f743e857707dccea4f7a93d711f818a8e6420890c2e73eb7f4fcc3c55c7d83b4d2bbd9bcea0c0668570e9ca7e92e5ca626754180da12a6b85a85'),
             optional_params={
-                keyparam.KpKid: b'ExampleRSA',
+                keyparam.KpKid: b'ExampleA.3',
                 keyparam.KpAlg: algorithms.Ps384,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }

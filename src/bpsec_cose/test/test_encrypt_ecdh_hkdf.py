@@ -21,7 +21,7 @@ class TestExample(BaseTest):
             y=bytes.fromhex('4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894cc73b2431d4cdc040d66e8eb2dad731f7dca57108545c'),
             d=bytes.fromhex('7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'),
             optional_params={
-                keyparam.KpKid: b'ExampleEC2',
+                keyparam.KpKid: b'ExampleA.8',
                 keyparam.KpAlg: algorithms.EcdhSsHKDF512,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }

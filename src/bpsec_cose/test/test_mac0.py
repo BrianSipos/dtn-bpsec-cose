@@ -13,9 +13,9 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 384-bit key (SHA-384 output size)
         key = SymmetricKey(
-            k=(b'\x00' * 16),
+            k=(b'\x00' * 16),  # placeholder for below
             optional_params={
-                keyparam.KpKid: b'ExampleMAC',
+                keyparam.KpKid: b'ExampleA.1',
                 keyparam.KpAlg: algorithms.HMAC384,
                 keyparam.KpKeyOps: [keyops.MacCreateOp, keyops.MacVerifyOp],
             }

@@ -24,7 +24,7 @@ class TestExample(BaseTest):
             dq=bytes.fromhex('a0fa7a9e2cb69e835535fb63e3ae4ada0d4ebc59829fa4a6d8b503ae61d932900142a554c977768283978bb937d030f272a6bbb9e88551066b75fee3eebbd9b25276757cfdffcd9298511075efe1de1dcf74328a1d1cce81ec6bc318704762d4366c108794c0dd1ec3b2387e48c01d0371d3c09b801fb2e41d998ad9c803b6fb0bd4793ad2b88f51012541ed55bda5685d6f8083c2d59b996682ec9f151ce35ef1046dd0a786998f81313ab85edadd155e07841bf6d874dbf23629100760ae61'),
             qinv=bytes.fromhex('598da6c558bf08c201b845b2dab3ff00a2ee74ce064d86f18af2f8b721205224526b7d8b9c42f6bc7f34a8c8623dcfc28ff800e28f23cd301814857a728b282a121ee6d47d031eef5c14d84d6aadfd2bdf3ef9d10dce7dda11ba466f125d67772b945b79baa5092f86f98dcfd1d8fc946fd24851bc3e49033c29d6509a73d64326d3981b165be7bb2fa15d2696200c786fe1098449ded9207af0391caabf617da3fd8c777e1ad755bd24855dc6d84933987543f12fba160c3c71de8bff439468'),
             optional_params={
-                keyparam.KpKid: b'ExampleRSA',
+                keyparam.KpKid: b'ExampleA.9',
                 keyparam.KpAlg: algorithms.RsaesOaepSha512,
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
             }
@@ -34,7 +34,6 @@ class TestExample(BaseTest):
         cek = SymmetricKey(
             k=bytes.fromhex('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
-                keyparam.KpKid: b'ExampleCEK',
                 keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
             }

@@ -19,7 +19,7 @@ class TestExample(BaseTest):
             y=bytes.fromhex('4526e81bf0d9ea0924f05a3453ad75b92806671511544c993f6bd908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d'),
             d=bytes.fromhex('3494803544d85a84d802400b50f51eea23b72d7d850b53cbf3006e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'),
             optional_params={
-                keyparam.KpKid: b'ExampleEC2',
+                keyparam.KpKid: b'ExampleA.2',
                 keyparam.KpAlg: algorithms.Esp384,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }

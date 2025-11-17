@@ -14,9 +14,9 @@ class TestExample(BaseTest):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 256-bit key derivation key
         kdk = SymmetricKey(
-            k=bytes.fromhex('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
+            k=bytes.fromhex('6c4e5271e211e0c8329ab8f363097f16516a459f12a4060cf0164968fdccbd63'),
             optional_params={
-                keyparam.KpKid: b'ExampleKEK',
+                keyparam.KpKid: b'ExampleA.6',
                 keyparam.KpAlg: algorithms.DirectHKDFSHA512,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
