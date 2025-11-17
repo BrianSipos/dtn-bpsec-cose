@@ -1810,8 +1810,7 @@ The final bundle is encoded as the following 170 octets in base-16:
       <section anchor="sec-example-ops-ec-sign">
         <name>ECC Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with a recipient having a P-256 curve ECC keypair identified by a "kid".
-The associated public key is included as a security parameter.
+This is an example of a signature with the signer having a P-384 curve ECC keypair identified by a "kid".
         </t>
         <figure>
           <name>Example Keys</name>
@@ -1901,8 +1900,7 @@ d1babdde44b35ff0776c765c1f2a44d2f69571263ed55f843686f69d00e078de686d
       <section>
         <name>RSA Keypair COSE_Sign1</name>
         <t>
-This is an example of a signature with a recipient having a 3072-bit RSA keypair identified by a "kid".
-The associated public key is included as a security parameter.
+This is an example of a signature with the signer having a 3072-bit RSA keypair identified by a "kid".
         </t>
         <t>
 This key strength is not supposed to be a secure configuration, only intended to explain the procedure.
@@ -2369,7 +2367,7 @@ ea17faf7407271a5e90eb8408501010000567443d510ee5ce1280ac6639b2256c980
       <section anchor="sec-example-ops-ec-recip-wrap">
         <name>ECC Keypair COSE_Encrypt with Key Wrap</name>
         <t>
-This is an example of an encryption with an P-256 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
+This is an example of an encryption with an P-384 curve ephemeral sender keypair and a static recipient keypair identified by a "kid".
 The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
         </t>
         <figure anchor="fig-ex-encrypt-ecc-kw-keys">
@@ -2496,7 +2494,7 @@ a089ff
       <section>
         <name>ECC Keypair COSE_Encrypt with HKDF</name>
         <t>
-This is an example of an encryption with an P-256 curve static sender keypair and a static recipient keypair each identified by a "kid".
+This is an example of an encryption with an P-384 curve static sender keypair and a static recipient keypair each identified by a "kid".
 The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where the third key is the CEK derived from the ECDH secret via a salt value in the recipient header.
         </t>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-keys">
