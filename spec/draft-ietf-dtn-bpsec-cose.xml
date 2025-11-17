@@ -1077,7 +1077,7 @@ For example, a choice of specific <xref target="sec-sym-keys">symmetric key iden
             <tr>
               <td>salt</td>
               <td>-20</td>
-              <td>Required for HKDF-using algorithms (direct and ECDH)</td>
+              <td>Required for ECDH-SS algorithms, optional for ECDH-ES</td>
             </tr>
             <tr>
               <td>x5t-sender</td>
