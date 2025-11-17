@@ -849,6 +849,9 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
             <t>
 The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
             </t>
+            <t>
+The current ECC-based algorithms using AES key wrap (code -29 through -34) use HKDF with SHA-256, so do not conform to CNSA 1.0.
+            </t>
           </aside>
           <table anchor="tab-interop-algs-ecc">
             <name>ECC Algorithms</name>
@@ -895,14 +898,14 @@ The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
                 <td>1</td>
                 <td>ECDH-ES + A256KW</td>
                 <td>-31</td>
-                <td>CNSA 1.0</td>
+                <td></td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-SS + A256KW</td>
                 <td>-34</td>
-                <td>CNSA 1.0</td>
+                <td></td>
               </tr>
             </tbody>
           </table>
