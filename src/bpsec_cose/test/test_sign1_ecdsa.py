@@ -1,8 +1,6 @@
 import cbor2
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
-from pycose.keys import EC2Key, curves, keyops, keyparam
+from pycose.keys import EC2Key, keyops, keyparam
 from pycose.messages import Sign1Message
 from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
@@ -13,34 +11,23 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        private_key = EC2Key(
-            crv=curves.P384,
-            x=bytes.fromhex('02dfc49747f5d3d219fe6185744729fa1672ef7d11cb57ca0320c632be06ca3fdcc118e63140ba3ec57ea7b85d419568'),
-            y=bytes.fromhex('4526e81bf0d9ea0924f05a3453ad75b92806671511544c993f6bd908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d'),
-            d=bytes.fromhex('3494803544d85a84d802400b50f51eea23b72d7d850b53cbf3006e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'),
+        private_pem = '''\
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDA0lIA1RNhahNgCQAtQ9R7qI7ctfYULU8vzAG5b4pQNSiwY1RCkEu/H
+3Hh1+7oizKmgBwYFK4EEACKhZANiAAQC38SXR/XT0hn+YYV0Ryn6FnLvfRHLV8oD
+IMYyvgbKP9zBGOYxQLo+xX6nuF1BlWhFJugb8NnqCSTwWjRTrXW5KAZnFRFUTJk/
+a9kIp6QjnUds/f101saINkiK0eYLDn0=
+-----END EC PRIVATE KEY-----
+'''
+        private_key = EC2Key.from_pem_private_key(
+            private_pem,
             optional_params={
-                keyparam.KpKid: b'ExampleEC2',
+                keyparam.KpKid: b'ExampleA.2',
                 keyparam.KpAlg: algorithms.Esp384,
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
-
-        ckey = ec.EllipticCurvePrivateNumbers(
-            int.from_bytes(private_key.d, 'big'),
-            ec.EllipticCurvePublicNumbers(
-                x=int.from_bytes(private_key.x, 'big'),
-                y=int.from_bytes(private_key.y, 'big'),
-                curve=private_key.crv.curve_obj
-            )
-        ).private_key()
-        ckey_pem = ckey.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        print('Private PEM:\n{}'.format(ckey_pem.decode('utf-8')))
-        serialization.load_pem_private_key(ckey_pem, password=None)
 
         # Primary block
         prim_dec = self._get_primary_item()

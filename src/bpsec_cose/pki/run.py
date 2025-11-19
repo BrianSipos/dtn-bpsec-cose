@@ -128,7 +128,10 @@ class PkiCa:
         self._ca_key = ca_key
         self._ca_cert = ca_cert
 
-    def generate_end_entity(self, cafile: Optional[str], certbase: str, keybase: str, mode: str, serial: int, node_name: str, node_id: str, fqdn: Optional[str] = None) -> x509.Certificate:
+    def generate_end_entity(self, cafile: Optional[str],
+                            certbase: str, keybase: str, mode: str,
+                            serial: int, node_name: str, node_id: str,
+                            fqdn: Optional[str] = None) -> x509.Certificate:
         '''
         :param mode: Either 'sign' or 'encrypt' or 'transport'.
         :param serial: The certificate serial number.

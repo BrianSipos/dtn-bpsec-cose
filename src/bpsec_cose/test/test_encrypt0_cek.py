@@ -27,7 +27,7 @@ class TestExample(BaseTest):
         cek = SymmetricKey(
             k=bytes.fromhex('13BF9CEAD057C0ACA2C9E52471CA4B19DDFAF4C0784E3F3E8E3999DBAE4CE45C'),
             optional_params={
-                keyparam.KpKid: b'ExampleCEK',
+                keyparam.KpKid: b'ExampleA.4',
                 keyparam.KpAlg: algorithms.A256GCM,
                 keyparam.KpKeyOps: [keyops.EncryptOp, keyops.DecryptOp],
                 keyparam.KpBaseIV: bytes.fromhex('6f3093eba5d85143c3dc0000'),

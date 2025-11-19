@@ -2,7 +2,6 @@
 '''
 from dataclasses import dataclass, field
 import enum
-import re
 from typing import List, Optional, Any
 from .bp import EndpointId
 
