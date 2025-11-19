@@ -1,6 +1,4 @@
 import cbor2
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives import serialization
 from pycose import headers, algorithms
 from pycose.keys import EC2Key, curves, keyops, keyparam
 from pycose.messages import EncMessage
@@ -14,12 +12,16 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        # recipient_key = EC2Key.generate_key(curves.P384)
-        recipient_key = EC2Key(
-            crv=curves.P384,
-            x=bytes.fromhex('0057ea0e6fdc50ddc1111bd810eae7c0ba24645d44d4712db0c8354c234b2970b4ac27e78f38250069d128f98e51ceb1'),
-            y=bytes.fromhex('4b72c50b27267637c40adcd78bd025e4b654a645d2ba7ba9894cc73b2431d4cdc040d66e8eb2dad731f7dca57108545c'),
-            d=bytes.fromhex('7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'),
+        recipient_pem = '''\
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDB5Ma98wwEK5Fe8uL4QCs2vq4SS3mM7IDhMPk3l5elImdnZ3iXATWIF
+rmu5OFzhb/egBwYFK4EEACKhZANiAAQAV+oOb9xQ3cERG9gQ6ufAuiRkXUTUcS2w
+yDVMI0spcLSsJ+ePOCUAadEo+Y5RzrFLcsULJyZ2N8QK3NeL0CXktlSmRdK6e6mJ
+TMc7JDHUzcBA1m6OstrXMffcpXEIVFw=
+-----END EC PRIVATE KEY-----
+'''
+        recipient_key = EC2Key.from_pem_private_key(
+            recipient_pem,
             optional_params={
                 keyparam.KpKid: b'ExampleA.8',
                 keyparam.KpAlg: algorithms.EcdhSsHKDF512,
@@ -35,32 +37,21 @@ class TestExample(BaseTest):
         kdf_salt = bytes.fromhex('2fa8c8352aea17faf7407271a5e90eb8')
         print('KDF salt: {}'.format(kdf_salt.hex()))
 
-        ckey = ec.EllipticCurvePrivateNumbers(
-            int.from_bytes(recipient_key.d, 'big'),
-            ec.EllipticCurvePublicNumbers(
-                x=int.from_bytes(recipient_key.x, 'big'),
-                y=int.from_bytes(recipient_key.y, 'big'),
-                curve=recipient_key.crv.curve_obj
-            )
-        ).private_key()
-        ckey_pem = ckey.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        print('Private PEM:\n{}'.format(ckey_pem.decode('utf-8')))
-        serialization.load_pem_private_key(ckey_pem, password=None)
-
         # session IV
         iv = bytes.fromhex('6F3093EBA5D85143C3DC484A')
         print('IV: {}'.format(iv.hex()))
 
         # Would be random ephemeral key, but test constant
-        sender_key = EC2Key(
-            crv=curves.P384,
-            x=bytes.fromhex('2f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d16375e1b9abaa9497a4bde513be6c9b0e7dae96033968c45'),
-            y=bytes.fromhex('fd27656fbb97f789d667f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'),
-            d=bytes.fromhex('c4fff15193b8bceff5e221cc37b919fa8d33581a37c08d3e8520a658b4040a443f8fb3b54fb4ce882510e76017b66261'),
+        sender_pem = '''\
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDDE//FRk7i87/XiIcw3uRn6jTNYGjfAjT6FIKZYtAQKRD+Ps7VPtM6I
+JRDnYBe2YmGgBwYFK4EEACKhZANiAAQviPCVxFyW43fhjXF6XmAHzo9gdq6CAJ0W
+N14bmrqpSXpL3lE75smw59rpYDOWjEX9J2Vvu5f3idZn9A1ztlqzYrIt0jv0kr7n
+K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
+-----END EC PRIVATE KEY-----
+'''
+        sender_key = EC2Key.from_pem_private_key(
+            sender_pem,
             optional_params={
                 keyparam.KpKid: b'SenderA.8',
                 keyparam.KpAlg: algorithms.EcdhSsHKDF512,

@@ -46,7 +46,7 @@ class BaseTest(unittest.TestCase):
         '''
         return {0: 0b01, -1: 0b01}
 
-    def _get_aad_array(self, addl_protected: bytes=b''):
+    def _get_aad_array(self, addl_protected: bytes = b''):
         ''' Get the AAD-list array.
 
         :param addl_protected: The additional-protected parameters encoded.

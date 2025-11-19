@@ -52,12 +52,12 @@ log_cli_level="info"
 load-plugins="pylint_junit"
 suggestion-mode="no"
 [tool.pylint.FORMAT]
-max-line-length=100
+max-line-length=160
 [tool.pylint.DESIGN]
 min-public-methods=1
 
 [tool.flake8]
-max-line-length=100
+max-line-length=160
 
 [project.urls]
 "Homepage" = "https://github.com/BrianSipos/dtn-bpsec-cose"
