@@ -135,14 +135,15 @@ bpsec-cose-asb = bpsec-context-use&lt;
 &gt;
         </sourcecode>
       </figure>
-      <section>
+      <section anchor="sec-bpsec-context-scope">
         <name>Security Scope</name>
         <t>
 The scope here refers to the set of information used by the security context to cryptographically bind with the plaintext data being integrity-protected or confidentiality-protected.
-This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same data.
+This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same kind of data.
+COSE additionally distinguishes between its own internal AAD, derived from COSE message content, and <em>external AAD</em> provided by the embedding application, which in this case is the BPSec context.
         </t>
         <t>
-The sources for AAD within the COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-context-AAD"/>.
+The sources for external AAD within the COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
 The purpose of this parameter is similar to the AAD Scope parameter and Integrity Scope parameter of <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
         </t>
         <dl newline="true">
@@ -186,7 +187,7 @@ By using a minimal AAD scope it is also possible for an integrity operation to c
       <section anchor="sec-ASB-parameters">
         <name>Parameters</name>
         <t>
-Each COSE context parameter value <bcp14>SHALL</bcp14> consist of the COSE structure indicated by <xref target="tab-ASB-parameters"/> in its decoded (CBOR item) form.
+Each COSE context parameter value <bcp14>SHALL</bcp14> consist of the COSE structure indicated by <xref target="tab-ASB-parameters"/> in its decoded CBOR item form.
 Each security block <bcp14>SHALL</bcp14> contain no more than one of each parameter type per target block.
         </t>
         <table anchor="tab-ASB-parameters">
@@ -229,7 +230,7 @@ When a parameter is not present and a default value is defined below, a security
           <t>
 The two parameters Additional Protected and Additional Unprotected allow de-duplicating header items which are common to all COSE results.
 Both additional header values contain a CBOR map which is to be merged with each of the result's unprotected headers.
-Although the additional header items are all treated as unprotected from the perspective of the COSE message, the additional protected map is included within the <tt>external_aad</tt> (see <xref target="sec-context-AAD"/>).
+Although the additional header items are all treated as unprotected from the perspective of the COSE message, the additional protected map is included within the <xref target="sec-secctx-aad">external AAD</xref>.
 The expected use of additional header map is to contain a certificate (chain) or identifier (see <xref target="sec-asym-keys"/>) which applies to all results in the same security block.
           </t>
           <t>
@@ -243,12 +244,12 @@ There is no well-defined behavior for a security acceptor to handle multiple Add
           </t>
           <t>
 Security sources <bcp14>SHOULD NOT</bcp14> include an additional header parameter which represents an empty map.
-Security verifiers and acceptors <bcp14>SHALL</bcp14> handle empty header map parameters, specifically the Additional Protected parameter because it is part of the <tt>external_aad</tt>.
+Security verifiers and acceptors <bcp14>SHALL</bcp14> handle empty header map parameters, specifically the Additional Protected parameter because it is part of the <xref target="sec-secctx-aad">external AAD</xref>.
           </t>
           <t>
 Security verifiers and acceptors <bcp14>SHALL</bcp14> treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result.
-For single-layer messages (i.e., COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
-If the same header label is present in a additional header map and a COSE layer's headers the item in the result header <bcp14>SHALL</bcp14> take precedence (i.e., the additional header items are added only if they are not already present in a layer's header).
+For single-layer messages (<em>i.e.</em>, COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
+If the same header label is present in a additional header map and a COSE layer's headers the item in the result header <bcp14>SHALL</bcp14> take precedence (<em>i.e.</em>, the additional header items are added only if they are not already present in a layer's header).
           </t>
           <t>
 Additional header maps <bcp14>SHALL</bcp14> NOT contain any private key material.
@@ -435,7 +436,7 @@ The integrity result for COSE_Mac and COSE_Mac0 messages are computed by the pro
 The integrity result for COSE_Sign and COSE_Sign1 messages are computed by the procedure in <xref section="4.4" target="RFC9052"/>.
           </t>
           <t>
-The COSE "protected attributes from the application" used for a signature or MAC result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-context-AAD"/>.
+The COSE "protected attributes from the application" used for a signature or MAC result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-secctx-aad"/>.
 The COSE payload used for a signature or MAC result <bcp14>SHALL</bcp14> be one of the following:
 the encoded form of the primary block if the target is the primary block (block number zero), or
 the BTSD content of the target if the target is not the primary block (block number non-zero).
@@ -483,7 +484,7 @@ Each confidentiality result <bcp14>SHALL</bcp14> use the "detached" payload form
 The confidentiality result for COSE_Encrypt and COSE_Encrypt0 messages are computed by the procedure in <xref section="5.3" target="RFC9052"/>.
           </t>
           <t>
-The COSE "protected attributes from the application" used for an encryption result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-context-AAD"/>.
+The COSE "protected attributes from the application" used for an encryption result <bcp14>SHALL</bcp14> be the encoded data defined in <xref target="sec-secctx-aad"/>.
 The COSE payload used for an encryption result <bcp14>SHALL</bcp14> be the BTSD content of the target.
 Because confidentiality of the primary block is disallowed by BPSec, there is no logic here for handling a BCB with a target on the primary block.
           </t>
@@ -498,27 +499,29 @@ This specification does not impose any additional key requirements beyond those 
       <section>
         <name>Canonicalization Algorithms</name>
         <t>
-Generating or processing COSE messages for the COSE context follows the profile defined in <xref target="sec-COSE-profile"/> with the "protected attributes from the application" (i.e., the <tt>external_aad</tt> item) generated as defined in <xref target="sec-context-AAD"/>.
+Generating or processing COSE messages for the COSE context follows the profile defined in <xref target="sec-COSE-profile"/> with the "protected attributes from the application" (<em>i.e.</em>, the external AAD) generated as defined in <xref target="sec-secctx-aad"/> and the detached payload being from the target block as defined in <xref target="sec-secctx-payload"/>.
         </t>
-        <section anchor="sec-context-AAD">
-          <name>Generating AAD</name>
+        <section anchor="sec-secctx-aad">
+          <name>Generating External AAD</name>
           <t>
-The AAD contents and encoding defined in this section are used for both integrity and confidentiality messages.
-The encoding of this AAD is different from AAD of <xref section="4.7.2" target="RFC9173"/> and the front items of IPPT of <xref section="3.7" target="RFC9173"/> due to support for AAD covering the ASB security source field and covering an arbitrary number of blocks in the same bundle.
+The COSE external AAD content and encoding defined in this section are used for both integrity and confidentiality messages.
+The encoding of this content is different from AAD of <xref section="4.7.2" target="RFC9173"/> and the front items of IPPT of <xref section="3.7" target="RFC9173"/> due to support for <xref target="sec-ASB-param-AAD-scope">AAD scope</xref> covering the ASB security source field and covering an arbitrary number of blocks in the same bundle.
           </t>
           <t>
 If the AAD Scope map contains any key which is a positive integer (block number) referencing a block which does not exist in the current bundle or any key which is a negative integer (special key) not supported by the processing entity the generation of the AAD <bcp14>SHALL</bcp14> be considered failed.
           </t>
           <t>
-When used as the <tt>external_aad</tt> for COSE operations, the AAD <bcp14>SHALL</bcp14> be encoded in accordance with the core deterministic encoding requirements of <xref section="4.2.1" target="RFC8949"/>.
-The AAD byte string <bcp14>SHALL</bcp14> consist of an encoded CBOR sequence, generated by concatenating the following byte string parts:
+When used as the <tt>external_aad</tt> for COSE operations, this external AAD <bcp14>SHALL</bcp14> be encoded in accordance with the core deterministic encoding requirements of <xref section="4.2.1" target="RFC8949"/>.
+The external AAD content <bcp14>SHALL</bcp14> consist of an encoded CBOR sequence, generated by concatenating the following byte string parts:
           </t>
           <ol>
             <li>
 The first part <bcp14>SHALL</bcp14> be the encoded Security Source EID associated with the ASB containing this security operation.
+This is a CBOR array of length 2 in accordance with <xref section="4.2.5.1" target="RFC9171"/>.
             </li>
             <li>
-The second part <bcp14>SHALL</bcp14> be the encoded AAD Scope value itself, which is a CBOR map.
+The second part <bcp14>SHALL</bcp14> be the encoded AAD Scope value itself.
+This is a CBOR map in accordance with <xref target="sec-ASB-param-AAD-scope"/>.
 Because of deterministic encoding, the negative keys will occur after positive keys.
             </li>
             <li>
@@ -533,23 +536,24 @@ If the map value has the <tt>AAD-metadata</tt> flag set, the next part is block 
                   <ul>
                     <li>
 If the map key is block number zero, the next part <bcp14>SHALL</bcp14> be the encoded form of the primary block of the containing bundle.
-This represents the full primary block, including its definite-length array head.
+This is the full primary block, including its definite-length array head.
                     </li>
                     <li>
 Otherwise, next part <bcp14>SHALL</bcp14> be the encoded form of the first three fields of the block (<em>i.e.</em>, the block type code, block number, and control flags) identified by the block number in the map key.
-This part is just the three encoded integer fields concatenated with no framing (array or otherwise).
+This is just the three encoded CBOR unsigned integer fields concatenated with no framing (array or otherwise).
                     </li>
                   </ul>
                 </li>
                 <li>
-If the map value has the <tt>AAD-btsd</tt> flag set and the map key is <em>not</em> block number zero, the next part is the encoded BTSD of the block identified by the block number in the map key.
-This part includes a byte string head.
+If the map value has the <tt>AAD-btsd</tt> flag set and the map key is <em>not</em> block number zero, the next part <bcp14>SHALL</bcp14> be the re-encoded BTSD of the block identified by the block number in the map key.
+This is a definite-length CBOR byte string.
+This part will be identical to the encoded BTSD item from the target block itself if that target block conforms to <xref section="4.3.2" target="RFC9171"/>.
                 </li>
               </ol>
             </li>
             <li>
-The last part <bcp14>SHALL</bcp14> be the encoded form of the Additional Protected parameter.
-This part includes a byte string head.
+The last part <bcp14>SHALL</bcp14> be the encoded form of the <xref target="sec-ASB-param-additional">Additional Protected parameter</xref>.
+This is a definite-length CBOR byte string.
 This has a default value of an empty string, defined in <xref target="sec-ASB-parameters"/>.
             </li>
           </ol>
@@ -588,12 +592,12 @@ block-metadata = (
             </sourcecode>
           </figure>
         </section>
-        <section>
+        <section anchor="sec-secctx-payload">
           <name>Payload Data</name>
           <t>
-When correlating between BPSec target BTSD and COSE plaintext or payload, any byte string <bcp14>SHALL</bcp14> be handled in its decoded (CBOR item) form.
-This means any CBOR header or tag in a source encoding are ignored for the purposes of security processing.
-This also means that if the source byte string was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size length, the security processing always treats it in a deterministically encoded CBOR form.
+When correlating between BPSec target BTSD and COSE plaintext or payload, any byte string <bcp14>SHALL</bcp14> be handled in its decoded CBOR item form.
+This means any CBOR head or tag in a source encoding are ignored for the purposes of security processing; only the BTSD content bytes are significant.
+This also means that if the target BTSD was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size length, the security processing always treats it in a deterministically encoded CBOR form.
         </t>
         </section>
       </section>
@@ -1152,7 +1156,7 @@ The <bcp14>RECOMMENDED</bcp14> priority policy for including public key identifi
           <li>The BIB Security Source is used to imply an associated end-entity certificate which identifies that Node ID.</li>
         </ol>
         <t>
-When certificates are used for public key data and the end-entity certificate is not explicitly trusted (i.e. pinned), a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
+When certificates are used for public key data and the end-entity certificate is not explicitly trusted (<em>i.e.</em> pinned), a security verifier or acceptor <bcp14>SHALL</bcp14> perform the certification path validation of <xref target="sec-context-auth-valid-cert"/> up to one or more trusted CA certificates.
 Leaving out part of the certification chain can cause a security verifier or acceptor to fail to validate a BIB if the left-out certificates are unknown to the acceptor (see <xref target="sec-threat-notrust-key"/>).
         </t>
         <t>
@@ -1338,7 +1342,7 @@ When public key certificates are used, all of the security considerations of <xr
         <name>AAD-Covered Block Modification</name>
         <t>
 The <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> can be used to refer to any other block within the same bundle (by its unique block number) at the time the associated security operation is added to a bundle.
-Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-context-AAD">AAD value</xref> it will cause verification or acceptance of the containing security operation to fail.
+Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-secctx-aad">AAD value</xref> it will cause verification or acceptance of the containing security operation to fail.
         </t>
         <t>
 One reason why such a modification would be made is that the other block has an expected lifetime shorter than the security operation.
@@ -1389,7 +1393,7 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
         </t>
         <t>
 The value range is negative 16-bit integer.
@@ -1443,7 +1447,7 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-context-AAD"/>.
+Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
         </t>
         <t>
 The value range is a bit position within an unsigned 64-bit integer.
