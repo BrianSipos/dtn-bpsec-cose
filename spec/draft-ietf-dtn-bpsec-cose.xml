@@ -499,7 +499,7 @@ This specification does not impose any additional key requirements beyond those 
       <section>
         <name>Canonicalization Algorithms</name>
         <t>
-Generating or processing COSE messages for the COSE context follows the profile defined in <xref target="sec-COSE-profile"/> with the "protected attributes from the application" (<em>i.e.</em>, the external AAD) generated as defined in <xref target="sec-secctx-aad"/> and the detached payload being from the target block as defined in <xref target="sec-secctx-payload"/>.
+Generating or processing COSE messages for the COSE context follows the profile defined in <xref target="sec-COSE-profile"/> with the "protected attributes from the application" (<em>i.e.</em>, the external AAD) generated as defined in <xref target="sec-secctx-aad"/> and the detached payload being the BTSD content from the target block as defined in <xref target="sec-secctx-payload"/>.
         </t>
         <section anchor="sec-secctx-aad">
           <name>Generating External AAD</name>
