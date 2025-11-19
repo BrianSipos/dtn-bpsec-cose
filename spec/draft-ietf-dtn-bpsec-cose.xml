@@ -2628,7 +2628,7 @@ d85143c3dc484af6818344a101381ba3044a4578616d706c65412e38224953656e64
       <section anchor="sec-example-ops-rsa-recip">
         <name>RSA Keypair COSE_Encrypt</name>
         <t>
-This is an example of an encryption with a recipient having a 1024-bit RSA keypair identified by a "kid".
+This is an example of an encryption with a recipient having a 3072-bit RSA keypair identified by a "kid".
 The associated public key is included as a security parameter.
         </t>
         <t>
