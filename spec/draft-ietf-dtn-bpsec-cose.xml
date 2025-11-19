@@ -596,7 +596,7 @@ block-metadata = (
           <name>Payload Data</name>
           <t>
 When correlating between BPSec target BTSD and COSE plaintext or payload, any byte string <bcp14>SHALL</bcp14> be handled in its decoded CBOR item form.
-This means any CBOR head or tag in a source encoding are ignored for the purposes of security processing; only the BTSD content bytes are significant.
+This means the CBOR head in an encoded form is ignored for the purposes of security processing; only the BTSD content bytes are significant.
 This also means that if the target BTSD was encoded in a non-conforming way, for example in indefinite-length form or with a non-minimum-size length, the security processing always treats it in a deterministically encoded CBOR form.
         </t>
         </section>
