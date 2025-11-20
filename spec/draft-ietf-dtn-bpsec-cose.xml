@@ -556,6 +556,7 @@ If the map value has the <tt>AAD-metadata</tt> flag set, the next part is block 
                     <li>
 If the map key is block number zero, the next part <bcp14>SHALL</bcp14> be the encoded form of the primary block of the containing bundle.
 This is the full primary block, including its definite-length array head.
+This part will be identical to the encoded primary block from the containing bundle if that primary block conforms to encoding requirements of <xref section="4.3.1" target="RFC9171"/>.
                     </li>
                     <li>
 Otherwise, next part <bcp14>SHALL</bcp14> be the encoded form of the first three fields of the block (<em>i.e.</em>, the block type code, block number, and control flags) identified by the block number in the map key.
@@ -566,7 +567,7 @@ This is just the three encoded CBOR unsigned integer fields concatenated with no
                 <li>
 If the map value has the <tt>AAD-btsd</tt> flag set and the map key is <em>not</em> block number zero, the next part <bcp14>SHALL</bcp14> be the re-encoded BTSD of the block identified by the block number in the map key.
 This is a definite-length CBOR byte string.
-This part will be identical to the encoded BTSD item from the target block itself if that target block conforms to <xref section="4.3.2" target="RFC9171"/>.
+This part will be identical to the encoded BTSD item from the target block itself if that target block conforms to encoding requirements of <xref section="4.3.2" target="RFC9171"/>.
                 </li>
               </ol>
             </li>
