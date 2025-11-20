@@ -38,13 +38,4 @@ jobs:
     - name: PKI examples
       run: |
         python3 -m bpsec_cose.pki.run
-        openssl ec -in bpsec_cose/pki/data/ca/key.pem
-        openssl x509 -text -in bpsec_cose/pki/data/ca/cert.pem
-        openssl x509 -text -in bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem
-        openssl x509 -text -in bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
-        openssl verify \
-          -attime $(date -d '2025-10-07T00:00:00Z' +'%s') \
-          -x509_strict -show_chain \
-          -CAfile bpsec_cose/pki/data/ca/cert.pem \
-          bpsec_cose/pki/data/nodes/src/ssl/certs/node-sign.pem \
-          bpsec_cose/pki/data/nodes/dst/ssl/certs/node-encrypt.pem
+        ./bpsec_cose/pki/check.sh

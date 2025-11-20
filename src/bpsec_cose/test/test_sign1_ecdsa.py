@@ -1,4 +1,5 @@
 import cbor2
+import os
 from pycose import headers, algorithms
 from pycose.keys import EC2Key, keyops, keyparam
 from pycose.messages import Sign1Message
@@ -6,21 +7,16 @@ from ..util import dump_cborseq, encode_diagnostic
 from ..bpsec import BlockType
 from .base import BaseTest
 
+SELFDIR = os.path.dirname(os.path.abspath(__file__))
+
 
 class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        private_pem = '''\
------BEGIN EC PRIVATE KEY-----
-MIGkAgEBBDA0lIA1RNhahNgCQAtQ9R7qI7ctfYULU8vzAG5b4pQNSiwY1RCkEu/H
-3Hh1+7oizKmgBwYFK4EEACKhZANiAAQC38SXR/XT0hn+YYV0Ryn6FnLvfRHLV8oD
-IMYyvgbKP9zBGOYxQLo+xX6nuF1BlWhFJugb8NnqCSTwWjRTrXW5KAZnFRFUTJk/
-a9kIp6QjnUds/f101saINkiK0eYLDn0=
------END EC PRIVATE KEY-----
-'''
         private_key = EC2Key.from_pem_private_key(
-            private_pem,
+            open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'src',
+                              'ssl', 'private', 'node-sign-ecc.pem'), 'r').read(),
             optional_params={
                 keyparam.KpKid: b'ExampleA.2',
                 keyparam.KpAlg: algorithms.Esp384,

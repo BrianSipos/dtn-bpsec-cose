@@ -159,13 +159,14 @@ class PkiCa:
         ]
 
         keyfile = keybase + '.pem'
+        LOGGER.info('Checking node %s key from %s', node_name, keyfile)
         if os.path.exists(keyfile):
             with open(keyfile, 'rb') as infile:
                 node_key = serialization.load_pem_private_key(infile.read(), password=None)
             LOGGER.info('Loaded node %s key from %s', node_name, keyfile)
         else:
-            LOGGER.info('Generated node %s key', node_name)
             node_key = self.generate_key({})
+            LOGGER.info('Generated node %s key', node_name)
 
         if mode == 'transport':
             sans += [
@@ -257,29 +258,50 @@ def main():
     nodes = {
         'src': {
             'node_id': 'dtn://src/',
-            'modes': {'sign'},
-            'serial': int.from_bytes(bytes.fromhex('6ffe89dcb76ed372ea7a'), 'big')
+            'variations': [
+                {
+                    'mode': 'sign',
+                    'kty': 'ecc',
+                    'serial': int.from_bytes(bytes.fromhex('6ffe89dcb76ed372ea7a'), 'big'),
+                },
+                {
+                    'mode': 'sign',
+                    'kty': 'rsa',
+                    'serial': int.from_bytes(bytes.fromhex('4cf6dc0848d1e140148b'), 'big'),
+                },
+            ]
         },
         'dst': {
             'node_id': 'dtn://dst/',
-            'modes': {'encrypt'},
-            'serial': int.from_bytes(bytes.fromhex('3f240bcda6f7fc3c29de'), 'big')
+            'variations': [
+                {
+                    'mode': 'encrypt',
+                    'kty': 'ecc',
+                    'serial': int.from_bytes(bytes.fromhex('3f240bcda6f7fc3c29de'), 'big'),
+                },
+                {
+                    'mode': 'encrypt',
+                    'kty': 'rsa',
+                    'serial': int.from_bytes(bytes.fromhex('eeb1ad992e4545ba9718'), 'big'),
+                },
+            ]
         },
     }
 
     for node_name, node_opts in nodes.items():
         node_id = node_opts['node_id']
-        modes = node_opts['modes']
-        serial = node_opts['serial']
 
         # Ubuntu common path mounted to /etc/ssl/
         nodedir = os.path.join(args.out_dir, 'nodes', node_name, 'ssl')
 
-        for mode in modes:
+        for var in node_opts['variations']:
+            mode = var['mode']
+            kty = var['kty']
+            serial = var['serial']
             pca.generate_end_entity(
                 cafile=None,
-                certbase=os.path.join(nodedir, 'certs', f'node-{mode}'),
-                keybase=os.path.join(nodedir, 'private', f'node-{mode}'),
+                certbase=os.path.join(nodedir, 'certs', f'node-{mode}-{kty}'),
+                keybase=os.path.join(nodedir, 'private', f'node-{mode}-{kty}'),
                 mode=mode,
                 serial=serial,
                 node_name=node_name,
