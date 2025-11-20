@@ -1,4 +1,4 @@
-bpv7_start = bundle / #6.55799(bundle)
+bpv7_start = bundle / admin-record
 
 ; Times before 2000 are invalid
 dtn-time = uint
@@ -99,10 +99,10 @@ blockflagbits = &(
   status-report-must-be-transmitted-if-block-cannot-be-processed: 1,
   block-must-be-replicated-in-every-fragment: 0
 )
-block-type-specific-data = bstr / #6.24(bstr)
+block-type-specific-data = bstr
 ; Actual CBOR data embedded in a bytestring, with optional tag to indicate so.
 ; Additional plain bstr allows ciphertext data.
-embedded-cbor<Item> = (bstr .cbor Item) / #6.24(bstr .cbor Item) / bstr
+embedded-cbor<Item> = (bstr .cbor Item) / bstr
 
 ; Extension block type, which does not specialize other than the code/number
 extension-block =

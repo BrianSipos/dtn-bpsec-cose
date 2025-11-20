@@ -144,7 +144,7 @@ COSE additionally distinguishes between its own internal AAD, derived from COSE 
         </t>
         <t>
 The sources for external AAD within the COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
-The purpose of this parameter is similar to the AAD Scope parameter and Integrity Scope parameter of the Default Security Contexts <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
+The purpose of this parameter is similar to the "AAD Scope" parameter and "Integrity Scope" parameter of the Default Security Contexts <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
         </t>
         <dl newline="true">
           <dt>Primary Block:</dt>
@@ -177,7 +177,7 @@ This case uses AAD scope key -2 and the value flag for metadata to indicate that
           <dt>Containing Security Block BTSD:</dt>
           <dd>
             <t>
-The BTSD content of the security block (as defined in <xref section="3.6" target="RFC9172"/>) is also partially covered by AAD unconditionally:
+The BTSD content of the security block itself (as defined in <xref section="3.6" target="RFC9172"/>) is also partially covered by AAD as explained below.
             </t>
             <ul>
               <li>
@@ -199,8 +199,9 @@ The Security Results are also not included directly, but these are the COSE mess
           </dd>
         </dl>
         <t>
-Because of the above, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
-By using a minimal AAD scope it is also possible for an integrity operation to cover only the BTSD of a single target block independently of the block metadata or bundle primary block associated with the target at the time the BIB is added.
+Because of this, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
+By using a minimal AAD scope it is also possible for an integrity operation to cover only the BTSD of its single target block independently of the block metadata or bundle primary block associated with the target at the time the BIB is added.
+Likewise, it is possible for a COSE context confidentiality operation to be bound to every block of a bundle at the time the BCB is added or bound to no context outside the BTSD of the target block.
         </t>
       </section>
       <section anchor="sec-ASB-parameters">
