@@ -100,7 +100,7 @@ start = bpsec-cose-asb / external_aad /
         <t>
 The definitions for the rules <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt> are taken from COSE <xref target="RFC9052"/>.
 The definition for the rule <tt>COSE_CertHash</tt> is taken from COSE X.509 <xref target="RFC9360"/>.
-The definitions for the rules <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>, the sockets <tt>$extension-block</tt>, and the generic rule <tt>extension-block-use</tt> are taken from BP <xref target="RFC9171"/>.
+The definitions for the rules <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>, <tt>block-control-flags</tt> the socket <tt>$extension-block</tt>, and the generic rule <tt>extension-block-use</tt> are taken from BP <xref target="RFC9171"/>.
 The BPSec specification <xref target="RFC9172"/> did not define its extension blocks using CDDL, so a supplementary definition for BPSec is provided in <xref target="sec-cddl-bpsec"/>.
         </t>
       </section>
