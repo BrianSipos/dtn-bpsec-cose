@@ -144,39 +144,58 @@ COSE additionally distinguishes between its own internal AAD, derived from COSE 
         </t>
         <t>
 The sources for external AAD within the COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
-The purpose of this parameter is similar to the AAD Scope parameter and Integrity Scope parameter of <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
+The purpose of this parameter is similar to the AAD Scope parameter and Integrity Scope parameter of the Default Security Contexts <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
         </t>
         <dl newline="true">
           <dt>Primary Block:</dt>
           <dd>
 The primary block identifies a bundle and, once created, the contents of this block are immutable.
 Changes to the primary block associated with the security target indicate that the target is no longer in its original bundle.
-Including the primary block as part of AAD ensures that security target appears in the same bundle that the security source intended.
+Including the primary block as part of AAD ensures that security target BTSD appears in the same bundle that the security source intended.
           </dd>
           <dt>Canonical Block-Type-Specific Data:</dt>
           <dd>
-Including the block-type-specific data (BTSD) of a non-target block as part of AAD ensures that that other block's BTSD does not change after the security block is added.
+Including the block-type-specific data (BTSD) of a non-target block as part of AAD ensures that that other block's BTSD does not change after the security operation is added.
 This can guarantee that not only has the security target BTSD not changed but the additional blocks' BTSD have not changed.
           </dd>
           <dt>Canonical Block Metadata:</dt>
           <dd>
-Including block metadata, which identifies and types a block, as part of AAD ensures that the block presence does not change after the security block is added.
+Including block metadata, which identifies and types a block, as part of AAD ensures that the block presence does not change after the security operation is added.
 This metadata explicitly excludes the CRC type and value fields because the CRC is derived from the BTSD.
-The metadata of the security block and the target block are also allowed, which binds the security result to that specific target.
+The metadata of the security block and the target block are also allowed (as described below), which binds the security result to that specific target block.
           </dd>
-          <dt>Containing Abstract Security Block:</dt>
+          <dt>Target Block Metadata:</dt>
+          <dd>
+One special case of including block metadata as AAD is for the target block itself, which ensures that the target BTSD is bound to its specific containing block.
+This case uses AAD Scope key -1 and the value flag for metadata to indicate that the block metadata is taken from the target of the security operation.
+          </dd>
+          <dt>Containing Security Block Metadata:</dt>
+          <dd>
+Another special case of including block metadata is for the security block containing the security operation itself, which ensures that the security operation is bound to its specific containing block.
+This case uses AAD scope key -2 and the value flag for metadata to indicate that the block metadata is taken from the containing security block.
+          </dd>
+          <dt>Containing Security Block BTSD:</dt>
           <dd>
             <t>
-The above sources of AAD allow covering the primary block, target block, and any other block besides the security block which contains the security operation for this COSE context
-The metadata of the containing security block can be included as described above, using AAD scope key -2 with the flag for metadata, but the BTSD of the security block (as defined in <xref section="3.6" target="RFC9172"/>) is also partially covered by AAD.
+The BTSD content of the security block (as defined in <xref section="3.6" target="RFC9172"/>) is also partially covered by AAD unconditionally:
             </t>
-            <t>
-The Security Targets field can be included indirectly by using AAD scope key -1 with the flag for metadata, which includes the target block number.
+            <ul>
+              <li>
+The Security Targets field can be included indirectly by using AAD scope key -1 to ensure the AAD includes each target block number.
+              </li>
+              <li>
 The Security Context ID is not included directly, but modification of this field will cause processing (verification or acceptance) of the associated security operations to fail.
-The Security Source field is included as AAD unconditionally, so is protected from modification.
+              </li>
+              <li>
+The Security Source field is always included as external AAD, so is protected from modification.
+              </li>
+              <li>
 The Security Context Flags and Security Context Parameters are not included directly, but the modification of parameters will cause processing of security operations to fail.
+              </li>
+              <li>
 The Security Results are also not included directly, but these are the COSE messages themselves which are designed to be handled as plaintext.
-            </t>
+              </li>
+            </ul>
           </dd>
         </dl>
         <t>
