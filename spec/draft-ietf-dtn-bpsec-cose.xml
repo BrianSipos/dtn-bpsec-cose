@@ -203,7 +203,7 @@ There are portions of each COSE message (result) which is included in the intern
         <t>
 Because of these options, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
 By using a minimal AAD scope it is also possible for an integrity operation to cover only the BTSD of its single target block independently of the block metadata or bundle primary block associated with the target at the time the BIB is added.
-Likewise, it is possible for a COSE context confidentiality operation to be bound to every block of a bundle at the time the BCB is added or bound to no context outside the BTSD of the target block.
+Likewise, it is possible for a COSE context confidentiality operation to be bound to every other block of a bundle at the time the BCB is added or bound to no context outside the BTSD of the target block.
         </t>
       </section>
       <section anchor="sec-ASB-parameters">
