@@ -100,7 +100,7 @@ start = bpsec-cose-asb / external_aad /
         <t>
 The definitions for the rules <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt> are taken from COSE <xref target="RFC9052"/>.
 The definition for the rule <tt>COSE_CertHash</tt> is taken from COSE X.509 <xref target="RFC9360"/>.
-The definitions for the rules <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>, <tt>block-control-flags</tt> the socket <tt>$extension-block</tt>, and the generic rule <tt>extension-block-use</tt> are taken from BP <xref target="RFC9171"/>.
+The definitions for the rules <tt>eid</tt>, <tt>primary-block</tt>, and <tt>extension-block</tt>, <tt>block-control-flags</tt>, the socket <tt>$extension-block</tt>, and the generic rule <tt>extension-block-use</tt> are taken from BP <xref target="RFC9171"/>.
 The BPSec specification <xref target="RFC9172"/> did not define its extension blocks using CDDL, so a supplementary definition for BPSec is provided in <xref target="sec-cddl-bpsec"/>.
         </t>
       </section>
@@ -140,10 +140,10 @@ bpsec-cose-asb = bpsec-context-use&lt;
         <t>
 The scope here refers to the set of information used by the security context to cryptographically bind with the plaintext data being integrity-protected or confidentiality-protected.
 This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same kind of data.
-COSE additionally distinguishes between its own internal AAD, derived from COSE message content, and <em>external AAD</em> provided by the embedding application, which in this case is the BPSec context.
+COSE additionally distinguishes between its internal portion of AAD, derived from COSE message content, and <em>external AAD</em> provided by the embedding application, which in this case is the BPSec security context.
         </t>
         <t>
-The sources for external AAD within the COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
+The sources for external AAD within this COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
 The purpose of this parameter is similar to the "AAD Scope" parameter and "Integrity Scope" parameter of the Default Security Contexts <xref target="RFC9173"/> but expanded to allow including <em>any</em> block in the bundle as AAD.
         </t>
         <dl newline="true">
@@ -151,14 +151,14 @@ The purpose of this parameter is similar to the "AAD Scope" parameter and "Integ
           <dd>
 The primary block identifies a bundle and, once created, the contents of this block are immutable.
 Changes to the primary block associated with the security target indicate that the target is no longer in its original bundle.
-Including the primary block as part of AAD ensures that security target BTSD appears in the same bundle that the security source intended.
+Including the primary block as part of AAD ensures that security target block-type-specific data (BTSD) appears in the same bundle that the security source intended.
           </dd>
-          <dt>Canonical Block-Type-Specific Data:</dt>
+          <dt>Other Canonical Block BTSD:</dt>
           <dd>
-Including the block-type-specific data (BTSD) of a non-target block as part of AAD ensures that that other block's BTSD does not change after the security operation is added.
+Including the BTSD of an other, non-target block as part of AAD ensures that that other block's BTSD does not change after the security operation is added.
 This can guarantee that not only has the security target BTSD not changed but the additional blocks' BTSD have not changed.
           </dd>
-          <dt>Canonical Block Metadata:</dt>
+          <dt>Other Canonical Block Metadata:</dt>
           <dd>
 Including block metadata, which identifies and types a block, as part of AAD ensures that the block presence does not change after the security operation is added.
 This metadata explicitly excludes the CRC type and value fields because the CRC is derived from the BTSD.
@@ -190,16 +190,18 @@ The Security Context ID is not included directly, but modification of this field
 The Security Source field is always included as external AAD, so is protected from modification.
               </li>
               <li>
-The Security Context Flags and Security Context Parameters are not included directly, but the modification of parameters will cause processing of security operations to fail.
+The Security Context Flags and Security Context Parameters are not all included directly, but the modification of parameters will cause processing of security operations to fail.
+The Additional Protected parameter is the portion of this data which is included in the external AAD.
               </li>
               <li>
 The Security Results are also not included directly, but these are the COSE messages themselves which are designed to be handled as plaintext.
+There are portions of each COSE message (result) which is included in the internal AAD (via <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, or <tt>Enc_structure</tt>) as defined by COSE <xref target="RFC9052"/>.
               </li>
             </ul>
           </dd>
         </dl>
         <t>
-Because of this, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
+Because of these options, it is possible for a security source to create a COSE context integrity operation which covers every block of a bundle at the time the BIB is added (excluding CRC Type and value fields).
 By using a minimal AAD scope it is also possible for an integrity operation to cover only the BTSD of its single target block independently of the block metadata or bundle primary block associated with the target at the time the BIB is added.
 Likewise, it is possible for a COSE context confidentiality operation to be bound to every block of a bundle at the time the BCB is added or bound to no context outside the BTSD of the target block.
         </t>
