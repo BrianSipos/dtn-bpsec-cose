@@ -517,6 +517,10 @@ Because confidentiality of the primary block is disallowed by BPSec, there is no
         <t>
 This specification does not impose any additional key requirements beyond those already specified for each COSE algorithm required in <xref target="sec-COSE-profile"/>.
         </t>
+        <t>
+It is expected, but not required, that keys referenced and used by COSE messages in this context will themselves be managed as COSE Key objects as defined in <xref section="7" target="RFC9052"/>.
+Using native COSE Key objects simplifies the work of an implementation to align with the key and credential identifiers contained in COSE header parameters.
+        </t>
       </section>
       <section>
         <name>Canonicalization Algorithms</name>
@@ -1162,7 +1166,7 @@ This provides size efficiency when multiple security results are present because
 Security verifiers and acceptors <bcp14>SHALL</bcp14> still process public keys or certificates present in a result message or recipient as applying to that individual COSE level.
         </t>
         <t>
-Security verifiers and acceptors <bcp14>SHALL</bcp14> aggregate all COSE_Key objects from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
+Security verifiers and acceptors <bcp14>SHALL</bcp14> aggregate all COSE Key objects from all parameters within a single BIB or BCB, independent of encoded type or order of parameters.
 Because each context contains a single set of security parameters which apply to all results in the same context, security verifiers and acceptors <bcp14>SHALL</bcp14> treat all public keys as being related to the security source itself and potentially applying to every result.
         </t>
       </section>
