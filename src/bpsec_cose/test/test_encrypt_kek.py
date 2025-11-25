@@ -16,7 +16,7 @@ class TestExample(BaseTest):
         kek = SymmetricKey(
             k=bytes.fromhex('0E8A982B921D1086241798032FEDC1F883EAB72E4E43BB2D11CFAE38AD7A972E'),
             optional_params={
-                keyparam.KpKid: b'ExampleA.4',
+                keyparam.KpKid: b'ExampleA.5',
                 keyparam.KpAlg: algorithms.A256KW,
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
             }
