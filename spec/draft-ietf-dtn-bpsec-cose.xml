@@ -5,12 +5,12 @@
  <!ENTITY nbhy   "&#8209;">
  <!ENTITY wj     "&#8288;">
 ]>
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-13" ipr="trust200902" sortRefs="false" symRefs="true" submissionType="IETF" tocInclude="true" updates="9172" version="3" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" consensus="true" docName="draft-ietf-dtn-bpsec-cose-14" ipr="trust200902" sortRefs="false" symRefs="true" submissionType="IETF" tocInclude="true" updates="9172" version="3" xml:lang="en">
   <front>
     <title abbrev="BPSec COSE">
       Bundle Protocol Security (BPSec) COSE Context
     </title>
-    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-13"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-dtn-bpsec-cose-14"/>
     <author fullname="Brian Sipos" initials="B." surname="Sipos">
       <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
       <address>
