@@ -2,6 +2,7 @@
 '''
 import unittest
 import cbor2
+import crcmod
 import datetime
 import textwrap
 from bpsec_cose.bp import EndpointId
@@ -10,31 +11,60 @@ from bpsec_cose.util import decode_protected, encode_diagnostic
 
 DTN_EPOCH = datetime.datetime(2000, 1, 1, 0, 0, 0)
 
+DEFAULT_CRC_TYPE = 2
+
 
 class BaseTest(unittest.TestCase):
 
-    def _get_primary_item(self):
+    def _replace_crc(self, dec: list, crc_type: int) -> bytes:
+        ''' Replace the last item of a decoded array with its CRC-32C value.
+        '''
+        if crc_type == 0:
+            return None
+        elif crc_type == 2:
+            crc_obj = crcmod.predefined.PredefinedCrc('crc-32c')
+        else:
+            raise ValueError(f'invalid CRC type {crc_type}')
+        crc_size = crc_obj.digest_size
+
+        old = bytes(dec[-1])
+        dec[-1] = crc_size * b'\x00'
+
+        enc = cbor2.dumps(dec)
+        crc_obj.update(enc)
+
+        dec[-1] = crc_obj.digest()
+
+        return old
+
+    def _get_primary_item(self) -> list:
         # arbitrary nonzero time
         delta = datetime.datetime(2025, 10, 7, 0, 0, 0) - DTN_EPOCH
-        return [
-            7,
-            0,
-            0,
+        dec = [
+            7,  # version
+            0,  # flags
+            DEFAULT_CRC_TYPE,  # CRC type
             EndpointId('dtn://dst/svc').encode_item(),
             EndpointId('dtn://src/svc').encode_item(),
             EndpointId('dtn://src/').encode_item(),
             [delta // datetime.timedelta(milliseconds=1), 0],
-            1000000
+            1000000,
+            b''
         ]
+        self._replace_crc(dec, dec[2])
+        return dec
 
     def _get_target_item(self):
-        return [
+        dec = [
             1,  # type code: payload
             1,  # always #1
-            0,
-            0,
-            cbor2.dumps("hello")
+            0,  # flags
+            DEFAULT_CRC_TYPE,  # CRC type
+            cbor2.dumps("hello"),
+            b''
         ]
+        self._replace_crc(dec, dec[3])
+        return dec
 
     def _block_identity(self, item):
         ''' Block identity is the first three fields of canonical block array.
