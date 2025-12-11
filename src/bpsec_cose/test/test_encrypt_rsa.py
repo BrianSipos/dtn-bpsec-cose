@@ -127,6 +127,8 @@ class TestExample(BaseTest):
         self.assertEqual(cek.k, decode_obj.key.k)
 
         target_dec[4] = content_ciphertext
+        self._replace_crc(target_dec, target_dec[3])
+        print('Target with ciphertext:', encode_diagnostic(target_dec))
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
         self._print_bundle(bundle)
