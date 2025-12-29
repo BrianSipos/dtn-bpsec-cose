@@ -381,7 +381,7 @@ The default value for this parameter (in <xref target="sec-ASB-parameters"/>) in
 Each COSE context result contains a COSE message, but the types of message allowed depend upon the security block type in which the result is present: only MAC or signature messages are allowed in a BIB and only encryption messages are allowed in a BCB.
         </t>
         <t>
-Additionally, this context restricts each security operation (embodied as a security target) to be associated with only a single COSE message (<em>i.e.</em>, a single result for each target).
+Additionally, this context restricts each security operation (embodied as a security target with a result array) to be associated with only a single COSE message (<em>i.e.</em>, a single result for each target).
 Within the security context defined in this section, each abstract security block <bcp14>SHALL</bcp14> contain exactly one result per security target.
 Security source policies can be tailored for this constraint, and security verifier or acceptor can treat other combinations of results-per-target as invalid.
         </t>
