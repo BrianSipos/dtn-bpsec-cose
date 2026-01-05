@@ -113,13 +113,13 @@ The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>", "<bcp14>REQUIRED
       <name>BPSec Security Context</name>
       <t>
 This document specifies a single security context for use in both BPSec integrity and confidentiality blocks.
-This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable parameters and COSE messages which can be present.
+This is done to save code points allocated to this specification and to simplify the encoding of COSE-in-BPSec; the BPSec block type uniquely defines the acceptable parameters and results which can be present.
       </t>
       <t>
 The COSE security context <bcp14>SHALL</bcp14> have the Security Context ID specified in <xref target="sec-iana-bundle"/>.
       </t>
       <t>
-Both types of security block can use the same parameters, defined in <xref target="sec-ASB-parameters"/>, to carry public key-related information and each type of security block allows specific COSE message results, defined in <xref target="sec-ASB-results"/>.
+Both types of security block can use parameters, defined in <xref target="sec-ASB-parameters"/>, to carry information applicable to all security operations, defined in <xref target="sec-ASB-results"/>, containing a specific COSE message for each security operation.
       </t>
       <figure anchor="fig-context-CDDL">
         <name>COSE context declaration CDDL</name>
