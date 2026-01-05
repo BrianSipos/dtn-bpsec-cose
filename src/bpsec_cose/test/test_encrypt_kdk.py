@@ -1,4 +1,5 @@
 import cbor2
+from typing import cast
 from pycose import headers, algorithms
 from pycose.keys import SymmetricKey, keyops, keyparam
 from pycose.messages import EncMessage
@@ -116,7 +117,8 @@ class TestExample(BaseTest):
         self.assertEqual(content_plaintext, decode_plaintext)
 
         print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
-        self.assertIsNotNone(decode_obj.key.k)
+        self.assertIsInstance(decode_obj.key, SymmetricKey)
+        self.assertIsNotNone(cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])

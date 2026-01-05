@@ -12,7 +12,7 @@ import datetime
 import logging
 import os
 import sys
-from typing import Union, Optional
+from typing import Any, Dict, List, Optional, Union
 
 LOGGER = logging.getLogger()
 SELFDIR = os.path.dirname(os.path.abspath(__file__))
@@ -255,7 +255,7 @@ def main():
         serial=int.from_bytes(bytes.fromhex('1515ffa740a4bd73f5ba'), 'big')
     )
 
-    nodes = {
+    nodes: Dict[str, Dict[str, Any]] = {
         'src': {
             'node_id': 'dtn://src/',
             'variations': [
@@ -295,9 +295,9 @@ def main():
         nodedir = os.path.join(args.out_dir, 'nodes', node_name, 'ssl')
 
         for var in node_opts['variations']:
-            mode = var['mode']
-            kty = var['kty']
-            serial = var['serial']
+            mode: str = var['mode']
+            kty: str = var['kty']
+            serial: int = var['serial']
             pca.generate_end_entity(
                 cafile=None,
                 certbase=os.path.join(nodedir, 'certs', f'node-{mode}-{kty}'),

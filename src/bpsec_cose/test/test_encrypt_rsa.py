@@ -1,7 +1,8 @@
 import cbor2
 import os
+from typing import cast
 from pycose import headers, algorithms
-from pycose.keys import SymmetricKey, RSAKey, keyops, keyparam
+from pycose.keys import CoseKey, SymmetricKey, RSAKey, keyops, keyparam
 from pycose.messages import EncMessage
 from pycose.messages.recipient import KeyWrap
 from ..util import dump_cborseq, encode_diagnostic
@@ -16,7 +17,7 @@ class TestExample(BaseTest):
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 3072-bit key
-        private_key = RSAKey.from_pem_private_key(
+        private_key = cast(RSAKey, CoseKey.from_pem_private_key(
             open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'dst',
                               'ssl', 'private', 'node-encrypt-rsa.pem'), 'r').read(),
             optional_params={
@@ -24,7 +25,7 @@ class TestExample(BaseTest):
                 keyparam.KpAlg: algorithms.RsaesOaepSha512,
                 keyparam.KpKeyOps: [keyops.WrapOp, keyops.UnwrapOp],
             }
-        )
+        ))
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(private_key.encode()))))
         # 256-bit content encryption key
         cek = SymmetricKey(
@@ -124,7 +125,8 @@ class TestExample(BaseTest):
         self.assertEqual(content_plaintext, decode_plaintext)
 
         print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
-        self.assertEqual(cek.k, decode_obj.key.k)
+        self.assertIsInstance(decode_obj.key, SymmetricKey)
+        self.assertEqual(cek.k, cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])

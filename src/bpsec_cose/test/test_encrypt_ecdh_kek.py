@@ -1,7 +1,8 @@
 import cbor2
 import os
+from typing import cast
 from pycose import headers, algorithms
-from pycose.keys import SymmetricKey, EC2Key, curves, keyops, keyparam
+from pycose.keys import CoseKey, EC2Key, SymmetricKey, keyops, keyparam
 from pycose.messages import EncMessage
 from pycose.messages.recipient import KeyAgreementWithKeyWrap
 from ..util import dump_cborseq, encode_diagnostic
@@ -15,7 +16,7 @@ class TestExample(BaseTest):
 
     def test(self):
         print('\nTest: ' + __name__ + '.' + type(self).__name__)
-        recipient_key = EC2Key.from_pem_private_key(
+        recipient_key = cast(EC2Key, CoseKey.from_pem_private_key(
             open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'dst',
                               'ssl', 'private', 'node-encrypt-ecc.pem'), 'r').read(),
             optional_params={
@@ -23,7 +24,7 @@ class TestExample(BaseTest):
                 keyparam.KpAlg: algorithms.EcdhEsA256KW,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
-        )
+        ))
         print('Private Key: {}'.format(encode_diagnostic(cbor2.loads(recipient_key.encode()))))
         recipient_public = EC2Key(
             crv=recipient_key.crv,
@@ -54,14 +55,14 @@ N14bmrqpSXpL3lE75smw59rpYDOWjEX9J2Vvu5f3idZn9A1ztlqzYrIt0jv0kr7n
 K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
 -----END EC PRIVATE KEY-----
 '''
-        sender_key = EC2Key.from_pem_private_key(
+        sender_key = cast(EC2Key, CoseKey.from_pem_private_key(
             sender_pem,
             optional_params={
                 keyparam.KpKid: b'SenderEC2',
                 keyparam.KpAlg: algorithms.EcdhEsA256KW,
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
-        )
+        ))
         print('Sender Private Key: {}'.format(encode_diagnostic(cbor2.loads(sender_key.encode()))))
         sender_public = EC2Key(
             crv=sender_key.crv,
@@ -161,7 +162,8 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         self.assertEqual(content_plaintext, decode_plaintext)
 
         print('Loopback CEK:', encode_diagnostic(cbor2.loads(decode_obj.key.encode())))
-        self.assertEqual(cek.k, decode_obj.key.k)
+        self.assertIsInstance(decode_obj.key, SymmetricKey)
+        self.assertEqual(cek.k, cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])

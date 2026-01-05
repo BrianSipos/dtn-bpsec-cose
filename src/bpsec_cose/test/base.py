@@ -2,11 +2,12 @@
 '''
 import unittest
 import cbor2
-import crcmod
+import crcmod.predefined
 import datetime
 import textwrap
+from typing import Optional
 from bpsec_cose.bp import EndpointId
-from bpsec_cose.bpsec import SecurityBlockData
+from bpsec_cose.bpsec import SecurityBlockData, KeyValPair
 from bpsec_cose.util import decode_protected, encode_diagnostic
 
 DTN_EPOCH = datetime.datetime(2000, 1, 1, 0, 0, 0)
@@ -16,7 +17,7 @@ DEFAULT_CRC_TYPE = 2
 
 class BaseTest(unittest.TestCase):
 
-    def _replace_crc(self, dec: list, crc_type: int) -> bytes:
+    def _replace_crc(self, dec: list, crc_type: int) -> Optional[bytes]:
         ''' Replace the last item of a decoded array with its CRC-32C value.
         '''
         if crc_type == 0:
@@ -40,10 +41,11 @@ class BaseTest(unittest.TestCase):
     def _get_primary_item(self) -> list:
         # arbitrary nonzero time
         delta = datetime.datetime(2025, 10, 7, 0, 0, 0) - DTN_EPOCH
+        crc_type = DEFAULT_CRC_TYPE
         dec = [
             7,  # version
             0,  # flags
-            DEFAULT_CRC_TYPE,  # CRC type
+            crc_type,  # CRC type
             EndpointId('dtn://dst/svc').encode_item(),
             EndpointId('dtn://src/svc').encode_item(),
             EndpointId('dtn://src/').encode_item(),
@@ -51,19 +53,20 @@ class BaseTest(unittest.TestCase):
             1000000,
             b''
         ]
-        self._replace_crc(dec, dec[2])
+        self._replace_crc(dec, crc_type)
         return dec
 
     def _get_target_item(self):
+        crc_type = DEFAULT_CRC_TYPE
         dec = [
             1,  # type code: payload
             1,  # always #1
             0,  # flags
-            DEFAULT_CRC_TYPE,  # CRC type
+            crc_type,  # CRC type
             cbor2.dumps("hello"),
             b''
         ]
-        self._replace_crc(dec, dec[3])
+        self._replace_crc(dec, crc_type)
         return dec
 
     def _block_identity(self, item):
@@ -100,7 +103,7 @@ class BaseTest(unittest.TestCase):
             context_id=3,  # COSE
             security_source=EndpointId('dtn://src/').encode_item(),
             parameters=[
-                [5, self._get_aad_scope()],
+                KeyValPair(5, self._get_aad_scope()),
             ],
             results=[
                 [  # target block #1

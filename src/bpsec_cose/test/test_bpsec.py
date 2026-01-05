@@ -1,6 +1,6 @@
 import cbor2
 import unittest
-from bpsec_cose.bpsec import EndpointId, SecurityBlockData
+from bpsec_cose.bpsec import EndpointId, SecurityBlockData, KeyValPair
 from bpsec_cose.util import encode_diagnostic
 from .base import BaseTest
 
@@ -31,11 +31,11 @@ class TestSecurityBlock(unittest.TestCase):
             targets=[1],
             security_source=EndpointId('dtn://node/').encode_item(),
             parameters=[
-                [1, 2]
+                KeyValPair(1, 2),
             ],
             results=[
                 [
-                    [3, 4],
+                    KeyValPair(3, 4),
                 ],
             ],
         )
@@ -45,11 +45,11 @@ class TestSecurityBlock(unittest.TestCase):
             SecurityBlockData.Flags.HAS_PARAMS,  # flags
             [1, '//node/'],
             [  # parameters
-                [1, 2],
+                KeyValPair(1, 2),
             ],
             [  # results
                 [
-                    [3, 4],
+                    KeyValPair(3, 4),
                 ],
             ],
         ]

@@ -21,9 +21,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install
-      run: |
-        pip3 install git+https://github.com/BrianSipos/pycose.git@sipos-combined-patches
-        pip3 install -e .
+      run: pip3 install -e .
     - name: Lint with flake8
       run: |
         pip3 install .[flake8]
@@ -31,6 +29,10 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Check with ty
+      run: |
+        pip3 install .[ty]
+        ty check bpsec_cose
     - name: BPSec examples
       run: |
         pip3 install .[test]
