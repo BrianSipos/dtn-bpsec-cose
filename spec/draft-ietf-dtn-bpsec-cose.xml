@@ -119,7 +119,7 @@ This is done to save code points allocated to this specification and to simplify
 The COSE security context <bcp14>SHALL</bcp14> have the Security Context ID specified in <xref target="sec-iana-bundle"/>.
       </t>
       <t>
-Both types of security block can use parameters, defined in <xref target="sec-ASB-parameters"/>, to carry information applicable to all security operations, defined in <xref target="sec-ASB-results"/>, containing a specific COSE message for each security operation.
+Both types of security block can use parameters (defined in <xref target="sec-ASB-parameters"/>) to carry information applicable to all security operations and results (defined in <xref target="sec-ASB-results"/>) containing a specific COSE message for each security operation.
       </t>
       <figure anchor="fig-context-CDDL">
         <name>COSE context declaration CDDL</name>
@@ -138,7 +138,7 @@ bpsec-cose-asb = bpsec-context-use&lt;
         <t>
 The scope here refers to the set of information used by the security context to cryptographically bind with the plaintext data being integrity-protected or confidentiality-protected.
 This information is generically referred to as additional authenticated data (AAD), which is also the term used by COSE to describe the same kind of data.
-COSE additionally distinguishes between its internal portion of AAD, derived from COSE message content, and <em>external AAD</em> provided by the embedding application, which in this case is the BPSec security context.
+COSE distinguishes between its internal portion of AAD, derived from COSE message content, and <em>external AAD</em> provided by the embedding application, which in this case is the BPSec security context.
         </t>
         <t>
 The sources for external AAD within this COSE context are described below, controlled by the <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref>, and implemented as defined in <xref target="sec-secctx-aad"/>.
@@ -208,7 +208,11 @@ Likewise, it is possible for a COSE context confidentiality operation to be boun
         <name>Parameters</name>
         <t>
 Each COSE context parameter value <bcp14>SHALL</bcp14> consist of the COSE structure indicated by <xref target="tab-ASB-parameters"/> in its decoded CBOR item form.
-Each security block <bcp14>SHALL</bcp14> contain no more than one of each parameter type per target block.
+        </t>
+        <t>
+Each security block <bcp14>SHALL</bcp14> contain no more than one instance of each parameter ID.
+Security verifiers and acceptors <bcp14>SHALL</bcp14> treat a security block with multiple instances of any parameter ID as invalid.
+There is no well-defined behavior for a security acceptor to handle multiple Additional Protected or AAD Scope parameters.
         </t>
         <table anchor="tab-ASB-parameters">
           <name>COSE Context Parameters</name>
@@ -256,11 +260,6 @@ The expected use of additional header map is to contain a certificate (chain) or
           <t>
 Following the same pattern as COSE, when both additional header maps are present in a single security block they <bcp14>SHALL</bcp14> not contain any duplicated labels.
 Security verifiers and acceptors <bcp14>SHALL</bcp14> treat a pair of additional header maps containing duplicated labels as invalid.
-          </t>
-          <t>
-No more than one of each Additional Protected and Additional Unprotected parameter <bcp14>SHALL</bcp14> be present in a single security block.
-Security verifiers and acceptors <bcp14>SHALL</bcp14> treat a security block with multiple instances of either additional header type as invalid.
-There is no well-defined behavior for a security acceptor to handle multiple Additional Protected parameters.
           </t>
           <t>
 Security sources <bcp14>SHOULD NOT</bcp14> include an additional header parameter which represents an empty map.
@@ -383,7 +382,8 @@ Each COSE context result contains a COSE message, but the types of message allow
         <t>
 Additionally, this context restricts each security operation (embodied as a security target with a result array) to be associated with only a single COSE message (<em>i.e.</em>, a single result for each target).
 Within the security context defined in this section, each abstract security block <bcp14>SHALL</bcp14> contain exactly one result per security target.
-Security source policies can be tailored for this constraint, and security verifier or acceptor can treat other combinations of results-per-target as invalid.
+Security verifiers and acceptors <bcp14>SHALL</bcp14> treat other combinations of results-per-target as invalid.
+Security policies can be tailored for this constraint, which has a side effect that each security operation also has only a single set of COSE layer 0 header parameters (<em>e.g.</em>, COSE algorithm).
         </t>
         <t>
 The code points for Result ID values are identical to the  existing COSE message-marking tags in <xref section="2" target="RFC9052"/>.
