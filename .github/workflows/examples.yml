@@ -28,6 +28,8 @@ jobs:
         flake8 . --count --statistics
     - name: Check with ty
       run: |
+        # workaround ty issue https://github.com/astral-sh/ty/issues/1323
+        pip3 install virtualenv
         virtualenv .venv
         source .venv/bin/activate
         pip3 install .[ty]
