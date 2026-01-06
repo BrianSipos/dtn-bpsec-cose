@@ -31,6 +31,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Check with ty
       run: |
+        virtualenv .venv
+        source .venv/bin/activate
         pip3 install .[ty]
         python3 -m ty check bpsec_cose
     - name: BPSec examples
