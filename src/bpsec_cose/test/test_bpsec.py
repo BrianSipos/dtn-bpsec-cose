@@ -31,11 +31,11 @@ class TestSecurityBlock(unittest.TestCase):
             targets=[1],
             security_source=EndpointId('dtn://node/').encode_item(),
             parameters=[
-                [1, 2]
+                (1, 2),
             ],
             results=[
                 [
-                    [3, 4],
+                    (3, 4),
                 ],
             ],
         )
@@ -45,11 +45,11 @@ class TestSecurityBlock(unittest.TestCase):
             SecurityBlockData.Flags.HAS_PARAMS,  # flags
             [1, '//node/'],
             [  # parameters
-                [1, 2],
+                (1, 2),
             ],
             [  # results
                 [
-                    [3, 4],
+                    (3, 4),
                 ],
             ],
         ]
