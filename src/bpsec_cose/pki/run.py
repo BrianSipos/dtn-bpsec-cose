@@ -8,14 +8,14 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ec
 from cryptography.hazmat.primitives.asymmetric.types import (
-    CertificateIssuerPrivateKeyTypes, CertificateIssuerPublicKeyTypes
+    CertificateIssuerPrivateKeyTypes
 )
 import asn1
 import datetime
 import logging
 import os
 import sys
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, cast
 
 LOGGER = logging.getLogger()
 SELFDIR = os.path.dirname(os.path.abspath(__file__))
