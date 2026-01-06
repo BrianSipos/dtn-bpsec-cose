@@ -92,7 +92,7 @@ class BaseTest(unittest.TestCase):
             addl_protected,
         ]
 
-    def _get_asb_item(self, result):
+    def _get_asb_item(self, result: KeyValPair):
         ''' Get the ASB CBOR-item for a CBOR-item result.
 
         :param result: The single result item for target block number 1.
@@ -103,7 +103,7 @@ class BaseTest(unittest.TestCase):
             context_id=3,  # COSE
             security_source=EndpointId('dtn://src/').encode_item(),
             parameters=[
-                KeyValPair(5, self._get_aad_scope()),
+                (5, self._get_aad_scope()),
             ],
             results=[
                 [  # target block #1

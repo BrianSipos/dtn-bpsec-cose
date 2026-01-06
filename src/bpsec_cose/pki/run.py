@@ -7,12 +7,15 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ec
+from cryptography.hazmat.primitives.asymmetric.types import (
+    CertificateIssuerPrivateKeyTypes, CertificateIssuerPublicKeyTypes
+)
 import asn1
 import datetime
 import logging
 import os
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union, cast
 
 LOGGER = logging.getLogger()
 SELFDIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,8 +32,8 @@ class PkiCa:
     def __init__(self):
         # same as test config
         self._nowtime = datetime.datetime(2025, 10, 6, 0, 0, 0)
-        self._ca_key = None
-        self._ca_cert = None
+        self._ca_key: Optional[CertificateIssuerPrivateKeyTypes] = None
+        self._ca_cert: Optional[x509.Certificate] = None
 
     def other_name_eid(self, eid: str) -> x509.OtherName:
         ''' Encode a text EID as an Other Name object.
@@ -43,7 +46,7 @@ class PkiCa:
             eid_enc.output()
         )
 
-    def generate_key(self, key_opts: dict) -> Union[rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey]:
+    def generate_key(self, key_opts: dict) -> CertificateIssuerPrivateKeyTypes:
         keytype = key_opts.get('keytype', 'SECP384R1').upper()
         if keytype == 'RSA':
             key_size = 3072
@@ -55,7 +58,7 @@ class PkiCa:
             raise ValueError(f'Unknown keytype: {keytype}')
         return node_key
 
-    def generate_root_ca(self, certbase: str, keybase: str, serial: int) -> x509.Certificate:
+    def generate_root_ca(self, certbase: str, keybase: str, serial: int) -> None:
         ''' Generate and retain a root CA. '''
         keyfile = keybase + '.pem'
         if os.path.exists(keyfile):
@@ -66,6 +69,9 @@ class PkiCa:
             LOGGER.info('Generated CA key')
             ca_key = self.generate_key({})
 
+        ca_key = cast(CertificateIssuerPrivateKeyTypes, ca_key)
+        ca_pub = ca_key.public_key()
+
         ca_name = x509.Name([
             x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, 'Certificate Authority'),
         ])
@@ -74,7 +80,7 @@ class PkiCa:
         ).issuer_name(
             ca_name
         ).public_key(
-            ca_key.public_key()
+            ca_pub
         ).serial_number(
             serial
         ).not_valid_before(
@@ -104,10 +110,10 @@ class PkiCa:
             ]),
             critical=False,
         ).add_extension(
-            x509.SubjectKeyIdentifier.from_public_key(ca_key.public_key()),
+            x509.SubjectKeyIdentifier.from_public_key(ca_pub),
             critical=False,
         ).add_extension(
-            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()),
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_pub),
             critical=False,
         ).sign(ca_key, hashes.SHA384(), backend=default_backend())
 
@@ -131,7 +137,7 @@ class PkiCa:
     def generate_end_entity(self, cafile: Optional[str],
                             certbase: str, keybase: str, mode: str,
                             serial: int, node_name: str, node_id: str,
-                            fqdn: Optional[str] = None) -> x509.Certificate:
+                            fqdn: Optional[str] = None) -> None:
         '''
         :param mode: Either 'sign' or 'encrypt' or 'transport'.
         :param serial: The certificate serial number.
@@ -139,6 +145,8 @@ class PkiCa:
         :param node_id: The Node ID for the entity as a URI string.
         :param fqdn: For transport mode, the FQDN of the node.
         '''
+        if self._ca_cert is None or self._ca_key is None:
+            raise RuntimeError('No CA available')
 
         sans = [
             self.other_name_eid(node_id)
@@ -168,10 +176,14 @@ class PkiCa:
             node_key = self.generate_key({})
             LOGGER.info('Generated node %s key', node_name)
 
+        node_key = cast(CertificateIssuerPrivateKeyTypes, node_key)
+        ca_pub = self._ca_key.public_key()
+
         if mode == 'transport':
-            sans += [
-                x509.DNSName(fqdn),
-            ]
+            if fqdn:
+                sans += [
+                    x509.DNSName(fqdn),
+                ]
             key_usage['digital_signature'] = True
             ekus += [
                 x509.oid.ExtendedKeyUsageOID.CLIENT_AUTH,
@@ -209,7 +221,7 @@ class PkiCa:
             x509.ExtendedKeyUsage(ekus),
             critical=False,
         ).add_extension(
-            x509.AuthorityKeyIdentifier.from_issuer_public_key(self._ca_key.public_key()),
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_pub),
             critical=False,
         ).sign(self._ca_key, hashes.SHA384(), backend=default_backend())
 

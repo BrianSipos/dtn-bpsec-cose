@@ -97,10 +97,10 @@ class TestExample(BaseTest):
         message_enc = cbor2.dumps(message_dec)
 
         # ASB structure
-        asb_dec = self._get_asb_item([
+        asb_dec = self._get_asb_item((
             msg_obj.cbor_tag,
             message_enc
-        ])
+        ))
         asb_enc = self._get_asb_enc(asb_dec)
         print('ASB: {}'.format(encode_diagnostic(asb_dec)))
         print('Encoded: {}'.format(encode_diagnostic(asb_enc)))

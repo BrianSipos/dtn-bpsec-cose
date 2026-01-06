@@ -2,7 +2,7 @@
 '''
 from dataclasses import dataclass, field
 import enum
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Tuple, TypeAlias
 from .bp import EndpointId
 
 
@@ -14,10 +14,7 @@ class BlockType(enum.IntEnum):
     BCB = 12
 
 
-@dataclass
-class KeyValPair():
-    key: int
-    val: Any
+KeyValPair: TypeAlias = Tuple[int, Any]
 
 
 @dataclass

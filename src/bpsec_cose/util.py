@@ -38,7 +38,7 @@ def encode_diagnostic(obj, **kwargs):
     indent = kwargs.get('indent')
     wsp_indent = ' ' * indent if indent is not None else ''
 
-    if isinstance(obj, list):
+    if isinstance(obj, (list, tuple)):
         nextkw = copy.copy(kwargs)
         if indent is not None:
             nextkw['indent'] += 2
