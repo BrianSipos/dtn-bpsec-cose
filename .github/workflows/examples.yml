@@ -37,7 +37,7 @@ jobs:
     - name: Explicit PYTHONPATH
       run: echo "PYTHONPATH=${Python3_ROOT_DIR}/lib/python3.12/site-packages" >> $GITHUB_ENV
     - name: Check with ty
-      run: python3 -m ty check bpsec_cose
+      run: python3 -m ty check .
 
   build:
     name: Build and test
