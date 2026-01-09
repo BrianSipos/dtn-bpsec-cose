@@ -36,6 +36,7 @@ jobs:
       run: |
         # workaround ty issue https://github.com/astral-sh/ty/issues/1323
         pip3 install .[ty]
+        python3 -c 'import asn1; print(asn1.__file__)'
     - name: PYTHONPATH
       run: echo "PYTHONPATH=${HOME}/.local/lib/python3.12/site-packages:/usr/lib/python3/dist-packages" >> $GITHUB_ENV
     - name: Check with ty
