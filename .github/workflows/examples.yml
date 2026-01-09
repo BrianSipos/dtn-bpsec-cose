@@ -35,7 +35,7 @@ jobs:
     - name: Install
       run: |
         # workaround ty issue https://github.com/astral-sh/ty/issues/1323
-        pip3 install .[ty] git+https://github.com/astral-sh/ruff.git@claude/fix-issue-1323-XMlQh
+        pip3 install .[ty]
     - name: Check with ty
       env:
         PYTHONPATH: '/usr/lib/python3/dist-packages'
