@@ -38,7 +38,7 @@ jobs:
         pip3 install .[ty]
     - name: Check with ty
       env:
-        PYTHONPATH: '/usr/lib/python3/dist-packages'
+        PYTHONPATH: "${HOME}/.local/lib/python3.12/site-packages:/usr/lib/python3/dist-packages"
       run: python3 -m ty check bpsec_cose
 
   build:
