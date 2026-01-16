@@ -34,10 +34,8 @@ jobs:
         python-version: '3.12'
     - name: Install
       run: pip3 install .[ty]
-    - name: Explicit PYTHONPATH
-      run: echo "PYTHONPATH=${PWD}:${Python3_ROOT_DIR}/lib/python3.12/site-packages" >> $GITHUB_ENV
     - name: Check with ty
-      run: python3 -m ty check .
+      run: ty --python ${Python3_ROOT_DIR} check .
 
   build:
     name: Build and test
