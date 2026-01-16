@@ -35,7 +35,7 @@ jobs:
     - name: Install
       run: pip3 install .[ty]
     - name: Check with ty
-      run: ty --python ${Python3_ROOT_DIR} check .
+      run: ty check --python ${Python3_ROOT_DIR} .
 
   build:
     name: Build and test
