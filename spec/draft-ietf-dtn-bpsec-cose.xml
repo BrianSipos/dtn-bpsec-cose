@@ -863,10 +863,10 @@ This is consistent with COSE requirements on derived keys for HMAC but more stri
           </t>
           <t>
 When generating a BCB result from a symmetric content encryption key (CEK), sources <bcp14>SHALL</bcp14> use a COSE_Encrypt0 message or a COSE_Encrypt with a direct recipient.
-When generating a BCB result from one or more symmetric KEK or KDK, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
+When generating a BCB result from one or more symmetric KEK or KDK, sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
-Multiple-use CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+Multiple-use CEKs <bcp14>SHALL</bcp14> be managed by sources to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
 Details are discussed in <xref target="sec-threat-overuse"/>.
           </t>
           <t>
