@@ -726,7 +726,7 @@ The requirements of this profile still allow the use of potentially not-easily-i
         <t>
 The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-algo-vuln"/>.
+It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-threat-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
@@ -795,7 +795,7 @@ The symmetric keyed algorithms here are not a super-set of those available in <x
             </t>
           </aside>
           <t>
-The "direct" algorithm is really just a recipient placeholder to allow using a content encryption key (CEK) identifier in a that COSE layer, so has no cryptographic function or effect on security strength.
+The "direct" algorithm is really just a recipient placeholder to allow using a content key identifier in a that COSE layer, so has no cryptographic function or effect on security strength.
           </t>
           <table anchor="tab-interop-algs-sym">
             <name>Symmetric Algorithms</name>
@@ -854,24 +854,29 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
             </tbody>
           </table>
           <t>
-When generating a BIB result from a symmetric key, implementations <bcp14>SHALL</bcp14> use a COSE_Mac or COSE_Mac0 using the private key directly.
-When a COSE_Mac or COSE_Mac0 is used with a direct key, the top-layer headers <bcp14>SHALL</bcp14> include a key identifier (see <xref target="sec-sym-keys"/>).
+When generating a BIB result from a symmetric content key, sources <bcp14>SHALL</bcp14> use a COSE_Mac0 message or a COSE_Mac with a direct recipient.
+When generating a BIB result from one or more symmetric key-encryption key (KEK) or key-derivation key (KDK), sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
 The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the hash function output length.
-This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all keys used for HMAC.
+This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all content keys used for HMAC.
           </t>
           <t>
-When generating a BCB result from a symmetric CEK, implementations <bcp14>SHOULD</bcp14> use COSE_Encrypt or COSE_Encrypt0 with direct CEK.
-Session CEKs <bcp14>SHALL</bcp14> be managed to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+When generating a BCB result from a symmetric content encryption key (CEK), sources <bcp14>SHALL</bcp14> use a COSE_Encrypt0 message or a COSE_Encrypt with a direct recipient.
+When generating a BCB result from one or more symmetric KEK or KDK, sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
-When generating a BCB result from a symmetric key-encryption key (KEK), implementations <bcp14>SHOULD</bcp14> use a COSE_Encrypt message with a recipient containing an indirect (wrapped or derived) CEK.
-When a COSE_Encrypt is used with an overall KEK, the recipient layer <bcp14>SHALL</bcp14> include a key identifier for the KEK.
+Multiple-use CEKs <bcp14>SHALL</bcp14> be managed by sources to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+Details are discussed in <xref target="sec-threat-overuse"/>.
           </t>
           <t>
-When a COSE_Encrypt is used with a symmetric KEK and a single recipient, the direct HKDF algorithms (code -10 and -11) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -3 through -5) to reduce message size and the need for symmetric key generation.
-When processing a COSE_Encrypt with a symmetric KEK, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+All COSE message results using symmetric keys include a key identifier as required by <xref target="sec-sym-keys"/>.
+For COSE_Mac0 and COSE_Encrypt0 the key identifier will be header parameter(s) in the only layer.
+For COSE_Mac and COSE_Encrypt key identifiers will be header parameter(s) in the recipient layer(s).
+          </t>
+          <t>
+When a COSE_Mac or COSE_Encrypt is used with a single recipient, the direct HKDF algorithms (code -10 and -11) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -3 through -5) to reduce message size and the need for symmetric key generation.
+When processing a COSE_Mac or COSE_Encrypt recipient, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
           </t>
         </section>
         <section>
@@ -1351,7 +1356,20 @@ It is important that the key requirements of <xref target="sec-ASB-parameters"/>
 Including non-public key material in ASB parameters will expose that material in the bundle data and over the bundle convergence layer during transport.
         </t>
       </section>
-      <section anchor="sec-algo-vuln">
+      <section anchor="sec-threat-overuse">
+        <name>Threat: Key Overuse</name>
+        <t>
+For many symmetric keyed algorithms (but none of the asymmetric algorithms included in this specification) there are limits to the number of operations or total size of plaintext data processed with a single key.
+These limits are discussed in the specifications that register COSE algorithm code points and will not be repeated here.
+For example, AES-GCM imposes strict limits on the total plaintext processed for each key based on the security strength needed by the application.
+        </t>
+        <t>
+Some algorithms are more or less vulnerable to reuse of pairs of key-and-initialization-vector.
+These limits are also discussed in specifications that register COSE algorithm code points.
+For example, AES-GCM imposes a strict limit that a single pair never be used for more than one encryption operation.
+        </t>
+      </section>
+      <section anchor="sec-threat-algo-vuln">
         <name>Threat: Algorithm Vulnerabilities</name>
         <t>
 Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
@@ -2296,7 +2314,7 @@ a708e9984d8601010002561fd25f64a2ee33e774abe16700bcfd9cf12ea5f7d84144
       <section>
         <name>Symmetric Key COSE_Encrypt with HKDF</name>
         <t>
-This is an example of an encryption with a derived CEK and an explicit key-derivation key (KDK) identified by a "kid".
+This is an example of an encryption with a derived CEK and an explicit KDK identified by a "kid".
 The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where the second key is the CEK derived from the KDK via a salt value in the recipient header.
         </t>
         <figure anchor="fig-ex-encrypt-sym-hkdf-keys">
