@@ -1651,7 +1651,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
-            <title>DTN Bundle Protocol Security COSE Security Context</title>
+            <title>Bundle Protocol Security (BPSec) COSE Context</title>
             <author fullname="Brian Sipos" initials="B." surname="Sipos">
               <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
             </author>
