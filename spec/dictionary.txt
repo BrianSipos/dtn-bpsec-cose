@@ -26,6 +26,7 @@ cddl
 CDDL
 CEK
 CEKs
+CFRG
 ciphersuite
 ciphertext
 clientAuth
@@ -39,6 +40,7 @@ COSE
 CRC
 crit
 CRLs
+Crypto
 cryptographic
 cryptographically
 ctx

@@ -866,7 +866,8 @@ When generating a BCB result from a symmetric content encryption key (CEK), sour
 When generating a BCB result from one or more symmetric KEK or KDK, sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
-Multiple-use CEKs <bcp14>SHALL</bcp14> be managed by sources to avoid overuse and the vulnerabilities associated with large amount of ciphertext from the same key.
+Security sources <bcp14>SHALL</bcp14> manage the life-cycle of multiple-use CEKs to avoid overuse and vulnerabilities associated with large amount of plaintext processed with the same key.
+Security verifiers and acceptors <bcp14>SHOULD</bcp14> keep track of CEKs to avoid overuse and vulnerabilities associated with multiple failures with the same key.
 Details are discussed in <xref target="sec-threat-overuse"/>.
           </t>
           <t>
@@ -1364,9 +1365,17 @@ These limits are discussed in the specifications that register COSE algorithm co
 For example, AES-GCM imposes strict limits on the total plaintext processed for each key based on the security strength needed by the application.
         </t>
         <t>
+Algorithms can also impose limits on the number of forgery attempts (observed as failed operations) or size of failed ciphertext associated with a single key.
+These limits are to avoid the ability of an on-path attacker to forge messages based on that key.
+For example, AES-GCM imposes a (large) limit on the number of forgery attempts  for a single key.
+        </t>
+        <t>
 Some algorithms are more or less vulnerable to reuse of pairs of key-and-initialization-vector.
 These limits are also discussed in specifications that register COSE algorithm code points.
 For example, AES-GCM imposes a strict limit that a single pair never be used for more than one encryption operation.
+        </t>
+        <t>
+Specific details covering modern AEAD algorithms are documented and explained in a Crypto Forum Research Group draft <xref target="I-D.irtf-cfrg-aead-limits"/>.
         </t>
       </section>
       <section anchor="sec-threat-algo-vuln">
@@ -1639,6 +1648,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>DTN Bundle Protocol Security COSE Security Context</title>
