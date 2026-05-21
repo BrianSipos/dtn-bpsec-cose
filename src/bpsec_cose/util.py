@@ -3,16 +3,27 @@
 import binascii
 import copy
 import enum
+import io
 import six
 import cbor2
+import cbor_diag
 
 
-def dump_cborseq(items):
+def cbor2diag(data: bytes):
+    ''' Overload with default options '''
+    return cbor_diag.cbor2diag(data, pretty=False, seq=True)
+
+
+def dump_cborseq(items: list) -> bytes:
     ''' Concatenate a cborseq of encoded items '''
-    return b''.join(map(cbor2.dumps, items))
+    with io.BytesIO() as fp:
+        enc = cbor2.CBOREncoder(fp)
+        for item in items:
+            enc.encode(item)
+        return fp.getvalue()
 
 
-def encode_protected(hdr):
+def encode_protected(hdr) -> bytes:
     ''' Perform protected header encoding of RFC8152 Section 3.
     '''
     if not hdr:
