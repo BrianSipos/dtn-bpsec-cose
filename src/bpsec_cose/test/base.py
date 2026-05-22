@@ -141,7 +141,7 @@ class BaseTest(unittest.TestCase):
     def _assemble_bundle(self, blocks_enc: List[bytes]) -> bytes:
         return b'\x9f' + b''.join(blocks_enc) + b'\xff'
 
-    def _print_headers(self, item: list, name: str):
+    def _print_headers(self, item: list, name: str) -> None:
         ''' Print COSE Headers from a decoded item.
         '''
         phdr_enc = item[0]
@@ -150,7 +150,7 @@ class BaseTest(unittest.TestCase):
         print('{} Encoded: {}'.format(name, phdr_enc.hex()))
         print('{} Unprotected: {}'.format(name, cbor2diag(uhdr_enc)))
 
-    def _print_message(self, item: list, recipient_idx=None):
+    def _print_message(self, item: list, recipient_idx: Optional[int] = None) -> None:
         ''' Print a top-level COSE message.
         '''
         print('Message: {}'.format(cbor2diag(cbor2.dumps(item))))
@@ -159,6 +159,6 @@ class BaseTest(unittest.TestCase):
             for (ix, rcpt) in enumerate(item[recipient_idx]):
                 self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
 
-    def _print_bundle(self, bundle: bytes):
+    def _print_bundle(self, bundle: bytes) -> None:
         print('Total bundle: {}'.format(cbor2diag(bundle)))
         print('Total bundle size {}:\n{}'.format(len(bundle), textwrap.fill(bundle.hex(), 68)))
