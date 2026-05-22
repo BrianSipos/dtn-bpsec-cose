@@ -55,6 +55,7 @@ DTN
 ECC
 ECDH
 EdDSA
+EE
 eid
 EKU
 encodings
@@ -89,6 +90,7 @@ PartyU
 PartyV
 PEM
 pkcs
+PKCs
 PKI
 pkix
 PKIX
