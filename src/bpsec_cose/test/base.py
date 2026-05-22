@@ -5,7 +5,7 @@ import cbor2
 import crcmod.predefined
 import datetime
 import textwrap
-from typing import Optional
+from typing import List, Optional
 from bpsec_cose.bp import EndpointId
 from bpsec_cose.bpsec import SecurityBlockData, KeyValPair
 from bpsec_cose.util import decode_protected, encode_diagnostic
@@ -56,7 +56,7 @@ class BaseTest(unittest.TestCase):
         self._replace_crc(dec, crc_type)
         return dec
 
-    def _get_target_item(self):
+    def _get_target_item(self) -> list:
         crc_type = DEFAULT_CRC_TYPE
         dec = [
             1,  # type code: payload
@@ -69,17 +69,17 @@ class BaseTest(unittest.TestCase):
         self._replace_crc(dec, crc_type)
         return dec
 
-    def _block_identity(self, item):
+    def _block_identity(self, item) -> list:
         ''' Block identity is the first three fields of canonical block array.
         '''
         return item[:3]
 
-    def _get_aad_scope(self):
+    def _get_aad_scope(self) -> dict:
         ''' Get the AAD-scope parameter value.
         '''
         return {0: 0b01, -1: 0b01}
 
-    def _get_aad_array(self, addl_protected: bytes = b''):
+    def _get_aad_array(self, addl_protected: bytes = b'') -> list:
         ''' Get the AAD-list array.
 
         :param addl_protected: The additional-protected parameters encoded.
@@ -92,7 +92,7 @@ class BaseTest(unittest.TestCase):
             addl_protected,
         ]
 
-    def _get_asb_item(self, result: KeyValPair):
+    def _get_asb_item(self, result: KeyValPair) -> list:
         ''' Get the ASB CBOR-item for a CBOR-item result.
 
         :param result: The single result item for target block number 1.
@@ -101,7 +101,7 @@ class BaseTest(unittest.TestCase):
         return SecurityBlockData(
             targets=[1],
             context_id=3,  # COSE
-            security_source=EndpointId('dtn://src/').encode_item(),
+            security_source=EndpointId('dtn://src/'),
             parameters=[
                 (5, self._get_aad_scope()),
             ],
@@ -112,12 +112,12 @@ class BaseTest(unittest.TestCase):
             ],
         ).encode_item()
 
-    def _get_asb_enc(self, asb_dec):
+    def _get_asb_enc(self, asb_dec) -> bytes:
         ''' Encode ASB array as unframed CBOR sequence.
         '''
         return b''.join(cbor2.dumps(item) for item in asb_dec)
 
-    def _get_bpsec_item(self, block_type, asb_dec=None):
+    def _get_bpsec_item(self, block_type, asb_dec: Optional[list] = None) -> list:
         return [
             block_type,
             3,
@@ -126,10 +126,10 @@ class BaseTest(unittest.TestCase):
             self._get_asb_enc(asb_dec or [])
         ]
 
-    def _assemble_bundle(self, blocks_enc):
+    def _assemble_bundle(self, blocks_enc: List[bytes]) -> bytes:
         return b'\x9f' + b''.join(blocks_enc) + b'\xff'
 
-    def _print_headers(self, item, name: str):
+    def _print_headers(self, item, name: str) -> None:
         ''' Print COSE Headers from a decoded item.
         '''
         phdr_enc = item[0]
@@ -139,7 +139,7 @@ class BaseTest(unittest.TestCase):
         print('{} Encoded: {}'.format(name, encode_diagnostic(phdr_enc)))
         print('{} Unprotected: {}'.format(name, encode_diagnostic(uhdr_dec)))
 
-    def _print_message(self, item, recipient_idx=None):
+    def _print_message(self, item: list, recipient_idx: Optional[int] = None) -> None:
         ''' Print a top-level COSE message.
         '''
         print('Message: {}'.format(encode_diagnostic(item)))
@@ -148,5 +148,5 @@ class BaseTest(unittest.TestCase):
             for (ix, rcpt) in enumerate(item[recipient_idx]):
                 self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
 
-    def _print_bundle(self, bundle):
+    def _print_bundle(self, bundle: bytes) -> None:
         print('Total bundle size {}:\n{}'.format(len(bundle), textwrap.fill(bundle.hex(), 68)))

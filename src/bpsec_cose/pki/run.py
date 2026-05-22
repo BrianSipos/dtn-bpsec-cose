@@ -148,7 +148,7 @@ class PkiCa:
         if self._ca_cert is None or self._ca_key is None:
             raise RuntimeError('No CA available')
 
-        sans = [
+        sans: list[x509.GeneralName] = [
             self.other_name_eid(node_id)
         ]
         key_usage = dict(

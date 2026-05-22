@@ -35,17 +35,17 @@ class SecurityBlockData():
     parameters: Optional[List[KeyValPair]] = None
     results: List[List[KeyValPair]] = field(default_factory=list)
 
-    def encode_item(self):
+    def encode_item(self) -> list:
         flags = SecurityBlockData.Flags.NONE
         if self.parameters:
             flags |= SecurityBlockData.Flags.HAS_PARAMS
 
-        item = [
+        item: list = [
             self.targets,
             self.context_id,
             flags,
         ]
-        item.append(self.security_source)
+        item.append(self.security_source.encode_item())
         if self.parameters:
             item.append(self.parameters)
         item.append(self.results)
