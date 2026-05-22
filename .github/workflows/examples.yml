@@ -33,7 +33,7 @@ jobs:
       with:
         python-version: '3.12'
     - name: Install
-      run: pip3 install .[ty]
+      run: pip3 install .[test,ty]
     - name: Check with ty
       run: ty check --python ${Python3_ROOT_DIR} .
 
