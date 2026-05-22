@@ -5,7 +5,7 @@ import cbor2
 import crcmod.predefined
 import datetime
 import textwrap
-from typing import Optional
+from typing import List, Optional
 from bpsec_cose.bp import EndpointId
 from bpsec_cose.bpsec import SecurityBlockData, KeyValPair
 from bpsec_cose.util import decode_protected, encode_diagnostic
