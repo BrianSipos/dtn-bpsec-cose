@@ -2,7 +2,7 @@
 '''
 from dataclasses import dataclass, field
 import enum
-from typing import Optional, Any, Tuple
+from typing import List, Optional, Any, Tuple, TypeAlias
 from .bp import EndpointId
 
 
@@ -14,7 +14,7 @@ class BlockType(enum.IntEnum):
     BCB = 12
 
 
-KeyValPair = Tuple[int, Any]
+KeyValPair: TypeAlias = Tuple[int, Any]
 
 
 @dataclass
@@ -29,11 +29,11 @@ class SecurityBlockData():
         NONE = 0x00
         HAS_PARAMS = 0x01
 
-    targets: list[int]
+    targets: List[int]
     context_id: int
     security_source: EndpointId
-    parameters: Optional[list[KeyValPair]] = None
-    results: list[list[KeyValPair]] = field(default_factory=list)
+    parameters: Optional[List[KeyValPair]] = None
+    results: List[List[KeyValPair]] = field(default_factory=list)
 
     def encode_item(self) -> list:
         flags = SecurityBlockData.Flags.NONE
