@@ -113,7 +113,7 @@ class BaseTest(unittest.TestCase):
         return SecurityBlockData(
             targets=[1],
             context_id=3,  # COSE
-            security_source=self._SECSRC_EID.encode_item(),
+            security_source=self._SECSRC_EID,
             parameters=[
                 (5, self._get_aad_scope()),
             ],

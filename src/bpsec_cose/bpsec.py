@@ -40,12 +40,12 @@ class SecurityBlockData():
         if self.parameters:
             flags |= SecurityBlockData.Flags.HAS_PARAMS
 
-        item = [
+        item: list = [
             self.targets,
             self.context_id,
             flags,
         ]
-        item.append(self.security_source)
+        item.append(self.security_source.encode_item())
         if self.parameters:
             item.append(self.parameters)
         item.append(self.results)

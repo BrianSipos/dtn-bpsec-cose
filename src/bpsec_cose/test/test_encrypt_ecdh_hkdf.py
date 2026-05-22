@@ -1,8 +1,9 @@
 import cbor2
 import os
-from typing import cast
+from typing import cast, Type
 from pycose import headers, algorithms
 from pycose.keys import CoseKey, EC2Key, SymmetricKey, keyops, keyparam
+from pycose.keys.curves import CoseCurve
 from pycose.messages import EncMessage
 from pycose.messages.recipient import DirectKeyAgreement
 from ..util import dump_cborseq, cbor2diag
@@ -27,7 +28,7 @@ class TestExample(BaseTest):
         ))
         print('Private Key: {}'.format(cbor2diag(recipient_key.encode())))
         recipient_public = EC2Key(
-            crv=recipient_key.crv,
+            crv=cast(Type[CoseCurve], recipient_key.crv),
             x=recipient_key.x,
             y=recipient_key.y
         )
@@ -57,7 +58,7 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         ))
         print('Sender Private Key: {}'.format(cbor2diag(sender_key.encode())))
         sender_public = EC2Key(
-            crv=sender_key.crv,
+            crv=cast(Type[CoseCurve], sender_key.crv),
             x=sender_key.x,
             y=sender_key.y
         )
@@ -165,7 +166,7 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
 
         print('Loopback CEK:', cbor2diag(decode_obj.key.encode()))
         self.assertIsInstance(decode_obj.key, SymmetricKey)
-        self.assertEqual(msg_obj.key.k, cast(SymmetricKey, decode_obj.key).k)
+        self.assertEqual(cast(SymmetricKey, msg_obj.key).k, cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])

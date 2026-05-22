@@ -29,7 +29,7 @@ class TestSecurityBlock(unittest.TestCase):
         asb = SecurityBlockData(
             context_id=123,
             targets=[1],
-            security_source=EndpointId('dtn://node/').encode_item(),
+            security_source=EndpointId('dtn://node/'),
             parameters=[
                 (1, 2),
             ],

@@ -129,7 +129,7 @@ class TestExample(BaseTest):
 
         print('Loopback CEK:', cbor2diag(decode_obj.key.encode()))
         self.assertIsInstance(decode_obj.key, SymmetricKey)
-        self.assertEqual(msg_obj.key.k, cast(SymmetricKey, decode_obj.key).k)
+        self.assertEqual(cast(SymmetricKey, msg_obj.key).k, cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])
