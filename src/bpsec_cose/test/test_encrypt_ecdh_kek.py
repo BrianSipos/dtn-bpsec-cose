@@ -116,15 +116,21 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         recip.key = sender_key
         recip.local_attrs = {
             headers.StaticKey: recipient_public,
+            headers.SuppPubOther: self._get_kdf_pub_other(),
         }
+        recip_kw = recip.get_attr(headers.Algorithm).get_key_wrap_func()
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
         print('COSE Structure: {}'.format(cbor2diag(cose_struct_enc)))
         print('Encoded: {}'.format(cose_struct_enc.hex()))
+        kdf_ctx_enc = recip.get_kdf_context(recip_kw).encode()
+        print('COSE_KDF_Context: {}'.format(cbor2diag(kdf_ctx_enc)))
+        print('Encoded: {}'.format(kdf_ctx_enc.hex()))
 
         # Encoded message
         message_enc = msg_obj.encode(tag=False)
+        print('KEK:', recip._compute_kek(recip_kw, recipient_public, recip.key, recip.get_attr(headers.Algorithm)).hex())
         message_dec = cbor2.loads(message_enc)
         # Detach the payload
         content_ciphertext = message_dec[2]
@@ -156,7 +162,12 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         decode_obj.external_aad = ext_aad_enc
 
         recip = decode_obj.recipients[0]
+        # recipient's view of keys
         recip.key = recipient_key
+        recip.local_attrs = {
+            headers.SuppPubOther: self._get_kdf_pub_other(),
+        }
+
         decode_plaintext = decode_obj.decrypt(recipient=recip)
         print('Loopback plaintext:', decode_plaintext.hex())
         self.assertEqual(content_plaintext, decode_plaintext)

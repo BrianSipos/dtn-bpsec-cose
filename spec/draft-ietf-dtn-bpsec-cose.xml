@@ -124,15 +124,15 @@ Both types of security block can use parameters (defined in <xref target="sec-AS
       </t>
       <figure anchor="fig-context-CDDL">
         <name>COSE context declaration CDDL</name>
-        <sourcecode type="cddl">
+        <sourcecode type="cddl"><![CDATA[
 ; Specialize the ASB for this context
 $ext-data-asb /= bpsec-cose-asb
-bpsec-cose-asb = bpsec-context-use&lt;
+bpsec-cose-asb = bpsec-context-use<
   3, ; Context ID COSE
   $bpsec-cose-param,
   $bpsec-cose-result
-&gt;
-        </sourcecode>
+>
+]]></sourcecode>
       </figure>
       <section anchor="sec-bpsec-context-scope">
         <name>Security Scope</name>
@@ -629,12 +629,12 @@ All of the examples of security operations under <xref target="sec-example-ops"/
         <section anchor="sec-secctx-kdfctx">
           <name>Generating KDF Context</name>
           <t>
-The KDF context items defined in this section is used as input to recipient-layer processing of COSE messages which make use of the structure <tt>COSE_KDF_Context</tt> defined in <xref section="5.2" target="RFC9053"/>.
+The KDF context items defined in this section are used as input to recipient-layer processing of COSE messages which make use of the structure <tt>COSE_KDF_Context</tt> defined in <xref section="5.2" target="RFC9053"/>.
 Within that structure the following items are specialized for this BPSec context.
           </t>
           <aside>
             <t>
-For the interoperability algorithms of <xref target="sec-interop-alg"/> the only algorithms which use KDF context are "direct+HKDF-SHA-512"&nbsp;(-11), "ECDH-ES+HKDF-512"&nbsp;(-26), and "ECDH-SS+HKDF-512"&nbsp;(-28).
+For the interoperability algorithms of <xref target="sec-interop-alg"/> the only algorithms which use KDF context are direct+HKDF and the ECDH family (all variations).
             </t>
           </aside>
           <t>
@@ -672,7 +672,7 @@ KDF-other-list = [
             </sourcecode>
           </figure>
           <t>
-Examples of KDF context use are in <xref target="fig-ex-encrypt-sym-hkdf-kdfctx"/> of <xref target="sec-example-ops-encrypt-sym-hkdf"/> and <xref target="fig-ex-encrypt-ecc-hkdf-kdfctx"/> of <xref target="sec-example-ops-encrypt-ecc-hkdf"/>.
+Examples of KDF context use are in <xref target="fig-ex-encrypt-sym-hkdf-kdfctx"/> of <xref target="sec-example-ops-encrypt-sym-hkdf"/>, <xref target="fig-ex-encrypt-ecc-kw-kdfctx"/> of <xref target="sec-example-ops-encrypt-ecc-kw"/>, and <xref target="fig-ex-encrypt-ecc-hkdf-kdfctx"/> of <xref target="sec-example-ops-encrypt-ecc-hkdf"/>.
           </t>
         </section>
         <section anchor="sec-secctx-payload">
@@ -1877,7 +1877,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
       </t>
       <figure anchor="fig-ex-primary-block">
         <name>Primary block CBOR diagnostic</name>
-        <sourcecode type="cbor">
+        <sourcecode type="cbor"><![CDATA[
 [
   7, / BP version /
   0, / flags /
@@ -1892,20 +1892,20 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
   1000000, / lifetime /
   h'82a081c9' / CRC value /
 ]
-        </sourcecode>
+]]></sourcecode>
       </figure>
       <figure anchor="fig-ex-target-block">
         <name>Target block CBOR diagnostic</name>
-        <sourcecode type="cbor">
+        <sourcecode type="cbor"><![CDATA[
 [
   1, / type code: payload /
   1, / block num /
   0, / flags /
   2, / CRC type /
-  &lt;&lt;"hello"&gt;&gt;, / block-type-specific-data /
+  <<"hello">>, / block-type-specific-data /
   h'4ec359d2' / CRC value /
 ]
-        </sourcecode>
+]]></sourcecode>
       </figure>
       <t>
 Together these form an original bundle without any security operations present.
@@ -1921,7 +1921,7 @@ All of the block integrity block examples operate within the context of the "fra
       </t>
       <figure anchor="fig-ex-bib-frame">
         <name>Block integrity frame block CBOR diagnostic</name>
-        <sourcecode type="cbor">
+        <sourcecode type="cbor"><![CDATA[
 [
   11, / type code: BIB /
   3, / block num /
@@ -1929,11 +1929,11 @@ All of the block integrity block examples operate within the context of the "fra
   0, / CRC type /
   '' / BTSD to be replaced with ASB /
 ]
-        </sourcecode>
+]]></sourcecode>
       </figure>
       <figure anchor="fig-ex-bcb-frame">
         <name>Block confidentiality frame block CBOR diagnostic</name>
-        <sourcecode type="cbor">
+        <sourcecode type="cbor"><![CDATA[
 [
   12, / type code: BCB /
   3, / block num /
@@ -1941,7 +1941,7 @@ All of the block integrity block examples operate within the context of the "fra
   0, / CRC type /
   '' / BTSD to be replaced with ASB /
 ]
-        </sourcecode>
+]]></sourcecode>
       </figure>
       <t>
 All of the examples also operate within a security block containing the AAD Scope parameter with value <tt>{0:0b1,-1:0b1}</tt> indicating the primary block and target block metadata are included.
@@ -1968,7 +1968,7 @@ The target block after application of the encryption is shown in <xref target="f
       </t>
       <figure anchor="fig-ex-encrypt-target-final">
         <name>Encrypted Target block CBOR diagnostic</name>
-        <sourcecode type="cbor">
+        <sourcecode type="cbor"><![CDATA[
 [
   1, / type code: payload /
   1, / block num /
@@ -1977,7 +1977,7 @@ The target block after application of the encryption is shown in <xref target="f
   h'1fd25f64a2ee33e774abe16700bcfd9cf12ea5f7d841', / ciphertext /
   h'47abdef0'
 ]
-        </sourcecode>
+]]></sourcecode>
       </figure>
       <section>
         <name>Symmetric Key COSE_Mac0</name>
@@ -1986,7 +1986,7 @@ This is an example of a MAC with recipient having a 384-bit symmetric key (same 
         </t>
         <figure>
           <name>Symmetric Key</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   {
     / kty / 1: 4, / symmetric /
@@ -1997,7 +1997,7 @@ This is an example of a MAC with recipient having a 384-bit symmetric key (same 
 5b711d7b5ed4077466e677860648412f1bf8c91d0624'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-mac-struct"/>.
@@ -2006,7 +2006,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
         </t>
         <figure anchor="fig-ex-mac-struct">
           <name><tt>MAC_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "MAC0", / context /
   h'a10105', / protected /
@@ -2015,11 +2015,11 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 404482a081c901010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-mac-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2034,21 +2034,21 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   [ / target block #1 /
     [ / result /
       17, / COSE_Mac0 tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 6 / HMAC 384 384 /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / kid / 4: 'ExampleA.1'
         },
         null, / payload detached /
         h'ec8260a38a1a00fef2cd4aae063f50f01c5645e84c6c4893ca895eed44
 ef60a5f50f9adf5cc5654499b881e589637805' / tag /
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 180 octets in base-16:
@@ -2069,7 +2069,7 @@ This is an example of a signature with the signer having a P-384 curve ECC keypa
         </t>
         <figure>
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   { / signing private key /
     / kty / 1: 2, / EC2 /
@@ -2085,7 +2085,7 @@ d908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d',
 6e5be2940d4a2c18d510a412efc7dc7875fbba22cca9'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-sign-ec2-struct"/>.
@@ -2094,7 +2094,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
         </t>
         <figure anchor="fig-ex-sign-ec2-struct">
           <name><tt>Sig_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Signature1", / context /
   h'a10126', / protected /
@@ -2103,11 +2103,11 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 404482a081c901010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-sign-ec2-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2122,10 +2122,10 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   [ / target block #1 /
     [ / result /
       18, / COSE_Sign1 tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: -51 / ESP384 /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / kid / 4: 'ExampleA.2'
         },
@@ -2134,11 +2134,11 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 233634251c2c1862b0a194b8503985931051a77731a74a1514b83092d7c662e6dbcd
 a2629af72b24bf1cc3c5e2552f54ddfcc1762e6bc46fd5e6c2137e4a695e563e
 ae' / signature /
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 229 octets in base-16:
@@ -2164,7 +2164,7 @@ This signature uses a random salt, so the full signature output is not determini
         </t>
         <figure>
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   { / signing private key /
     / kty / 1: 3, / RSA /
@@ -2228,7 +2228,7 @@ eb25be7f3a969cd5ce0f60c88213a5fb9e8de7d99fb54867c3f604925da9f522ca67
 9633b134468882364be6595a55648a41fb56ae658f27ab704055d4c23bb95fa'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-sign-rsa-struct"/>.
@@ -2237,7 +2237,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
         </t>
         <figure anchor="fig-ex-sign-rsa-struct">
           <name><tt>Sig_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Signature1", / context /
   h'a1013824', / protected /
@@ -2246,11 +2246,11 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 404482a081c901010040', / external_aad /
   h'6568656c6c6f' / payload /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-sign-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2265,10 +2265,10 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   [ / target block #1 /
     [ / result /
       18, / COSE_Sign1 tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: -38 / PS384 /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / kid / 4: 'ExampleA.3'
         },
@@ -2285,11 +2285,11 @@ d7a4b6ea0d2a74d278f39ff365f3ed61d4c50b35e1bb5c23e8c5778d43558f6e1d7f
 9cd8ac38c12d33eb11cd698618f4d5536b1fe3482b42e69baf266bc82a2cfc0577be
 126b6b6aac0134273759b64d3d7512da810092fa6345e26ede9d1a3e20336b2a7448
 58928dd1158b4dc6e8037f4bfba61e' / signature /
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 520 octets in base-16:
@@ -2321,7 +2321,7 @@ The key used is shown in <xref target="fig-ex-encrypt0-symm-keys"/>, which inclu
         </t>
         <figure anchor="fig-ex-encrypt0-symm-keys">
           <name>Example Key</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   {
     / kty / 1: 4, / symmetric /
@@ -2333,7 +2333,7 @@ The key used is shown in <xref target="fig-ex-encrypt0-symm-keys"/>, which inclu
 99dbae4ce45c'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt0-symm-struct"/>.
@@ -2341,7 +2341,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
         </t>
         <figure anchor="fig-ex-encrypt0-symm-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt0", / context /
   h'a10103', / protected /
@@ -2349,7 +2349,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt0-symm-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt0-target-final"/>.
@@ -2357,7 +2357,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
         </t>
         <figure anchor="fig-ex-encrypt0-symm-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2372,24 +2372,24 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   [ / target block #1 /
     [ / result /
       16, / COSE_Encrypt0 tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / kid / 4: 'ExampleA.4',
           / partial iv / 6: h'484a'
         },
         null / payload detached /
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-encrypt0-target-final">
           <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   1, / type code: payload /
   1, / block num /
@@ -2398,7 +2398,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   h'1fd25f64a2eee2ff1a1ab29812ba221874380974c13b', / ciphertext /
   h'2086c017'
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 149 octets in base-16:
@@ -2419,7 +2419,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-kw-keys"/>.
         </t>
         <figure anchor="fig-ex-encrypt-sym-kw-keys">
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   {
     / kty / 1: 4, / symmetric /
@@ -2436,7 +2436,7 @@ ae38ad7a972e'
 99dbae4ce45c'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt-sym-kw-struct"/>.
@@ -2444,7 +2444,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
         </t>
         <figure anchor="fig-ex-encrypt-sym-kw-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt", / context /
   h'a10103', / protected /
@@ -2452,7 +2452,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-sym-kw-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
@@ -2460,7 +2460,7 @@ The recipient does not have any protected header parameters because AES Key Wrap
         </t>
         <figure anchor="fig-ex-encrypt-sym-kw-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2475,17 +2475,17 @@ The recipient does not have any protected header parameters because AES Key Wrap
   [ / target block #1 /
     [ / result /
       96, / COSE_Encrypt tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null, / payload detached /
         [
           [ / recipient /
-            &lt;&lt;&gt;&gt;, / protected /
+            <<>>, / protected /
             { / unprotected /
               / alg / 1: -5, / A256KW /
               / kid / 4: 'ExampleA.5'
@@ -2494,11 +2494,11 @@ The recipient does not have any protected header parameters because AES Key Wrap
 03a6331159e3d691a708e9984d' / key-wrapped /
           ]
         ]
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 209 octets in base-16:
@@ -2521,7 +2521,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where 
         </t>
         <figure anchor="fig-ex-encrypt-sym-hkdf-keys">
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   {
     / kty / 1: 4, / symmetric /
@@ -2538,7 +2538,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where 
 9784dc3e220f'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt-sym-hkdf-struct"/>.
@@ -2547,7 +2547,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-sym-
         </t>
         <figure anchor="fig-ex-encrypt-sym-hkdf-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt", / context /
   h'a10103', / protected /
@@ -2555,7 +2555,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-sym-
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-encrypt-sym-hkdf-kdfctx">
           <name><tt>COSE_KDF_Context</tt> CBOR diagnostic</name>
@@ -2566,7 +2566,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-sym-
   [null, null, null], / PartyVInfo /
   [ / SuppPubInfo /
     256, / keyDataLength /
-    h'a1012a', / protected /
+    <<{1: -11}>>, / protected /
     <<"BPSec", [1, "//src/"]>> / other /
   ]
 ]
@@ -2578,7 +2578,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
         </t>
         <figure anchor="fig-ex-encrypt-sym-hkdf-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2593,19 +2593,19 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   [ / target block #1 /
     [ / result /
       96, / COSE_Encrypt tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null, / payload detached /
         [
           [ / recipient /
-            &lt;&lt;{ / protected /
+            <<{ / protected /
               / alg / 1: -11 / direct+HKDF-SHA-512 /
-            }&gt;&gt;,
+            }>>,
             { / unprotected /
               / kid / 4: 'ExampleA.6',
               / salt / -20: h'2fa8c8352aea17faf7407271a5e90eb8'
@@ -2613,15 +2613,15 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
             h'' / empty /
           ]
         ]
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-encrypt-sym-hkdf-target-final">
           <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   1, / type code: payload /
   1, / block num /
@@ -2630,7 +2630,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   h'b0a2f0a70a8be9d010a1191d47a2f257752852766fda', / ciphertext /
   h'74d42000'
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 187 octets in base-16:
@@ -2652,7 +2652,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-kw-keys"/>.
         </t>
         <figure anchor="fig-ex-encrypt-ecc-kw-keys">
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   { / sender ephemeral private key /
     / kty / 1: 2, / EC2 /
@@ -2682,17 +2682,24 @@ c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
     / alg / 3: 3, / A256GCM /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
+  },
+  { / derived KEK /
+    / kty / 1: 4, / symmetric /
+    / alg / 3: -5, / A256KW /
+    / k / -1: h'9cabb9ae2e9a0d5145aabbb0969a6f99099869cc109f7c232efb
+0bfd82204847'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt-ecc-kw-struct"/>.
 The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
+The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-kw-kdfctx"/>.
         </t>
         <figure anchor="fig-ex-encrypt-ecc-kw-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt", / context /
   h'a10103', / protected /
@@ -2700,14 +2707,29 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
+        </figure>
+        <figure anchor="fig-ex-encrypt-ecc-kw-kdfctx">
+          <name><tt>COSE_KDF_Context</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[
+  -5, / AlgorithmID /
+  [null, null, null], / PartyUInfo /
+  [null, null, null], / PartyVInfo /
+  [ / SuppPubInfo /
+    256, / keyDataLength /
+    <<{1: -31}>>, / protected /
+    <<"BPSec", [1, "//src/"]>> / other /
+  ]
+]
+]]></sourcecode>
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-ecc-kw-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
         </t>
         <figure anchor="fig-ex-encrypt-ecc-kw-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2722,19 +2744,19 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
   [ / target block #1 /
     [ / result /
       96, / COSE_Encrypt tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null, / payload detached /
         [
           [ / recipient /
-            &lt;&lt;{ / protected /
+            <<{ / protected /
               / alg / 1: -31 / ECDH-ES + A256KW /
-            }&gt;&gt;,
+            }>>,
             { / unprotected /
               / kid / 4: 'ExampleA.7',
               / ephemeral key / -1: {
@@ -2746,15 +2768,15 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
 bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'
               }
             },
-            h'0eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01
-ac8d3aefcc12433f9563da401d' / key-wrapped /
+            h'5a3d85050c06d6a9ce0cfcc1abdc12380b9916096c8310d1bac5f6
+bfaa091c6f0e5f7d256dc54ae7' / key-wrapped /
           ]
         ]
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 319 octets in base-16:
@@ -2767,8 +2789,8 @@ The final bundle is encoded as the following 319 octets in base-16:
 a4010220022158302f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
 5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45225830fd27656fbb97f789d6
 67f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee7454574
-1e2866cb2d58280eaff015e61418d8910ba25ed9733450558b6a20ab410f3c925b01
-ac8d3aefcc12433f9563da401d8601010002561fd25f64a2ee33e774abe16700bcfd
+1e2866cb2d58285a3d85050c06d6a9ce0cfcc1abdc12380b9916096c8310d1bac5f6
+bfaa091c6f0e5f7d256dc54ae78601010002561fd25f64a2ee33e774abe16700bcfd
 9cf12ea5f7d8414447abdef0ff
         </sourcecode>
       </section>
@@ -2780,7 +2802,7 @@ The keys used are shown in <xref target="fig-ex-encrypt-ecc-hkdf-keys"/>, where 
         </t>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-keys">
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   {
     / kty / 1: 2, / EC2 /
@@ -2815,7 +2837,7 @@ c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
 575c90e27766'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt-ecc-hkdf-struct"/>.
@@ -2824,7 +2846,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
         </t>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt", / context /
   h'a10103', / protected /
@@ -2832,7 +2854,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-kdfctx">
           <name><tt>COSE_KDF_Context</tt> CBOR diagnostic</name>
@@ -2843,7 +2865,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
   [null, null, null], / PartyVInfo /
   [ / SuppPubInfo /
     256, / keyDataLength /
-    h'a1012a', / protected /
+    <<{1: -28}>>, / protected /
     <<"BPSec", [1, "//src/"]>> / other /
   ]
 ]
@@ -2855,7 +2877,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
         </t>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -2870,19 +2892,19 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   [ / target block #1 /
     [ / result /
       96, / COSE_Encrypt tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null, / payload detached /
         [
           [ / recipient /
-            &lt;&lt;{ / protected /
+            <<{ / protected /
               / alg / 1: -28 / ECDH-SS + HKDF-512 /
-            }&gt;&gt;,
+            }>>,
             { / unprotected /
               / kid / 4: 'ExampleA.8',
               / sender kid / -3: 'SenderA.8',
@@ -2891,15 +2913,15 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
             h'' / empty /
           ]
         ]
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <figure anchor="fig-ex-encrypt-ecc-hkdf-target-final">
           <name>Encrypted Target block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   1, / type code: payload /
   1, / block num /
@@ -2908,7 +2930,7 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   h'39360d2a997bd9d35900d1040ef1e411666359e79474', / ciphertext /
   h'73172a0c'
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 199 octets in base-16:
@@ -2934,7 +2956,7 @@ This padding scheme uses a random salt, so the full Layer 1 ciphertext output is
         </t>
         <figure anchor="fig-ex-encrypt-rsa-keys">
           <name>Example Keys</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   { / recipient private key /
     / kty / 1: 3, / RSA /
@@ -3004,7 +3026,7 @@ b426775bac26854b539e18176f89e785bacd4672534f683f80b2cc7927bf8f7'
 99dbae4ce45c'
   }
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-encrypt-rsa-struct"/>.
@@ -3012,7 +3034,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
         </t>
         <figure anchor="fig-ex-encrypt-rsa-struct">
           <name><tt>Enc_structure</tt> CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [
   "Encrypt", / context /
   h'a10103', / protected /
@@ -3020,7 +3042,7 @@ The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040' / external_aad /
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The ASB item for this encryption operation is shown in <xref target="fig-ex-encrypt-rsa-asb"/> and corresponds with the updated target block (containing the ciphertext) of <xref target="fig-ex-encrypt-target-final"/>.
@@ -3028,7 +3050,7 @@ The recipient does not have any protected header parameters because RSA OAEP doe
         </t>
         <figure anchor="fig-ex-encrypt-rsa-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
-          <sourcecode type="cbor">
+          <sourcecode type="cbor"><![CDATA[
 [1], / targets /
 3, / security context /
 1, / flags: params-present /
@@ -3043,17 +3065,17 @@ The recipient does not have any protected header parameters because RSA OAEP doe
   [ / target block #1 /
     [ / result /
       96, / COSE_Encrypt tag /
-      &lt;&lt;[
-        &lt;&lt;{ / protected /
+      <<[
+        <<{ / protected /
            / alg / 1: 3 / A256GCM /
-        }&gt;&gt;,
+        }>>,
         { / unprotected /
           / iv / 5: h'6f3093eba5d85143c3dc484a'
         },
         null, / payload detached /
         [
           [ / recipient /
-            &lt;&lt;&gt;&gt;, / protected /
+            <<>>, / protected /
             { / unprotected /
               / alg / 1: -42, / RSAES-OAEP w SHA-512 /
               / kid / 4: 'ExampleA.9'
@@ -3072,11 +3094,11 @@ eba39b4e619c4daf6c08beaf654932f8f88ad8685e87402f75be68bf3dd2e5539a7d
 71f3b14de9a50d7bb23e26feb3cc1ea882' / key-encapsulation /
           ]
         ]
-      ]&gt;&gt;
+      ]>>
     ]
   ]
 ]
-          </sourcecode>
+]]></sourcecode>
         </figure>
         <t>
 The final bundle is encoded as the following 557 octets in base-16:
