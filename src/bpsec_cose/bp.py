@@ -8,7 +8,9 @@ import re
 @dataclass
 class EndpointId():
     _re_dtn = re.compile(r'dtn:(.+)')
+    ''' General DTN scheme '''
     _re_ipn = re.compile(r'ipn:(\d+).(\d+).(\d+)')
+    ''' Three-element IPN scheme form '''
 
     @enum.unique
     class Scheme(enum.IntEnum):
@@ -16,8 +18,9 @@ class EndpointId():
         ipn = 2
 
     url: str
+    ''' The EID in text form '''
 
-    def encode_item(self):
+    def encode_item(self) -> list:
         match_dtn = EndpointId._re_dtn.match(self.url)
         if match_dtn is not None:
             scheme_val = EndpointId.Scheme.dtn

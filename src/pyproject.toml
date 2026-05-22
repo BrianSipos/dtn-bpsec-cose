@@ -30,6 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "cbor_diag",
   "pytest",
   "pytest-cov",
   "coverage",
