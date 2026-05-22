@@ -117,7 +117,7 @@ class BaseTest(unittest.TestCase):
         '''
         return b''.join(cbor2.dumps(item) for item in asb_dec)
 
-    def _get_bpsec_item(self, block_type, asb_dec: Optional[list]=None) -> list:
+    def _get_bpsec_item(self, block_type, asb_dec: Optional[list] = None) -> list:
         return [
             block_type,
             3,
@@ -139,7 +139,7 @@ class BaseTest(unittest.TestCase):
         print('{} Encoded: {}'.format(name, encode_diagnostic(phdr_enc)))
         print('{} Unprotected: {}'.format(name, encode_diagnostic(uhdr_dec)))
 
-    def _print_message(self, item: list, recipient_idx: Optional[int]=None) -> None:
+    def _print_message(self, item: list, recipient_idx: Optional[int] = None) -> None:
         ''' Print a top-level COSE message.
         '''
         print('Message: {}'.format(encode_diagnostic(item)))
