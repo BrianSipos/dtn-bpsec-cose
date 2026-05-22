@@ -2400,8 +2400,8 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where 
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'a2db6ff560dfd645999362dc1d39eff1d77336c93e973baf5053
-f4733c19ade4'
+    / k / -1: h'd21023f8b11e116be2c1f5c9b116ae82cfea82e64810f08952c8
+9784dc3e220f'
   }
 ]
           </sourcecode>
@@ -2430,7 +2430,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-sym-
   3, / AlgorithmID /
   [null, null, null], / PartyUInfo /
   [null, null, null], / PartyVInfo /
-  [
+  [ / SuppPubInfo /
     256, / keyDataLength /
     h'a1012a', / protected /
     <<"BPSec", [1, "//src/"]>> / other /
@@ -2493,8 +2493,8 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   2, / CRC type /
-  h'cd3367b96d5b3f493cdc117f9a392f02d6d4b93f6726', / ciphertext /
-  h'1524984b'
+  h'b0a2f0a70a8be9d010a1191d47a2f257752852766fda', / ciphertext /
+  h'74d42000'
 ]
           </sourcecode>
         </figure>
@@ -2506,8 +2506,8 @@ The final bundle is encoded as the following 187 octets in base-16:
 7372632f821b000000bd51281400001a000f42404482a081c9850c03000058578101
 03018201662f2f7372632f818205a2000120018181821860583b8443a10103a1054c
 6f3093eba5d85143c3dc484af6818343a1012aa2044a4578616d706c65412e363350
-2fa8c8352aea17faf7407271a5e90eb840860101000256cd3367b96d5b3f493cdc11
-7f9a392f02d6d4b93f6726441524984bff
+2fa8c8352aea17faf7407271a5e90eb840860101000256b0a2f0a70a8be9d010a119
+1d47a2f257752852766fda4474d42000ff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-encrypt-ecc-kw">
@@ -2677,8 +2677,8 @@ c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'67bb109aaee51e9616b512d5750139444ca26e6c0eeaa87f3917
-de41dd9ad9f6'
+    / k / -1: h'aea6dec271aa36ecb887d7703b17ab66ff57a9d5eac76477d2c6
+575c90e27766'
   }
 ]
           </sourcecode>
@@ -2707,7 +2707,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
   3, / AlgorithmID /
   [null, null, null], / PartyUInfo /
   [null, null, null], / PartyVInfo /
-  [
+  [ / SuppPubInfo /
     256, / keyDataLength /
     h'a1012a', / protected /
     <<"BPSec", [1, "//src/"]>> / other /
@@ -2771,8 +2771,8 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   2, / CRC type /
-  h'925c33206eb89fdc076f17489de3056e997a227b8d53', / ciphertext /
-  h'8eec52c4'
+  h'39360d2a997bd9d35900d1040ef1e411666359e79474', / ciphertext /
+  h'73172a0c'
 ]
           </sourcecode>
         </figure>
@@ -2785,7 +2785,7 @@ The final bundle is encoded as the following 199 octets in base-16:
 03018201662f2f7372632f818205a200012001818182186058478443a10103a1054c
 6f3093eba5d85143c3dc484af6818344a101381ba3044a4578616d706c65412e3822
 4953656e646572412e3833502fa8c8352aea17faf7407271a5e90eb8408601010002
-56925c33206eb89fdc076f17489de3056e997a227b8d53448eec52c4ff
+5639360d2a997bd9d35900d1040ef1e411666359e794744473172a0cff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-rsa-recip">

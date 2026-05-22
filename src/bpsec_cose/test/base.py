@@ -159,5 +159,6 @@ class BaseTest(unittest.TestCase):
             for (ix, rcpt) in enumerate(item[recipient_idx]):
                 self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
 
-    def _print_bundle(self, bundle):
+    def _print_bundle(self, bundle: bytes):
+        print('Total bundle: {}'.format(cbor2diag(bundle)))
         print('Total bundle size {}:\n{}'.format(len(bundle), textwrap.fill(bundle.hex(), 68)))
