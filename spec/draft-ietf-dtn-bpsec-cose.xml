@@ -726,7 +726,7 @@ The requirements of this profile still allow the use of potentially not-easily-i
         <t>
 The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-threat-algo-vuln"/>.
+It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
@@ -1210,9 +1210,8 @@ Any end-entity certificate associated with a BIB security source or BCB result r
     <section anchor="sec-pkix-profile">
       <name>PKIX Certificate Profile</name>
       <t>
-This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
-The profile here mandates specific data to be present in CA and end-entity certificates but does not mandate any specific key types or signing algorithms to be used.
-Such details are left to algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0.
+This section contains requirements on public key certificates (PKCs) used with the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
+The profile here mandates specific data to be present in certificate authority (CA) and end-entity (EE) certificates but does not mandate any specific key types or signing algorithms to be used (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-ops-pkc"/>).
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1274,12 +1273,101 @@ Effectively this means that a BP node uses separate certificates for transport (
         </t>
       </section>
     </section>
+    <section anchor="sec-ops">
+      <name>Operational Considerations</name>
+      <t>
+This section explains different operational topics of this BPSec context based on guidance of <xref target="RFC5706"/>.
+Many of these topics are related to capabilities which are not mandatory to use by the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>, so the discussion in this section is about when it is appropriate (or not) to use them.
+      </t>
+      <section anchor="sec-ops-alg-choice">
+        <name>Choice of Key and Algorithm Families</name>
+        <t>
+The <xref target="sec-COSE-profile">COSE profile</xref> and <xref target="sec-pkix-profile">PKIX profile</xref> in this document narrow down the wide variety of algorithm families and key-material families available within both the COSE and PKIX environments.
+The subsections under <xref target="sec-interop-alg"/> are organized by key family precisely because the choice of acceptable key family will narrow down to a small number of COSE algorithms compatible with that key family and strength.
+        </t>
+        <t>
+It is expected that the ultimate choice of which families are used in actual security operations will be determined by a small number of least-common acceptable choices among the various BP nodes acting as source, verifier, or acceptor roles for those operations.
+Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
+        </t>
+        <t>
+There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging post-quantum algorithm needs.
+        </t>
+      </section>
+      <section anchor="sec-ops-pkc">
+        <name>Public Keys and Certificates</name>
+        <t>
+Similar to the choice of key families being driven by administrative constraints, the decision of if and how to use public key certificates as part of this BPSec context is expected to be heavily influenced by needs and constraints of the administering entities.
+        </t>
+        <t>
+Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
+It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
+There are also algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0 conformance.
+        </t>
+        <t>
+For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate then all of the possible verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained extensions.
+        </t>
+      </section>
+      <section anchor="sec-ops-kid-choice">
+        <name>Choice of Key Identifiers</name>
+        <t>
+Similar to the algorithm family choice in <xref target="sec-ops-alg-choice"/>, the choice of which key identifier to use for a specific BPSec COSE security operation (among those described in <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/>) is expected to be based on least-common acceptable choices among the set of participating BP nodes.
+Overall ASB and total bundle size are likely driving concerns, so the use of short-length narrow-scoped "kid" could be more favorable over universally-unique (but longer) identifiers such as hash-based thumbprints <xref target="RFC9679"/>.
+        </t>
+        <t>
+Many of the "conditional" header parameters in <xref target="tab-interop-hdrs"/> are conditioned on the choice of acceptable key identifier for a particular operation.
+Because of this a node or mission with constraints on public key certificate use and identification will necessarily have a limited need for key-identifying parameters.
+        </t>
+      </section>
+      <section anchor="sec-ops-key-mgmt">
+        <name>General Key Management</name>
+        <t>
+The scope of this document explicitly excludes specifying management strategies or mechanisms for either symmetric or asymmetric keys or public key certificates.
+But there are recommendations and constraints provided here relating to if and when to include <xref target="sec-asym-keys">certificates or thumbprints</xref>, <xref target="sec-pkix-multiple-certs">single-use keys</xref>, and <xref target="sec-threat-overuse">key overuse</xref>.
+        </t>
+        <t>
+It is a larger, likely cross-administrative-domain, concern for how to distribute and manage keys and/or PKCs needed to support normal BPSec operations.
+This is also not unique to this COSE security context, and will apply equally to any security operations using equivalent key material or identity-binding credentials.
+        </t>
+      </section>
+      <section anchor="sec-ops-additional">
+        <name>Choice to use Additional Header Maps</name>
+        <t>
+The <xref target="sec-ASB-param-additional">additional header map parameters</xref> can be used to remove redundancies from multiple COSE messages in the same security block, but does not necessarily save encoded size (depending on if and which common header parameters are present in those COSE messages) and does add processing complexity to security verifiers and acceptors.
+        </t>
+        <t>
+Because these parameters are optional-to-use, a simplification which can apply within an administrative domain or across multiple domains is a restriction to avoid the use of additional header map parameters when they are not expected to provide any operational benefit.
+For BPSec entities this does not imply that these parameters are optional-to-implement because these parameters can still be present in security blocks from unexpected sources.
+It is a more general implementation and configuration matter for how to handle unexpected or unwanted (but otherwise valid) security parameters in any node.
+        </t>
+      </section>
+      <section anchor="sec-ops-aad-scope">
+        <name>Choice of AAD Scope</name>
+        <t>
+The security source of every BPSec security operation using the COSE context can choose a specific <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> appropriate for that operation.
+        </t>
+        <t>
+The maximum AAD Scope, and default when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
+Together these tightly constrain the ability of an attacker to replay either the target or security block (see <xref target="sec-threat-block-replay"/>).
+        </t>
+        <t>
+The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source.
+        </t>
+        <t>
+For specific cases, possibly depending on how tightly coupled the cryptographic processing is with the BP and BPSec processing or what kind of block rearranging is expected to happen by middleboxes, the AAD Scope can be reduced to allow changes to either the security block or target block metadata.
+It is <bcp14>RECOMMENDED</bcp14> to always include the primary block (number zero) in the AAD Scope to protect against replay attacks.
+        </t>
+        <t>
+For other cases, where several blocks are expected to have similar lifetimes and there is a desire to cover them all by a single security operation, the AAD Scope can be expanded to include not just the target block but other blocks in the same bundle.
+These cases need more careful consideration (see <xref target="sec-threat-aad-mod"/>) due to the more complex inter-relationships between all of the blocks involved in such a security operation.
+        </t>
+      </section>
+    </section>
     <section anchor="sec-security">
       <name>Security Considerations</name>
       <t>
 This section separates security considerations into threat categories based on guidance of BCP 72 <xref target="RFC3552"/>.
       </t>
-      <section>
+      <section anchor="sec-threat-block-replay">
         <name>Threat: BPSec Block Replay</name>
         <t>
 The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see <xref section="4.3.1" target="RFC9171"/>).
@@ -1395,7 +1483,7 @@ Because this security context uses whole COSE messages and inherits all COSE pro
 When public key certificates are used, all of the security considerations of <xref target="RFC5280"/> and any other narrowing PKIX profile apply to this security context.
         </t>
       </section>
-      <section>
+      <section anchor="sec-threat-aad-mod">
         <name>AAD-Covered Block Modification</name>
         <t>
 The <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> can be used to refer to any other block within the same bundle (by its unique block number) at the time the associated security operation is added to a bundle.
@@ -1644,10 +1732,12 @@ The value range is a bit position within an unsigned 64-bit integer.
           </front>
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
