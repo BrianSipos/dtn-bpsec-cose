@@ -104,10 +104,88 @@ The BPSec specification <xref target="RFC9172"/> did not define its extension bl
         </t>
       </section>
       <section>
-        <name>Requirements Language</name>
+        <name>Terminology</name>
         <t>
 The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>", "<bcp14>REQUIRED</bcp14>", "<bcp14>SHALL</bcp14>", "<bcp14>SHALL NOT</bcp14>", "<bcp14>SHOULD</bcp14>", "<bcp14>SHOULD NOT</bcp14>", "<bcp14>RECOMMENDED</bcp14>", "<bcp14>NOT RECOMMENDED</bcp14>", "<bcp14>MAY</bcp14>", and "<bcp14>OPTIONAL</bcp14>" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
         </t>
+        <t>
+The following terms are taken from BPSec <xref target="RFC9172"/>.
+        </t>
+        <dl>
+          <dt>Security Operation:</dt>
+          <dd>
+The application of a given security service to a security target.
+A security operation is implemented by a security block.
+          </dd>
+          <dt>Security Context:</dt>
+          <dd>
+The set of assumptions, algorithms, configurations, and policies used to implement security services.
+Each BPSec security context is identified by a code point present in an ASB.
+          </dd>
+          <dt>Abstract Security Block (ASB):</dt>
+          <dd>
+The structure of a bundle integrity block (BIB) an a bundle confidentiality block (BCB).
+          </dd>
+          <dt>(Security) Parameter:</dt>
+          <dd>
+A context-specific option which applies to all security operations in an ASB.
+          </dd>
+          <dt>(Security) Result:</dt>
+          <dd>
+A context-specific output for a single security operation in an ASB.
+          </dd>
+          <dt>Security Source:</dt>
+          <dd>
+A BPA that adds a security block to a bundle.
+          </dd>
+          <dt>Security Acceptor:</dt>
+          <dd>
+A BPA that processes and dispositions one or more security blocks in a bundle.
+Security acceptors act as the endpoint of a security service represented in a security block.
+          </dd>
+          <dt>Security Verifier:</dt>
+          <dd>
+A BPA that verifies the data integrity of one or more security blocks in a bundle.
+Unlike security acceptors, security verifiers do not act as the endpoint of a security service, and they do not remove verified security blocks
+          </dd>
+        </dl>
+        <t>
+The following terms are taken from COSE <xref target="RFC9052"/> <xref target="RFC9053"/>.
+        </t>
+        <dl>
+          <dt>Additional Authenticated Data (AAD):</dt>
+          <dd>
+This is structured data defined by COSE to provide context inputs to integrity operations (signing or MAC) or additional data for confidentiality operations (encryption).
+A portion of the AAD is provided from outside of the COSE processor as "external AAD" bytes.
+          </dd>
+          <dt>Key Derivation Function (KDF) Context:</dt>
+          <dd>
+This is structure data defined by COSE to provide context inputs to key derivation functions.
+A portion of the KDF context is provided from outside of the COSE processor as "other" bytes.
+          </dd>
+          <dt>Key Identifier (KID):</dt>
+          <dd>
+A general purpose correlator for key material stored outside of COSE messages and referenced from within COSE messages.
+          </dd>
+          <dt>Initialization Vector (IV):</dt>
+          <dd>
+An input to authenticated encryption algorithms separate from the secret key, plaintext/ciphertext, or AAD.
+          </dd>
+        </dl>
+        <t>
+The following terms are specific to this document.
+        </t>
+        <dl>
+          <dt>Participating Nodes:</dt>
+          <dd>
+For each security operation, the collection of security source node and all possible security verifiers and acceptors.
+Different operations can have a different set of participating nodes.
+          </dd>
+          <dt>Additional Header Maps:</dt>
+          <dd>
+These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB.
+          </dd>
+        </dl>
       </section>
     </section>
     <section anchor="sec-bpsec-context">
@@ -1331,18 +1409,46 @@ Effectively this means that a BP node uses separate certificates for transport (
     <section anchor="sec-ops">
       <name>Operational Considerations</name>
       <t>
-This section explains different operational topics of this BPSec context based on guidance of <xref target="RFC5706"/>.
-Many of these topics are related to capabilities which are not mandatory to use by the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>, so the discussion in this section is about when it is appropriate (or not) to use them.
+This section explains various operational topics of this BPSec context, based on guidance of the IETF Operations and Management Area Working Group <xref target="RFC5706"/>.
+Many of these topics are related to capabilities that are not mandatory to use in the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>.
+Therefore, this section discusses when their uses is appropriate and when it is not.
       </t>
+      <section>
+        <name>Understanding Participating Nodes</name>
+        <t>
+For each desired security operation, all security sources, verifiers, and acceptors which process that operation (<em>i.e.</em>, the participating nodes) need to implement and configure aspects of those operations which are carried as part of a security block (<em>i.e.</em>, BPSec parameters and results, COSE message types, and COSE header parameters) as well as aspects which are not part of the security block and are manged on each node (<em>e.g.</em>, key families and key stores, algorithm families and COSE algorithm processing).
+For most of the following subsections, understanding the participating nodes and what they each support is critical to managing the use of BPSec COSE operations.
+        </t>
+        <t>
+For example, if any security verifier along the path of a single security operation either does not implement or allow one of the COSE algorithm code points its verification will fail.
+Depending upon policy control in that node, it might delete the containing bundle entirely or at least remove the offending security operation.
+In either case, the security operation will not reach its desired acceptor and expected behavior will not occur.
+        </t>
+        <t>
+Beyond supporting algorithms, another critical aspect of all participating nodes is access to key material referenced by the security operation.
+If any participating node either does not have any needed key, or if a referencing key identifier is modified by an on-path attacker (see <xref target="sec-threat-unident-key"/>), or if the material itself is available but has expired (<em>e.g.</em>, PKIX validity time) then processing of the operation will fail.
+Similar to the example above, if key material is misaligned expected behavior will not occur.
+        </t>
+        <t>
+Operating in a PKIX environment adds additional challenges beyond simple knowledge of end-use key material.
+When participating nodes are expected to possess PKCs the use of shorted thumbprints ("x5t" header) can be used to avoid sending large duplicate certificate data.
+But if any participating node does not contain the full certificate chain needed for an operation, or if some portion of that chain fails <xref target="sec-context-auth-valid-cert">path validation</xref> then the situation of <xref target="sec-threat-notrust-key"/> occurs and the expected behavior will not occur.
+        </t>
+      </section>
       <section anchor="sec-ops-alg-choice">
         <name>Choice of Key and Algorithm Families</name>
         <t>
 The <xref target="sec-COSE-profile">COSE profile</xref> and <xref target="sec-pkix-profile">PKIX profile</xref> in this document narrow down the wide variety of algorithm families and key-material families available within both the COSE and PKIX environments.
-The subsections under <xref target="sec-interop-alg"/> are organized by key family precisely because the choice of acceptable key family will narrow down to a small number of COSE algorithms compatible with that key family and strength.
+The subsections under <xref target="sec-interop-alg"/> are organized by key family precisely because the choice of an acceptable key family narrows down the set of compatible COSE algorithms to a small number of options.
         </t>
         <t>
 It is expected that the ultimate choice of which families are used in actual security operations will be determined by a small number of least-common acceptable choices among the various BP nodes acting as source, verifier, or acceptor roles for those operations.
 Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
+        </t>
+        <t>
+For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available.
+If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available.
+In this case the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
         </t>
         <aside>
           <t>
@@ -1357,7 +1463,7 @@ A verifier or acceptor which does not constrain allowed algorithms is vulnerable
       <section anchor="sec-ops-pkc">
         <name>Public Keys and Certificates</name>
         <t>
-Similar to the choice of key families being driven by administrative constraints, the decision of if and how to use public key certificates as part of this BPSec context is expected to be heavily influenced by needs and constraints of the administering entities.
+Similar to how the choice of algorithm families is driven by administrative constraints, decisions regarding whether and how to use public key certificates with this BPSec context are expected to be heavily influenced by the needs and constraints of the administering entities.
         </t>
         <t>
 Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
@@ -1365,18 +1471,21 @@ It is expected that each PKIX environment will have detailed and specific needs 
 There are also algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0 conformance.
         </t>
         <t>
-For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate then all of the possible verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained extensions.
+For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
         </t>
       </section>
       <section anchor="sec-ops-kid-choice">
         <name>Choice of Key Identifiers</name>
         <t>
-Similar to the algorithm family choice in <xref target="sec-ops-alg-choice"/>, the choice of which key identifier to use for a specific BPSec COSE security operation (among those described in <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/>) is expected to be based on least-common acceptable choices among the set of participating BP nodes.
-Overall ASB and total bundle size are likely driving concerns, so the use of short-length narrow-scoped "kid" could be more favorable over universally-unique (but longer) identifiers such as hash-based thumbprints <xref target="RFC9679"/>.
+Similar to the algorithm family choice in <xref target="sec-ops-alg-choice"/>, the choice of which key identifier to use for a specific security operation (among those described in <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/>) is expected to be based on least-common acceptable choices among the set of participating nodes.
         </t>
         <t>
-Many of the "conditional" header parameters in <xref target="tab-interop-hdrs"/> are conditioned on the choice of acceptable key identifier for a particular operation.
-Because of this a node or mission with constraints on public key certificate use and identification will necessarily have a limited need for key-identifying parameters.
+For example if overall ASB and total bundle size are driving concerns, the use of short-length narrow-scoped "kid" could be more favorable over universally-unique (but longer) identifiers such as hash-based thumbprints <xref target="RFC9679"/>.
+Another example is if PKCs are available and pre-hashed for management reasons, then their thumbprints are readily available for "x5t" identifiers which can allow easy correlation between the ASB content, in-node logging, and network orchestration configuration.
+        </t>
+        <t>
+Many of the "conditional" header parameters in <xref target="tab-interop-hdrs"/> depend on the choice of acceptable key identifier for a particular security operation.
+Because of this, a node or mission with constraints on public key certificate use and identification will necessarily have a limited need for key-identifying parameters.
         </t>
         <t>
 In any case, an inherited requirement from COSE <xref section="3.1" target="RFC9052"/> is that "kid" values cannot be assumed by any processor to be unique and full validity of a COSE message depends on successful verification of (or decryption for) the entire message.
@@ -1385,12 +1494,15 @@ In any case, an inherited requirement from COSE <xref section="3.1" target="RFC9
       <section anchor="sec-ops-key-mgmt">
         <name>General Key Management</name>
         <t>
-The scope of this document explicitly excludes specifying management strategies or mechanisms for either symmetric or asymmetric keys or public key certificates.
-But there are recommendations and constraints provided here relating to if and when to include <xref target="sec-asym-keys">certificates or thumbprints</xref>, <xref target="sec-pkix-multiple-certs">single-use keys</xref>, and <xref target="sec-threat-overuse">key overuse</xref>.
+The scope of this document explicitly excludes specifying management strategies or mechanisms for symmetric keys, asymmetric keys, and public key certificates.
+However, this document does provide recommendations and constraints regarding when to include <xref target="sec-asym-keys">certificates or thumbprints</xref>, <xref target="sec-pkix-multiple-certs">single-use keys</xref>, and considerations related to <xref target="sec-threat-overuse">key overuse</xref>.
         </t>
         <t>
-It is a larger, likely cross-administrative-domain, concern for how to distribute and manage keys and/or PKCs needed to support normal BPSec operations.
+There is a broader concern, likely spanning multiple administrative domains, regarding how to distribute and manage keys and/or PKCs needed to support normal BPSec operations.
 This is also not unique to this COSE security context, and will apply equally to any security operations using equivalent key material or identity-binding credentials.
+        </t>
+        <t>
+Management of keys and certificates includes the entire life-cycle of those items, including distributing them to participating nodes, upkeep of time-limited items such as certificate chains, and decommissioning them after their effective lifetime has ended.
         </t>
       </section>
       <section anchor="sec-ops-additional">
@@ -1400,7 +1512,7 @@ The <xref target="sec-ASB-param-additional">additional header map parameters</xr
         </t>
         <t>
 Because these parameters are optional-to-use, a simplification which can apply within an administrative domain or across multiple domains is a restriction to avoid the use of additional header map parameters when they are not expected to provide any operational benefit.
-For BPSec entities this does not imply that these parameters are optional-to-implement because these parameters can still be present in security blocks from unexpected sources.
+For BPSec entities, this does not imply that these parameters are optional-to-implement; they can still be present in security blocks received from unexpected sources.
 It is a more general implementation and configuration matter for how to handle unexpected or unwanted (but otherwise valid) security parameters in any node.
         </t>
         <t>
@@ -1458,7 +1570,7 @@ An IV or Partial IV <bcp14>MAY</bcp14> be generated by a deterministic mechanism
           <dd>
 This is needed for KDF recipients (either direct+HKDF or the ECDH algorithms).
 In either case, similar to IV generation, the requirement for a salt is to be unique within its derivation context.
-Because of the KDF context defined in <xref target="sec-secctx-kdfctx"/> this means unique for each parent key and Security Source EID.
+Because of the KDF context defined in <xref target="sec-secctx-kdfctx"/>, this means the salt is unique for each parent key and Security Source EID.
 The length of each salt is recommended by COSE to be at least as large as the hash output for HKDF.
 A salt <bcp14>MAY</bcp14> be generated by a deterministic mechanism associated with a specific parent key (symmetric or ECDH-SS) only when the generating entity is the sole security source associated with that parent key.
           </dd>
