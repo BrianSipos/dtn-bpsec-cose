@@ -3415,7 +3415,7 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
     <section anchor="sec-doc-ack" numbered="false">
       <name>Acknowledgments</name>
       <t>
-Thanks to Lars Baumgaertner and Lukas Holst at ESA for review and prototyping feedback.
+Thanks to Lars Baumgaertner and Lukas Holst at the European Space Agency (ESA) and to David Koisser from SANCTUARY Systems GmbH for specification review and prototyping feedback. 
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
