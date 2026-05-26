@@ -18,6 +18,9 @@ DEFAULT_CRC_TYPE = 2
 class BaseTest(unittest.TestCase):
 
     _SECSRC_EID = EndpointId('dtn://src/')
+    ''' ASB security source field '''
+    _ADDL_PROTECTED: bytes = b''
+    ''' ASB additional protected parameter (encoded) '''
 
     def _replace_crc(self, dec: list, crc_type: int) -> Optional[bytes]:
         ''' Replace the last item of a decoded array with its CRC-32C value.
@@ -83,6 +86,7 @@ class BaseTest(unittest.TestCase):
         parts = [
             "BPSec",
             self._SECSRC_EID.encode_item(),
+            self._ADDL_PROTECTED,
         ]
         return dump_cborseq(parts)
 
@@ -91,17 +95,15 @@ class BaseTest(unittest.TestCase):
         '''
         return {0: 0b01, -1: 0b01}
 
-    def _get_aad_array(self, addl_protected: bytes = b'') -> list:
+    def _get_aad_array(self) -> list:
         ''' Get the AAD-list array.
-
-        :param addl_protected: The additional-protected parameters encoded.
         '''
         return [
             self._SECSRC_EID.encode_item(),
             self._get_aad_scope(),  # scope
             self._get_primary_item(),  # primary-ctx
         ] + self._block_identity(self._get_target_item()) + [  # target-ctx
-            addl_protected,
+            self._ADDL_PROTECTED,
         ]
 
     def _get_asb_item(self, result: KeyValPair) -> list:
