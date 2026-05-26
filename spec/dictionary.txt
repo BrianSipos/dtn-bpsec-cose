@@ -63,6 +63,7 @@ endian
 ESA
 FIPS
 GCM
+GmbH
 HKDF
 HMAC
 IANA
@@ -79,6 +80,7 @@ keyEncipherment
 keypair
 keypairs
 KeySet
+Koisser
 LLC
 LSbit
 Lukas
