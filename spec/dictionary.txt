@@ -8,11 +8,14 @@ acknowledgements
 AEAD
 AES
 alg
+APL
 ASB
+Babun
 Baumgaertner
 BCB
 BCP
 BIB
+BPA
 BPSec
 bstr
 btsd
@@ -72,6 +75,7 @@ IETF
 interoperable
 interoperation
 IPPT
+JHU
 KDF
 KDK
 KEK
