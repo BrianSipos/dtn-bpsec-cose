@@ -53,7 +53,7 @@ jobs:
     - name: Install
       run: pip3 install -e .[test]
     - name: BPSec examples
-      run: python3 -m pytest . --capture=no
+      run: python3 -m pytest . --log-cli-level=info
     - name: PKI examples
       run: |
         python3 -m bpsec_cose.pki.run

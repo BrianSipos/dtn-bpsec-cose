@@ -16,7 +16,6 @@ SELFDIR = os.path.dirname(os.path.abspath(__file__))
 class TestExample(BaseTest):
 
     def test(self):
-        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         recipient_key = cast(EC2Key, CoseKey.from_pem_private_key(
             open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'dst',
                               'ssl', 'private', 'node-encrypt-ecc.pem'), 'r').read(),
@@ -26,18 +25,18 @@ class TestExample(BaseTest):
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         ))
-        print('Private Key: {}'.format(cbor2diag(recipient_key.encode())))
+        self._logger.info('Private Key: %s', cbor2diag(recipient_key.encode()))
         recipient_public = EC2Key(
             crv=cast(Type[CoseCurve], recipient_key.crv),
             x=recipient_key.x,
             y=recipient_key.y
         )
         kdf_salt = bytes.fromhex('2fa8c8352aea17faf7407271a5e90eb8')
-        print('KDF salt: {}'.format(kdf_salt.hex()))
+        self._logger.info('KDF salt: %s', kdf_salt.hex())
 
         # session IV
         iv = bytes.fromhex('6F3093EBA5D85143C3DC484A')
-        print('IV: {}'.format(iv.hex()))
+        self._logger.info('IV: %s', iv.hex())
 
         # Would be random ephemeral key, but test constant
         sender_pem = '''\
@@ -56,7 +55,7 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
                 keyparam.KpKeyOps: [keyops.DeriveKeyOp],
             }
         ))
-        print('Sender Private Key: {}'.format(cbor2diag(sender_key.encode())))
+        self._logger.info('Sender Private Key: %s', cbor2diag(sender_key.encode()))
         sender_public = EC2Key(
             crv=cast(Type[CoseCurve], sender_key.crv),
             x=sender_key.x,
@@ -66,20 +65,20 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         # Primary block
         prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
-        print('Primary Block: {}'.format(cbor2diag(prim_enc)))
-        print('Encoded: {}'.format(prim_enc.hex()))
+        self._logger.info('Primary Block: %s', cbor2diag(prim_enc))
+        self._logger.info('Encoded: %s', prim_enc.hex())
 
         # Security target block
         target_dec = self._get_target_item()
         content_plaintext = target_dec[4]
-        print('Target Block: {}'.format(cbor2diag(cbor2.dumps(target_dec))))
-        print('Plaintext: {}'.format(content_plaintext.hex()))
+        self._logger.info('Target Block: %s', cbor2diag(cbor2.dumps(target_dec)))
+        self._logger.info('Plaintext: %s', content_plaintext.hex())
 
         # Combined AAD
         ext_aad_dec = self._get_aad_array()
         ext_aad_enc = dump_cborseq(ext_aad_dec)
-        print('External AAD: {}'.format(cbor2diag(ext_aad_enc)))
-        print('Encoded: {}'.format(ext_aad_enc.hex()))
+        self._logger.info('External AAD: %s', cbor2diag(ext_aad_enc))
+        self._logger.info('Encoded: %s', ext_aad_enc.hex())
 
         msg_obj = EncMessage(
             phdr={
@@ -113,21 +112,21 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
 
         # COSE internal structure
         cose_struct_enc = msg_obj._enc_structure
-        print('COSE Structure: {}'.format(cbor2diag(cose_struct_enc)))
-        print('Encoded: {}'.format(cose_struct_enc.hex()))
+        self._logger.info('COSE Structure: %s', cbor2diag(cose_struct_enc))
+        self._logger.info('Encoded: %s', cose_struct_enc.hex())
         kdf_ctx_enc = recip.get_kdf_context(msg_obj.phdr[headers.Algorithm]).encode()
-        print('COSE_KDF_Context: {}'.format(cbor2diag(kdf_ctx_enc)))
-        print('Encoded: {}'.format(kdf_ctx_enc.hex()))
+        self._logger.info('COSE_KDF_Context: %s', cbor2diag(kdf_ctx_enc))
+        self._logger.info('Encoded: %s', kdf_ctx_enc.hex())
 
         # Encoded message
         message_enc = msg_obj.encode(tag=False)
-        print('CEK:', cbor2diag(msg_obj.key.encode()))
+        self._logger.info('CEK: %s', cbor2diag(msg_obj.key.encode()))
         message_dec = cbor2.loads(message_enc)
         # Detach the payload
         content_ciphertext = message_dec[2]
         message_dec[2] = None
         self._print_message(message_dec, recipient_idx=3)
-        print('Ciphertext: {}'.format(content_ciphertext.hex()))
+        self._logger.info('Ciphertext: %s', content_ciphertext.hex())
         message_enc = cbor2.dumps(message_dec)
 
         # ASB structure
@@ -136,16 +135,16 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
             message_enc
         ))
         asb_enc = self._get_asb_enc(asb_dec)
-        print('ASB: {}'.format(cbor2diag(asb_enc)))
-        print('Encoded: {}'.format(asb_enc.hex()))
+        self._logger.info('ASB: %s', cbor2diag(asb_enc))
+        self._logger.info('Encoded: %s', asb_enc.hex())
 
         bpsec_dec = self._get_bpsec_item(
             block_type=BlockType.BCB,
             asb_dec=asb_dec,
         )
         bpsec_enc = cbor2.dumps(bpsec_dec)
-        print('BPSec block: {}'.format(cbor2diag(bpsec_enc)))
-        print('Encoded: {}'.format(bpsec_enc.hex()))
+        self._logger.info('BPSec block: %s', cbor2diag(bpsec_enc))
+        self._logger.info('Encoded: %s', bpsec_enc.hex())
 
         # Change from detached payload
         message_dec[2] = content_ciphertext
@@ -161,16 +160,16 @@ K/NAn2jd3yCAQKX8vL7nRUV0Hihmyy0=
         }
 
         decode_plaintext = decode_obj.decrypt(recipient=recip)
-        print('Loopback plaintext:', decode_plaintext.hex())
+        self._logger.info('Loopback plaintext: %s', decode_plaintext.hex())
         self.assertEqual(content_plaintext, decode_plaintext)
 
-        print('Loopback CEK:', cbor2diag(decode_obj.key.encode()))
+        self._logger.info('Loopback CEK: %s', cbor2diag(decode_obj.key.encode()))
         self.assertIsInstance(decode_obj.key, SymmetricKey)
         self.assertEqual(cast(SymmetricKey, msg_obj.key).k, cast(SymmetricKey, decode_obj.key).k)
 
         target_dec[4] = content_ciphertext
         self._replace_crc(target_dec, target_dec[3])
         target_enc = cbor2.dumps(target_dec)
-        print('Target with ciphertext:', cbor2diag(target_enc))
+        self._logger.info('Target with ciphertext: %s', cbor2diag(target_enc))
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
         self._print_bundle(bundle)

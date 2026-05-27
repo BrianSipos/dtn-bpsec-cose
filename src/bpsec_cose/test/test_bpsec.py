@@ -62,15 +62,15 @@ class TestInputs(BaseTest):
         # Primary block
         prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
-        print('Primary Block: {}'.format(encode_diagnostic(prim_dec)))
-        print('Encoded: {}'.format(encode_diagnostic(prim_enc)))
+        self._logger.info('Primary Block: %s', encode_diagnostic(prim_dec))
+        self._logger.info('Encoded: %s', encode_diagnostic(prim_enc))
 
         # Security target block
         target_dec = self._get_target_item()
         target_enc = cbor2.dumps(target_dec)
         content_plaintext = target_dec[4]
-        print('Target Block: {}'.format(encode_diagnostic(target_dec)))
-        print('Plaintext: {}'.format(encode_diagnostic(content_plaintext)))
+        self._logger.info('Target Block: %s', encode_diagnostic(target_dec))
+        self._logger.info('Plaintext: %s', encode_diagnostic(content_plaintext))
 
         bundle = self._assemble_bundle([prim_enc, target_enc])
         self._print_bundle(bundle)
