@@ -1,6 +1,5 @@
 import cbor2
 import copy
-import os
 from pycose import headers, algorithms
 from pycose.keys import OKPKey, curves, keyops, keyparam
 from pycose.messages import Sign1Message
