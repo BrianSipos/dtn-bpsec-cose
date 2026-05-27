@@ -10,7 +10,6 @@ from .base import BaseTest
 class TestExample(BaseTest):
 
     def test(self):
-        print('\nTest: ' + __name__ + '.' + type(self).__name__)
         # 384-bit key (SHA-384 output size)
         key = SymmetricKey(
             k=(b'\x00' * 16),  # placeholder for below
@@ -22,25 +21,25 @@ class TestExample(BaseTest):
         )
         # work around pycose issue #133 of key length
         key.store[keyparam.SymKpK] = bytes.fromhex('3a5c74e32ab4558a99581ec3a816576812aabe895db04494cda25b711d7b5ed4077466e677860648412f1bf8c91d0624')
-        print('Key: {}'.format(cbor2diag(key.encode())))
+        self._logger.info('Key: %s', cbor2diag(key.encode()))
 
         # Primary block
         prim_dec = self._get_primary_item()
         prim_enc = cbor2.dumps(prim_dec)
-        print('Primary Block: {}'.format(cbor2diag(prim_enc)))
-        print('Encoded: {}'.format(prim_enc.hex()))
+        self._logger.info('Primary Block: %s', cbor2diag(prim_enc))
+        self._logger.info('Encoded: %s', prim_enc.hex())
 
         # Security target block
         target_dec = self._get_target_item()
         content_plaintext = target_dec[4]
-        print('Target Block: {}'.format(cbor2diag(cbor2.dumps(target_dec))))
-        print('Plaintext: {}'.format(content_plaintext.hex()))
+        self._logger.info('Target Block: %s', cbor2diag(cbor2.dumps(target_dec)))
+        self._logger.info('Plaintext: %s', content_plaintext.hex())
 
         # Combined AAD
         ext_aad_dec = self._get_aad_array()
         ext_aad_enc = dump_cborseq(ext_aad_dec)
-        print('External AAD: {}'.format(cbor2diag(ext_aad_enc)))
-        print('Encoded: {}'.format(ext_aad_enc.hex()))
+        self._logger.info('External AAD: %s', cbor2diag(ext_aad_enc))
+        self._logger.info('Encoded: %s', ext_aad_enc.hex())
 
         msg_obj = Mac0Message(
             phdr={
@@ -57,8 +56,8 @@ class TestExample(BaseTest):
 
         # COSE internal structure
         cose_struct_enc = msg_obj._mac_structure
-        print('COSE Structure: {}'.format(cbor2diag(cose_struct_enc)))
-        print('Encoded: {}'.format(cose_struct_enc.hex()))
+        self._logger.info('COSE Structure: %s', cbor2diag(cose_struct_enc))
+        self._logger.info('Encoded: %s', cose_struct_enc.hex())
 
         # Encoded message
         message_enc = msg_obj.encode(tag=False)
@@ -75,16 +74,16 @@ class TestExample(BaseTest):
             message_enc
         ))
         asb_enc = self._get_asb_enc(asb_dec)
-        print('ASB: {}'.format(cbor2diag(asb_enc)))
-        print('Encoded: {}'.format(asb_enc.hex()))
+        self._logger.info('ASB: %s', cbor2diag(asb_enc))
+        self._logger.info('Encoded: %s', asb_enc.hex())
 
         bpsec_dec = self._get_bpsec_item(
             block_type=BlockType.BIB,
             asb_dec=asb_dec,
         )
         bpsec_enc = cbor2.dumps(bpsec_dec)
-        print('BPSec block: {}'.format(cbor2diag(bpsec_enc)))
-        print('Encoded: {}'.format(bpsec_enc.hex()))
+        self._logger.info('BPSec block: %s', cbor2diag(bpsec_enc))
+        self._logger.info('Encoded: %s', bpsec_enc.hex())
 
         # Change from detached payload
         message_dec[2] = content_signature
@@ -94,7 +93,7 @@ class TestExample(BaseTest):
 
         verify_valid = decode_obj.verify_tag()
         self.assertTrue(verify_valid)
-        print('Loopback verify:', verify_valid)
+        self._logger.info('Loopback verify: %s', verify_valid)
 
         target_enc = cbor2.dumps(target_dec)
         bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
