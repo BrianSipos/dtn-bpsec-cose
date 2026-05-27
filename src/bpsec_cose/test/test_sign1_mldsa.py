@@ -13,20 +13,20 @@ SELFDIR = os.path.dirname(os.path.abspath(__file__))
 
 class TestExample(BaseTest):
 
+    _KEY_FILE_PATH = os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'src', 'ssl', 'private', 'node-sign-ml.pem')
+
     def _do_keygen(self):
         ''' One-time key generation helper '''
         from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA87PrivateKey
         from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption
         c_key = MLDSA87PrivateKey.generate()
         c_bytes = c_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
-        with open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'src',
-                              'ssl', 'private', 'node-sign-ml.pem'), 'wb') as outfile:
+        with open(self._KEY_FILE_PATH, 'wb') as outfile:
             outfile.write(c_bytes)
 
     def test(self):
         private_key = CoseKey.from_pem_private_key(
-            open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'src',
-                              'ssl', 'private', 'node-sign-ml.pem'), 'r').read(),
+            open(self._KEY_FILE_PATH, 'r').read(),
             optional_params={
                 keyparam.KpKid: b'ExampleA.10',
                 keyparam.KpAlg: algorithms.MlDsa87,
