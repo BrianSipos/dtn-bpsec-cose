@@ -4,6 +4,7 @@ import unittest
 import cbor2
 import crcmod.predefined
 import datetime
+import logging
 import textwrap
 from typing import List, Optional
 from bpsec_cose.bp import EndpointId
@@ -21,6 +22,11 @@ class BaseTest(unittest.TestCase):
     ''' ASB security source field '''
     _ADDL_PROTECTED: bytes = b''
     ''' ASB additional protected parameter (encoded) '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def _replace_crc(self, dec: list, crc_type: int) -> Optional[bytes]:
         ''' Replace the last item of a decoded array with its CRC-32C value.
@@ -148,19 +154,19 @@ class BaseTest(unittest.TestCase):
         '''
         phdr_enc = item[0]
         uhdr_enc = cbor2.dumps(item[1])
-        print('{} Protected: {}'.format(name, cbor2diag(phdr_enc)))
-        print('{} Encoded: {}'.format(name, phdr_enc.hex()))
-        print('{} Unprotected: {}'.format(name, cbor2diag(uhdr_enc)))
+        self._logger.info('%s Protected: %s', name, cbor2diag(phdr_enc))
+        self._logger.info('%s Encoded: %s', name, phdr_enc.hex())
+        self._logger.info('%s Unprotected: %s', name, cbor2diag(uhdr_enc))
 
     def _print_message(self, item: list, recipient_idx: Optional[int] = None) -> None:
         ''' Print a top-level COSE message.
         '''
-        print('Message: {}'.format(cbor2diag(cbor2.dumps(item))))
+        self._logger.info('Message: %s', cbor2diag(cbor2.dumps(item)))
         self._print_headers(item, 'Layer-1')
         if recipient_idx and recipient_idx in item:
             for (ix, rcpt) in enumerate(item[recipient_idx]):
                 self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
 
     def _print_bundle(self, bundle: bytes) -> None:
-        print('Total bundle: {}'.format(cbor2diag(bundle)))
-        print('Total bundle size {}:\n{}'.format(len(bundle), textwrap.fill(bundle.hex(), 68)))
+        self._logger.info('Total bundle: %s', cbor2diag(bundle))
+        self._logger.info('Total bundle size %d:\n%s', len(bundle), textwrap.fill(bundle.hex(), 68))
