@@ -165,7 +165,7 @@ class BaseTest(unittest.TestCase):
         self._print_headers(item, 'Layer-1')
         if recipient_idx and recipient_idx in item:
             for (ix, rcpt) in enumerate(item[recipient_idx]):
-                self._print_headers(rcpt, 'Layer-2 #%s', ix)
+                self._print_headers(rcpt, 'Layer-2 #{}'.format(ix))
 
     def _print_bundle(self, bundle: bytes) -> None:
         self._logger.info('Total bundle: %s', cbor2diag(bundle))
