@@ -8,11 +8,14 @@ acknowledgements
 AEAD
 AES
 alg
+APL
 ASB
+Babun
 Baumgaertner
 BCB
 BCP
 BIB
+BPA
 BPSec
 bstr
 btsd
@@ -72,6 +75,7 @@ IETF
 interoperable
 interoperation
 IPPT
+JHU
 KDF
 KDK
 KEK
@@ -84,6 +88,7 @@ Koisser
 LLC
 LSbit
 Lukas
+middleboxes
 NIST
 nonRepudiation
 OAEP
@@ -97,10 +102,12 @@ PKI
 pkix
 PKIX
 plaintext
+pre
 PSK
 PSS
 RESTful
 RKF
+RNG
 RSA
 RSAES
 serverAuth

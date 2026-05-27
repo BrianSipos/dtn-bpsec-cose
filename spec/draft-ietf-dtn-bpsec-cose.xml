@@ -91,10 +91,10 @@ The entire CDDL structure can be extracted from the XML version of this document
 The following initial fragment defines the top-level rules of this document's CDDL, including the ASB data structure with its parameter/result sockets and rules needed for validating the example CBOR content.
         </t>
         <sourcecode type="cddl">
-start = bpsec-cose-asb / external_aad /
+start = bpsec-cose-asb /
   primary-block / extension-block /
-  MAC_structure / Sig_structure / Enc_structure / COSE_KDF_Context /
-  COSE_KeySet
+  external_aad / COSE_KDF_Context /
+  MAC_structure / Sig_structure / Enc_structure / COSE_KeySet
         </sourcecode>
         <t>
 The definitions for the rules <tt>MAC_structure</tt>, <tt>Sig_structure</tt>, <tt>Enc_structure</tt>, and <tt>COSE_KeySet</tt> are taken from COSE <xref target="RFC9052"/>.
@@ -104,10 +104,88 @@ The BPSec specification <xref target="RFC9172"/> did not define its extension bl
         </t>
       </section>
       <section>
-        <name>Requirements Language</name>
+        <name>Terminology</name>
         <t>
 The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>", "<bcp14>REQUIRED</bcp14>", "<bcp14>SHALL</bcp14>", "<bcp14>SHALL NOT</bcp14>", "<bcp14>SHOULD</bcp14>", "<bcp14>SHOULD NOT</bcp14>", "<bcp14>RECOMMENDED</bcp14>", "<bcp14>NOT RECOMMENDED</bcp14>", "<bcp14>MAY</bcp14>", and "<bcp14>OPTIONAL</bcp14>" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
         </t>
+        <t>
+The following terms are taken from BPSec <xref target="RFC9172"/>.
+        </t>
+        <dl>
+          <dt>Security Operation:</dt>
+          <dd>
+The application of a given security service to a security target.
+A security operation is implemented by a security block.
+          </dd>
+          <dt>Security Context:</dt>
+          <dd>
+The set of assumptions, algorithms, configurations, and policies used to implement security services.
+Each BPSec security context is identified by a code point present in an ASB.
+          </dd>
+          <dt>Abstract Security Block (ASB):</dt>
+          <dd>
+The structure of a bundle integrity block (BIB) an a bundle confidentiality block (BCB).
+          </dd>
+          <dt>(Security) Parameter:</dt>
+          <dd>
+A context-specific option which applies to all security operations in an ASB.
+          </dd>
+          <dt>(Security) Result:</dt>
+          <dd>
+A context-specific output for a single security operation in an ASB.
+          </dd>
+          <dt>Security Source:</dt>
+          <dd>
+A BPA that adds a security block to a bundle.
+          </dd>
+          <dt>Security Acceptor:</dt>
+          <dd>
+A BPA that processes and dispositions one or more security blocks in a bundle.
+Security acceptors act as the endpoint of a security service represented in a security block.
+          </dd>
+          <dt>Security Verifier:</dt>
+          <dd>
+A BPA that verifies the data integrity of one or more security blocks in a bundle.
+Unlike security acceptors, security verifiers do not act as the endpoint of a security service, and they do not remove verified security blocks
+          </dd>
+        </dl>
+        <t>
+The following terms are taken from COSE <xref target="RFC9052"/> <xref target="RFC9053"/>.
+        </t>
+        <dl>
+          <dt>Additional Authenticated Data (AAD):</dt>
+          <dd>
+This is structured data defined by COSE to provide context inputs to integrity operations (signing or MAC) or additional data for confidentiality operations (encryption).
+A portion of the AAD is provided from outside of the COSE processor as "external AAD" bytes.
+          </dd>
+          <dt>Key Derivation Function (KDF) Context:</dt>
+          <dd>
+This is structure data defined by COSE to provide context inputs to key derivation functions.
+A portion of the KDF context is provided from outside of the COSE processor as "other" bytes.
+          </dd>
+          <dt>Key Identifier (KID):</dt>
+          <dd>
+A general purpose correlator for key material stored outside of COSE messages and referenced from within COSE messages.
+          </dd>
+          <dt>Initialization Vector (IV):</dt>
+          <dd>
+An input to authenticated encryption algorithms separate from the secret key, plaintext/ciphertext, or AAD.
+          </dd>
+        </dl>
+        <t>
+The following terms are specific to this document.
+        </t>
+        <dl>
+          <dt>Participating Nodes:</dt>
+          <dd>
+For each security operation, the collection of security source node and all possible security verifiers and acceptors.
+Different operations can have a different set of participating nodes.
+          </dd>
+          <dt>Additional Header Maps:</dt>
+          <dd>
+These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB.
+          </dd>
+        </dl>
       </section>
     </section>
     <section anchor="sec-bpsec-context">
@@ -667,7 +745,9 @@ KDF-SuppPubInfo-other = bstr .cborseq KDF-other-list
 
 KDF-other-list = [
     "BPSec",
-    security-source: eid
+    security-source: eid,
+    ; copy of additional-protected (or default empty bstr)
+    additional-protected
 ]
             </sourcecode>
           </figure>
@@ -779,7 +859,7 @@ The requirements of this profile still allow the use of potentially not-easily-i
         <t>
 The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-threat-algo-vuln"/>.
+It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
         </t>
         <t>
@@ -1263,9 +1343,8 @@ Any end-entity certificate associated with a BIB security source or BCB result r
     <section anchor="sec-pkix-profile">
       <name>PKIX Certificate Profile</name>
       <t>
-This section contains requirements on certificates used for the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
-The profile here mandates specific data to be present in CA and end-entity certificates but does not mandate any specific key types or signing algorithms to be used.
-Such details are left to algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0.
+This section contains requirements on public key certificates (PKCs) used with the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
+The profile here mandates specific data to be present in certificate authority (CA) and end-entity (EE) certificates but does not mandate any specific key types or signing algorithms to be used (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-ops-pkc"/>).
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1327,12 +1406,193 @@ Effectively this means that a BP node uses separate certificates for transport (
         </t>
       </section>
     </section>
+    <section anchor="sec-ops">
+      <name>Operational Considerations</name>
+      <t>
+This section explains various operational topics of this BPSec context, based on guidance of the IETF Operations and Management Area Working Group <xref target="RFC5706"/>.
+Many of these topics are related to capabilities that are not mandatory to use in the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>.
+Therefore, this section discusses when their uses is appropriate and when it is not.
+      </t>
+      <section>
+        <name>Understanding Participating Nodes</name>
+        <t>
+For each desired security operation, all security sources, verifiers, and acceptors which process that operation (<em>i.e.</em>, the participating nodes) need to implement and configure aspects of those operations which are carried as part of a security block (<em>i.e.</em>, BPSec parameters and results, COSE message types, and COSE header parameters) as well as aspects which are not part of the security block and are manged on each node (<em>e.g.</em>, key families and key stores, algorithm families and COSE algorithm processing).
+For most of the following subsections, understanding the participating nodes and what they each support is critical to managing the use of BPSec COSE operations.
+        </t>
+        <t>
+For example, if any security verifier along the path of a single security operation either does not implement or allow one of the COSE algorithm code points its verification will fail.
+Depending upon policy control in that node, it might delete the containing bundle entirely or at least remove the offending security operation.
+In either case, the security operation will not reach its desired acceptor and expected behavior will not occur.
+        </t>
+        <t>
+Beyond supporting algorithms, another critical aspect of all participating nodes is access to key material referenced by the security operation.
+If any participating node either does not have any needed key, or if a referencing key identifier is modified by an on-path attacker (see <xref target="sec-threat-unident-key"/>), or if the material itself is available but has expired (<em>e.g.</em>, PKIX validity time) then processing of the operation will fail.
+Similar to the example above, if key material is misaligned expected behavior will not occur.
+        </t>
+        <t>
+Operating in a PKIX environment adds additional challenges beyond simple knowledge of end-use key material.
+When participating nodes are expected to possess PKCs the use of shorted thumbprints ("x5t" header) can be used to avoid sending large duplicate certificate data.
+But if any participating node does not contain the full certificate chain needed for an operation, or if some portion of that chain fails <xref target="sec-context-auth-valid-cert">path validation</xref> then the situation of <xref target="sec-threat-notrust-key"/> occurs and the expected behavior will not occur.
+        </t>
+      </section>
+      <section anchor="sec-ops-alg-choice">
+        <name>Choice of Key and Algorithm Families</name>
+        <t>
+The <xref target="sec-COSE-profile">COSE profile</xref> and <xref target="sec-pkix-profile">PKIX profile</xref> in this document narrow down the wide variety of algorithm families and key-material families available within both the COSE and PKIX environments.
+The subsections under <xref target="sec-interop-alg"/> are organized by key family precisely because the choice of an acceptable key family narrows down the set of compatible COSE algorithms to a small number of options.
+        </t>
+        <t>
+It is expected that the ultimate choice of which families are used in actual security operations will be determined by a small number of least-common acceptable choices among the various BP nodes acting as source, verifier, or acceptor roles for those operations.
+Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
+        </t>
+        <t>
+For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available.
+If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available.
+In this case the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
+        </t>
+        <aside>
+          <t>
+There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging post-quantum algorithm needs.
+          </t>
+        </aside>
+        <t>
+Separate from the choice of desired COSE algorithm from the security source is a choice of allowed algorithm(s) to be enforced by security verifiers and acceptors.
+A verifier or acceptor which does not constrain allowed algorithms is vulnerable to a <xref target="sec-threat-downgrade">downgrade attack</xref>.
+        </t>
+      </section>
+      <section anchor="sec-ops-pkc">
+        <name>Public Keys and Certificates</name>
+        <t>
+Similar to how the choice of algorithm families is driven by administrative constraints, decisions regarding whether and how to use public key certificates with this BPSec context are expected to be heavily influenced by the needs and constraints of the administering entities.
+        </t>
+        <t>
+Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
+It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
+There are also algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0 conformance.
+        </t>
+        <t>
+For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
+        </t>
+      </section>
+      <section anchor="sec-ops-kid-choice">
+        <name>Choice of Key Identifiers</name>
+        <t>
+Similar to the algorithm family choice in <xref target="sec-ops-alg-choice"/>, the choice of which key identifier to use for a specific security operation (among those described in <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/>) is expected to be based on least-common acceptable choices among the set of participating nodes.
+        </t>
+        <t>
+For example if overall ASB and total bundle size are driving concerns, the use of short-length narrow-scoped "kid" could be more favorable over universally-unique (but longer) identifiers such as hash-based thumbprints <xref target="RFC9679"/>.
+Another example is if PKCs are available and pre-hashed for management reasons, then their thumbprints are readily available for "x5t" identifiers which can allow easy correlation between the ASB content, in-node logging, and network orchestration configuration.
+        </t>
+        <t>
+Many of the "conditional" header parameters in <xref target="tab-interop-hdrs"/> depend on the choice of acceptable key identifier for a particular security operation.
+Because of this, a node or mission with constraints on public key certificate use and identification will necessarily have a limited need for key-identifying parameters.
+        </t>
+        <t>
+In any case, an inherited requirement from COSE <xref section="3.1" target="RFC9052"/> is that "kid" values cannot be assumed by any processor to be unique and full validity of a COSE message depends on successful verification of (or decryption for) the entire message.
+        </t>
+      </section>
+      <section anchor="sec-ops-key-mgmt">
+        <name>General Key Management</name>
+        <t>
+The scope of this document explicitly excludes specifying management strategies or mechanisms for symmetric keys, asymmetric keys, and public key certificates.
+However, this document does provide recommendations and constraints regarding when to include <xref target="sec-asym-keys">certificates or thumbprints</xref>, <xref target="sec-pkix-multiple-certs">single-use keys</xref>, and considerations related to <xref target="sec-threat-overuse">key overuse</xref>.
+        </t>
+        <t>
+There is a broader concern, likely spanning multiple administrative domains, regarding how to distribute and manage keys and/or PKCs needed to support normal BPSec operations.
+This is also not unique to this COSE security context, and will apply equally to any security operations using equivalent key material or identity-binding credentials.
+        </t>
+        <t>
+Management of keys and certificates includes the entire life-cycle of those items, including distributing them to participating nodes, upkeep of time-limited items such as certificate chains, and decommissioning them after their effective lifetime has ended.
+        </t>
+      </section>
+      <section anchor="sec-ops-additional">
+        <name>Choice to use Additional Header Maps</name>
+        <t>
+The <xref target="sec-ASB-param-additional">additional header map parameters</xref> can be used to remove redundancies from multiple COSE messages in the same security block, but does not necessarily save encoded size (depending on if and which common header parameters are present in those COSE messages) and does add processing complexity to security verifiers and acceptors.
+        </t>
+        <t>
+Because these parameters are optional-to-use, a simplification which can apply within an administrative domain or across multiple domains is a restriction to avoid the use of additional header map parameters when they are not expected to provide any operational benefit.
+For BPSec entities, this does not imply that these parameters are optional-to-implement; they can still be present in security blocks received from unexpected sources.
+It is a more general implementation and configuration matter for how to handle unexpected or unwanted (but otherwise valid) security parameters in any node.
+        </t>
+        <t>
+Because the additional protected header parameter is included unconditionally in the <xref target="sec-secctx-aad">external AAD</xref>, it is handled equivalently to the in-COSE-layer protected header map.
+This means that the same considerations for including header parameters in either protected or unprotected in-COSE-layer header map apply to the additional header maps.
+Individual header parameters define their own requirements for protection when needed.
+        </t>
+      </section>
+      <section anchor="sec-ops-aad-scope">
+        <name>Choice of AAD Scope</name>
+        <t>
+The security source of every BPSec security operation using the COSE context can choose a specific <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> appropriate for that operation.
+        </t>
+        <t>
+The maximum AAD Scope, and default when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
+Together these tightly constrain the ability of an attacker to replay either the target or security block (see <xref target="sec-threat-block-replay"/>).
+        </t>
+        <t>
+The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source.
+        </t>
+        <t>
+For specific cases, possibly depending on how tightly coupled the cryptographic processing is with the BP and BPSec processing or what kind of block rearranging is expected to happen by middleboxes, the AAD Scope can be reduced to allow changes to either the security block or target block metadata.
+It is <bcp14>RECOMMENDED</bcp14> to always include the primary block (number zero) in the AAD Scope to protect against replay attacks.
+        </t>
+        <t>
+For other cases, where several blocks are expected to have similar lifetimes and there is a desire to cover them all by a single security operation, the AAD Scope can be expanded to include not just the target block but other blocks in the same bundle.
+These cases need more careful consideration (see <xref target="sec-threat-aad-mod"/>) due to the more complex inter-relationships between all of the blocks involved in such a security operation.
+        </t>
+      </section>
+      <section anchor="sec-ops-rng">
+        <name>Random and Unique Numbers for COSE</name>
+        <t>
+There are several points during processing when a security source must generate either random or unique numbers to satisfy cryptographic algorithm requirements.
+In all cases, the proper functioning of COSE assumes the source entity has a (pseudo-)random number generator (RNG) sufficient to meet the security needs of each algorithm.
+        </t>
+        <t>
+For the interoperability profile in <xref target="sec-interop-alg"/> these include:
+        </t>
+        <dl newline="true">
+          <dt>KID generation:</dt>
+          <dd>
+This is needed for cases where the KID is not generated in some deterministic way from the key itself (see <xref target="sec-ops-kid-choice"/>).
+Each KID value does not need to be universally unique, but is expected to be unique within the scope of each Security Source EID for the sake of logging and auditing.
+Reuse of KID values for a single Security Source is permitted but is <bcp14>NOT RECOMMENDED</bcp14> in order to avoid confusion of comparing traffic and node logs across time.
+          </dd>
+          <dt>IV generation:</dt>
+          <dd>
+This is needed for symmetric-key AEAD algorithms (A256GCM in this case).
+The value is either a direct "IV" parameter or as a "Base IV" from a COSE key paired with a "Partial IV" parameter.
+In either case, the algorithm requirement is for uniqueness of the key-and-IV pair not for randomness of the IV itself.
+The length of each full IV is determined by the AEAD algorithm.
+An IV or Partial IV <bcp14>MAY</bcp14> be generated by a deterministic mechanism associated with a specific content key only when the generating entity is the sole security source associated with that content key.
+          </dd>
+          <dt>KDF salt generation:</dt>
+          <dd>
+This is needed for KDF recipients (either direct+HKDF or the ECDH algorithms).
+In either case, similar to IV generation, the requirement for a salt is to be unique within its derivation context.
+Because of the KDF context defined in <xref target="sec-secctx-kdfctx"/>, this means the salt is unique for each parent key and Security Source EID.
+The length of each salt is recommended by COSE to be at least as large as the hash output for HKDF.
+A salt <bcp14>MAY</bcp14> be generated by a deterministic mechanism associated with a specific parent key (symmetric or ECDH-SS) only when the generating entity is the sole security source associated with that parent key.
+          </dd>
+          <dt>Unique content key generation:</dt>
+          <dd>
+This is needed for key-wrap recipients (either direct+A256KW or ECDH+A256KW or RSAES-OAEP algorithms).
+Although the requirement here is for uniqueness, the expected mechanism of generating ephemeral content keys is to use an RNG or a KDF internal to the security source.
+          </dd>
+          <dt>Ephemeral ECDH key generation:</dt>
+          <dd>
+This is needed for the ECDH-ES algorithms to ensure that the sender key is truly ephemeral and enable forward secrecy.
+Although the requirement here is for uniqueness, the expected mechanism of generating ephemeral ECDH keys is to use an RNG.
+          </dd>
+        </dl>
+      </section>
+    </section>
     <section anchor="sec-security">
       <name>Security Considerations</name>
       <t>
 This section separates security considerations into threat categories based on guidance of BCP 72 <xref target="RFC3552"/>.
       </t>
-      <section>
+      <section anchor="sec-threat-block-replay">
         <name>Threat: BPSec Block Replay</name>
         <t>
 The bundle's primary block contains fields which uniquely identify a bundle: the Source Node ID, Creation Timestamp, and fragment parameters (see <xref section="4.3.1" target="RFC9171"/>).
@@ -1423,12 +1683,28 @@ These limits are to avoid the ability of an on-path attacker to forge messages b
 For example, AES-GCM imposes a (large) limit on the number of forgery attempts  for a single key.
         </t>
         <t>
-Some algorithms are more or less vulnerable to reuse of pairs of key-and-initialization-vector.
+Some algorithms are more or less vulnerable to reuse of pairs of key-and-IV.
 These limits are also discussed in specifications that register COSE algorithm code points.
 For example, AES-GCM imposes a strict limit that a single pair never be used for more than one encryption operation.
         </t>
         <t>
 Specific details covering modern AEAD algorithms are documented and explained in a Crypto Forum Research Group draft <xref target="I-D.irtf-cfrg-aead-limits"/>.
+        </t>
+      </section>
+      <section anchor="sec-threat-downgrade">
+        <name>Threat: Algorithm Downgrade</name>
+        <t>
+The message and processing structure of COSE includes in-band algorithm identifiers as a protected header parameter.
+One possible attack on COSE generally is an on-path attacker manipulating an algorithm identifier to achieve a downgrade to an algorithm which is vulnerable to further attacks or collisions.
+        </t>
+        <t>
+For COSE algorithms which make use of a KDF, the <tt>COSE_KDF_Context</tt> includes as its first item the explicit algorithm identifier of the lower COSE layer to bind each KDF-using recipient to that lower layer algorithm.
+Other algorithms, such as those which use key wrapping (A256KW and ECDH+A256KW) or key encryption (RSAES-OAEP) do not bind the content key to the content encryption algorithm and are possibly vulnerable to a downgrade.
+        </t>
+        <t>
+Because this profile of COSE mandates the use of AEAD encryption algorithms for the COSE payload (layer 0) it is ensured that the content encryption algorithm is protected, but there is still a possibility that two different AEAD algorithms have a collision when the entire COSE message and its detached payload can be modified by an attacker.
+It is <bcp14>RECOMMENDED</bcp14> that verifiers and acceptors enforce narrow constraints on allowed COSE algorithms in all COSE layers.
+It is an implementation matter to choose and configure allowed algorithms on participating nodes.
         </t>
       </section>
       <section anchor="sec-threat-algo-vuln">
@@ -1448,7 +1724,7 @@ Because this security context uses whole COSE messages and inherits all COSE pro
 When public key certificates are used, all of the security considerations of <xref target="RFC5280"/> and any other narrowing PKIX profile apply to this security context.
         </t>
       </section>
-      <section>
+      <section anchor="sec-threat-aad-mod">
         <name>AAD-Covered Block Modification</name>
         <t>
 The <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> can be used to refer to any other block within the same bundle (by its unique block number) at the time the associated security operation is added to a bundle.
@@ -1697,10 +1973,12 @@ The value range is a bit position within an unsigned 64-bit integer.
           </front>
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
@@ -2400,8 +2678,8 @@ The keys used are shown in <xref target="fig-ex-encrypt-sym-hkdf-keys"/>, where 
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'd21023f8b11e116be2c1f5c9b116ae82cfea82e64810f08952c8
-9784dc3e220f'
+    / k / -1: h'9219317dd73fe13a4d40494aa3edade0d844f70475aeb558b9d6
+18f0388d82ad'
   }
 ]
 ]]></sourcecode>
@@ -2433,7 +2711,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-sym-
   [ / SuppPubInfo /
     256, / keyDataLength /
     <<{1: -11}>>, / protected /
-    <<"BPSec", [1, "//src/"]>> / other /
+    <<"BPSec", [1, "//src/"], ''>> / other /
   ]
 ]
 ]]></sourcecode>
@@ -2493,8 +2771,8 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   2, / CRC type /
-  h'b0a2f0a70a8be9d010a1191d47a2f257752852766fda', / ciphertext /
-  h'74d42000'
+  h'6d0664951176f40600518b5c32a2a2137871f1f045ad', / ciphertext /
+  h'd7042de5'
 ]
 ]]></sourcecode>
         </figure>
@@ -2506,8 +2784,8 @@ The final bundle is encoded as the following 187 octets in base-16:
 7372632f821b000000bd51281400001a000f42404482a081c9850c03000058578101
 03018201662f2f7372632f818205a2000120018181821860583b8443a10103a1054c
 6f3093eba5d85143c3dc484af6818343a1012aa2044a4578616d706c65412e363350
-2fa8c8352aea17faf7407271a5e90eb840860101000256b0a2f0a70a8be9d010a119
-1d47a2f257752852766fda4474d42000ff
+2fa8c8352aea17faf7407271a5e90eb8408601010002566d0664951176f40600518b
+5c32a2a2137871f1f045ad44d7042de5ff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-encrypt-ecc-kw">
@@ -2543,17 +2821,17 @@ c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
     / d / -4: h'7931af7cc3010ae457bcb8be100acdafab8492de633b20384c3e
 4de5e5e94899d9d9de25c04d6205ae6bb9385ce16ff7'
   },
+  { / derived KEK /
+    / kty / 1: 4, / symmetric /
+    / alg / 3: -5, / A256KW /
+    / k / -1: h'6f8e81f2cef6fb914ca4013a244a56a9ccd8f57d9eb481e94bec
+1d3e6b33af9d'
+  },
   { / wrapped CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
     / k / -1: h'13bf9cead057c0aca2c9e52471ca4b19ddfaf4c0784e3f3e8e39
 99dbae4ce45c'
-  },
-  { / derived KEK /
-    / kty / 1: 4, / symmetric /
-    / alg / 3: -5, / A256KW /
-    / k / -1: h'9cabb9ae2e9a0d5145aabbb0969a6f99099869cc109f7c232efb
-0bfd82204847'
   }
 ]
 ]]></sourcecode>
@@ -2585,7 +2863,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
   [ / SuppPubInfo /
     256, / keyDataLength /
     <<{1: -31}>>, / protected /
-    <<"BPSec", [1, "//src/"]>> / other /
+    <<"BPSec", [1, "//src/"], ''>> / other /
   ]
 ]
 ]]></sourcecode>
@@ -2634,8 +2912,8 @@ The ASB item for this encryption operation is shown in <xref target="fig-ex-encr
 bee72bf3409f68dddf208040a5fcbcbee74545741e2866cb2d'
               }
             },
-            h'5a3d85050c06d6a9ce0cfcc1abdc12380b9916096c8310d1bac5f6
-bfaa091c6f0e5f7d256dc54ae7' / key-wrapped /
+            h'40cbaff3538184a12ed3f3aee47f899342b642cc9d78d2db84c26b
+08b2d16eb8f162740a25b21f37' / key-wrapped /
           ]
         ]
       ]>>
@@ -2655,8 +2933,8 @@ The final bundle is encoded as the following 319 octets in base-16:
 a4010220022158302f88f095c45c96e377e18d717a5e6007ce8f6076ae82009d1637
 5e1b9abaa9497a4bde513be6c9b0e7dae96033968c45225830fd27656fbb97f789d6
 67f40d73b65ab362b22dd23bf492bee72bf3409f68dddf208040a5fcbcbee7454574
-1e2866cb2d58285a3d85050c06d6a9ce0cfcc1abdc12380b9916096c8310d1bac5f6
-bfaa091c6f0e5f7d256dc54ae78601010002561fd25f64a2ee33e774abe16700bcfd
+1e2866cb2d582840cbaff3538184a12ed3f3aee47f899342b642cc9d78d2db84c26b
+08b2d16eb8f162740a25b21f378601010002561fd25f64a2ee33e774abe16700bcfd
 9cf12ea5f7d8414447abdef0ff
         </sourcecode>
       </section>
@@ -2699,8 +2977,8 @@ c73b2431d4cdc040d66e8eb2dad731f7dca57108545c',
   { / derived CEK /
     / kty / 1: 4, / symmetric /
     / alg / 3: 3, / A256GCM /
-    / k / -1: h'aea6dec271aa36ecb887d7703b17ab66ff57a9d5eac76477d2c6
-575c90e27766'
+    / k / -1: h'044696106512bd01e479c9d836ae8ec0183096a689010d103f7d
+5e0109ab61d2'
   }
 ]
 ]]></sourcecode>
@@ -2732,7 +3010,7 @@ The recipient internal KDF context is shown in <xref target="fig-ex-encrypt-ecc-
   [ / SuppPubInfo /
     256, / keyDataLength /
     <<{1: -28}>>, / protected /
-    <<"BPSec", [1, "//src/"]>> / other /
+    <<"BPSec", [1, "//src/"], ''>> / other /
   ]
 ]
 ]]></sourcecode>
@@ -2793,8 +3071,8 @@ This ciphertext is different than the common one in <xref target="fig-ex-encrypt
   1, / block num /
   0, / flags /
   2, / CRC type /
-  h'39360d2a997bd9d35900d1040ef1e411666359e79474', / ciphertext /
-  h'73172a0c'
+  h'2ca0e0a335caf954c79f9e4c2c24016df09f662069c0', / ciphertext /
+  h'1631e85a'
 ]
 ]]></sourcecode>
         </figure>
@@ -2807,7 +3085,7 @@ The final bundle is encoded as the following 199 octets in base-16:
 03018201662f2f7372632f818205a200012001818182186058478443a10103a1054c
 6f3093eba5d85143c3dc484af6818344a101381ba3044a4578616d706c65412e3822
 4953656e646572412e3833502fa8c8352aea17faf7407271a5e90eb8408601010002
-5639360d2a997bd9d35900d1040ef1e411666359e794744473172a0cff
+562ca0e0a335caf954c79f9e4c2c24016df09f662069c0441631e85aff
         </sourcecode>
       </section>
       <section anchor="sec-example-ops-rsa-recip">
@@ -3271,7 +3549,8 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
     <section anchor="sec-doc-ack" numbered="false">
       <name>Acknowledgments</name>
       <t>
-Thanks to Lars Baumgaertner and Lukas Holst at the European Space Agency (ESA) and to David Koisser from SANCTUARY Systems GmbH for specification review and prototyping feedback. 
+Thanks to Lars Baumgaertner and Lukas Holst of the European Space Agency (ESA) for prototyping feedback.
+Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback. 
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
