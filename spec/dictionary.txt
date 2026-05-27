@@ -53,6 +53,7 @@ decrypting
 deterministically
 digitalSignature
 DOI
+DSA
 dtn
 DTN
 ECC
@@ -69,6 +70,7 @@ GCM
 GmbH
 HKDF
 HMAC
+HPKE
 IANA
 IESG
 IETF
@@ -79,6 +81,7 @@ JHU
 KDF
 KDK
 KEK
+KEM
 keyAgreement
 keyEncipherment
 keypair

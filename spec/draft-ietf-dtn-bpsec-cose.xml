@@ -31,7 +31,7 @@
     <abstract>
       <t>
 This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
-A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certificates are also defined for BPSec interoperation.
+A profile for COSE, focused on asymmetric-key algorithms, and for public key certificates are also defined for BPSec interoperation.
       </t>
     </abstract>
   </front>
@@ -1147,13 +1147,48 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tbody>
           </table>
           <t>
-When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
-When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE signature is generated with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
+When generating a BIB result from an RSA private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an RSA private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE signature is generated with an RSA private key, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
           </t>
           <t>
 When generating a BCB result from an RSA public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+          </t>
+        </section>
+        <section>
+          <name>ML Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the module-lattice-based (ML) algorithms in <xref target="tab-interop-algs-ml"/> if they will operate with ML key material.
+          </t>
+          <table anchor="tab-interop-algs-ml">
+            <name>ML Algorithms</name>
+            <thead>
+              <tr>
+                <th>BPSec Block</th>
+                <th>COSE Layer</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>ML-DSA-87</td>
+                <td>-50</td>
+                <td>CNSA 2.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
+When generating a BIB result from an ML private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an ML private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+          </t>
+          <t>
+Uses of ML keys for creating or consuming a BCB result are not supported by this profile.
+There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public-Key Encryption (HPKE).
           </t>
         </section>
       </section>
@@ -3550,7 +3585,7 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
       <name>Acknowledgments</name>
       <t>
 Thanks to Lars Baumgaertner and Lukas Holst of the European Space Agency (ESA) for prototyping feedback.
-Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback. 
+Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
