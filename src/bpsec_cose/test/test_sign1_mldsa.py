@@ -1,7 +1,8 @@
 import cbor2
+import copy
 import os
 from pycose import headers, algorithms
-from pycose.keys import EC2Key, keyops, keyparam
+from pycose.keys import CoseKey, keyops, keyparam
 from pycose.messages import Sign1Message
 from ..util import dump_cborseq, cbor2diag
 from ..bpsec import BlockType
@@ -12,7 +13,8 @@ SELFDIR = os.path.dirname(os.path.abspath(__file__))
 
 class TestExample(BaseTest):
 
-    def do_keygen(self):
+    def _do_keygen(self):
+        ''' One-time key generation helper '''
         from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA87PrivateKey
         from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption
         c_key = MLDSA87PrivateKey.generate()
@@ -22,8 +24,7 @@ class TestExample(BaseTest):
             outfile.write(c_bytes)
 
     def test(self):
-
-        private_key = EC2Key.from_pem_private_key(
+        private_key = CoseKey.from_pem_private_key(
             open(os.path.join(SELFDIR, '..', 'pki', 'data', 'nodes', 'src',
                               'ssl', 'private', 'node-sign-ml.pem'), 'r').read(),
             optional_params={
@@ -32,6 +33,9 @@ class TestExample(BaseTest):
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )
+        public_key = copy.deepcopy(private_key)
+        del private_key[keyparam.AKPKpPub]
+        del public_key[keyparam.AKPKpPriv]
         print('Private Key: {}'.format(cbor2diag(private_key.encode())))
 
         # Primary block
@@ -94,7 +98,7 @@ class TestExample(BaseTest):
 
         decode_obj = Sign1Message.from_cose_obj(message_dec, allow_unknown_attributes=False)
         decode_obj.external_aad = ext_aad_enc
-        decode_obj.key = private_key
+        decode_obj.key = public_key
 
         verify_valid = decode_obj.verify_signature(detached_payload=content_plaintext)
         self.assertTrue(verify_valid)

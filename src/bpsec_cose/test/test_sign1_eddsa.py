@@ -1,4 +1,6 @@
 import cbor2
+import copy
+import os
 from pycose import headers, algorithms
 from pycose.keys import OKPKey, curves, keyops, keyparam
 from pycose.messages import Sign1Message
@@ -21,6 +23,8 @@ class TestExample(BaseTest):
                 keyparam.KpKeyOps: [keyops.SignOp, keyops.VerifyOp],
             }
         )
+        public_key = copy.deepcopy(private_key)
+        del public_key[keyparam.OKPKpD]
         print('Private Key: {}'.format(cbor2diag(private_key.encode())))
 
         # Primary block
@@ -83,7 +87,7 @@ class TestExample(BaseTest):
 
         decode_obj = Sign1Message.from_cose_obj(message_dec, allow_unknown_attributes=False)
         decode_obj.external_aad = ext_aad_enc
-        decode_obj.key = private_key
+        decode_obj.key = public_key
 
         verify_valid = decode_obj.verify_signature(detached_payload=content_plaintext)
         self.assertTrue(verify_valid)
