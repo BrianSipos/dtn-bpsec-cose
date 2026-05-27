@@ -4,9 +4,13 @@ import binascii
 import copy
 import enum
 import io
+import logging
 import six
 import cbor2
 import cbor_diag
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def cbor2diag(data: bytes):
@@ -90,7 +94,7 @@ def encode_diagnostic(obj, **kwargs):
     elif obj is None:
         text = 'null'
     else:
-        self._logger.info('Unencodable value ({}): %s', type(obj), repr(obj))
+        LOGGER.error('Unencodable value (%s): %s', type(obj), repr(obj))
         text = None
     # prepend unconditionally
     if text and wsp_indent:

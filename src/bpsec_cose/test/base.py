@@ -28,7 +28,6 @@ class BaseTest(unittest.TestCase):
 
         self._logger = logging.getLogger(self.__class__.__name__)
 
-
     def _replace_crc(self, dec: list, crc_type: int) -> Optional[bytes]:
         ''' Replace the last item of a decoded array with its CRC-32C value.
         '''
