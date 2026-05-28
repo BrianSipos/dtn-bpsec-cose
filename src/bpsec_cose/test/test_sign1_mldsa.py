@@ -34,7 +34,6 @@ class TestExample(BaseTest):
             }
         )
         public_key = copy.deepcopy(private_key)
-        del private_key[keyparam.AKPKpPub]
         del public_key[keyparam.AKPKpPriv]
         self._logger.info('Private Key: %s', cbor2diag(private_key.encode()))
 
@@ -78,6 +77,7 @@ class TestExample(BaseTest):
         message_dec = cbor2.loads(message_enc)
         self._print_message(message_dec, recipient_idx=4)
         message_enc = cbor2.dumps(message_dec)
+        self._logger.info('Signature size: %d', len(message_dec[3]))
 
         # ASB structure
         asb_dec = self._get_asb_item((
