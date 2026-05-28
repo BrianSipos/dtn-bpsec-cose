@@ -31,7 +31,7 @@
     <abstract>
       <t>
 This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
-A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certificates are also defined for BPSec interoperation.
+A profile for COSE, focused on asymmetric-key algorithms, and for public key certificates are also defined for BPSec interoperation.
       </t>
     </abstract>
   </front>
@@ -179,11 +179,16 @@ The following terms are specific to this document.
           <dt>Participating Nodes:</dt>
           <dd>
 For each security operation, the collection of security source node and all possible security verifiers and acceptors.
-Different operations can have a different set of participating nodes.
+Different security operations can have a different set of participating nodes (see <xref target="sec-ops-participating"/>).
+          </dd>
+          <dt>Middlebox:</dt>
+          <dd>
+An intermediate BP node along a bundle's path between source and destination node, which may or may not be a participating node.
+A middlebox which is not a participating node can alter a bundle in ways which affect security operations (see <xref target="sec-ops-aad-scope"/> and <xref target="sec-threat-aad-mod"/>).
           </dd>
           <dt>Additional Header Maps:</dt>
           <dd>
-These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB.
+These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB (see <xref target="sec-ASB-param-additional"/> and <xref target="sec-ops-additional-hdrs"/>).
           </dd>
         </dl>
       </section>
@@ -1147,9 +1152,9 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tbody>
           </table>
           <t>
-When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
-When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE signature is generated with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
+When generating a BIB result from an RSA private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an RSA private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE signature is generated with an RSA private key, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
           </t>
           <t>
 When generating a BCB result from an RSA public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
@@ -1413,7 +1418,7 @@ This section explains various operational topics of this BPSec context, based on
 Many of these topics are related to capabilities that are not mandatory to use in the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>.
 Therefore, this section discusses when their uses is appropriate and when it is not.
       </t>
-      <section>
+      <section anchor="sec-ops-participating">
         <name>Understanding Participating Nodes</name>
         <t>
 For each desired security operation, all security sources, verifiers, and acceptors which process that operation (<em>i.e.</em>, the participating nodes) need to implement and configure aspects of those operations which are carried as part of a security block (<em>i.e.</em>, BPSec parameters and results, COSE message types, and COSE header parameters) as well as aspects which are not part of the security block and are manged on each node (<em>e.g.</em>, key families and key stores, algorithm families and COSE algorithm processing).
@@ -1446,9 +1451,9 @@ It is expected that the ultimate choice of which families are used in actual sec
 Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
         </t>
         <t>
-For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available.
-If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available.
-In this case the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
+For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available: ESP384 (-51).
+If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available: ECDH-ES+HKDF-512 (-26).
+In these cases the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
         </t>
         <aside>
           <t>
@@ -1461,14 +1466,14 @@ A verifier or acceptor which does not constrain allowed algorithms is vulnerable
         </t>
       </section>
       <section anchor="sec-ops-pkc">
-        <name>Public Keys and Certificates</name>
+        <name>Use of Public Key Certificates</name>
         <t>
 Similar to how the choice of algorithm families is driven by administrative constraints, decisions regarding whether and how to use public key certificates with this BPSec context are expected to be heavily influenced by the needs and constraints of the administering entities.
         </t>
         <t>
 Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
 It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
-There are also algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0 conformance.
+There are also algorithm-specific profiles, such as the one for CNSA 1.0 conformance <xref target="RFC8603"/>.
         </t>
         <t>
 For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
@@ -1505,8 +1510,8 @@ This is also not unique to this COSE security context, and will apply equally to
 Management of keys and certificates includes the entire life-cycle of those items, including distributing them to participating nodes, upkeep of time-limited items such as certificate chains, and decommissioning them after their effective lifetime has ended.
         </t>
       </section>
-      <section anchor="sec-ops-additional">
-        <name>Choice to use Additional Header Maps</name>
+      <section anchor="sec-ops-additional-hdrs">
+        <name>Use of Additional Header Maps</name>
         <t>
 The <xref target="sec-ASB-param-additional">additional header map parameters</xref> can be used to remove redundancies from multiple COSE messages in the same security block, but does not necessarily save encoded size (depending on if and which common header parameters are present in those COSE messages) and does add processing complexity to security verifiers and acceptors.
         </t>
@@ -1527,11 +1532,11 @@ Individual header parameters define their own requirements for protection when n
 The security source of every BPSec security operation using the COSE context can choose a specific <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> appropriate for that operation.
         </t>
         <t>
-The maximum AAD Scope, and default when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
+The default AAD Scope, used when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
 Together these tightly constrain the ability of an attacker to replay either the target or security block (see <xref target="sec-threat-block-replay"/>).
         </t>
         <t>
-The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source.
+The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source (by identity, not by any proof-of-possession).
         </t>
         <t>
 For specific cases, possibly depending on how tightly coupled the cryptographic processing is with the BP and BPSec processing or what kind of block rearranging is expected to happen by middleboxes, the AAD Scope can be reduced to allow changes to either the security block or target block metadata.
@@ -1728,7 +1733,7 @@ When public key certificates are used, all of the security considerations of <xr
         <name>AAD-Covered Block Modification</name>
         <t>
 The <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> can be used to refer to any other block within the same bundle (by its unique block number) at the time the associated security operation is added to a bundle.
-Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-secctx-aad">AAD value</xref> it will cause verification or acceptance of the containing security operation to fail.
+Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-secctx-aad">AAD value</xref>, including its removal, that will cause verification or acceptance of the security operation to fail.
         </t>
         <t>
 One reason why such a modification would be made is that the other block has an expected lifetime shorter than the security operation.
@@ -1736,13 +1741,28 @@ For example, a Previous Node block (<xref section="4.4.1" target="RFC9171"/>) is
 The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block with an expected lifetime shorter than the containing security operation.
         </t>
         <t>
-Another reason for a modification is that the other block is designed to be updated along the forwarding path.
-For example, a Hop Count block (<xref section="4.4.3" target="RFC9171"/>) is expected to be modified as the bundle is forwarded by each node.
-The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to be modified by intermediate nodes during the lifetime of the containing security operation.
+A reason for a block to be removed is if it has its block processing control flags (<xref section="4.2.4" target="RFC9171"/>) have the bit set indicating "Discard block if it can't be processed" and the block type or type-specific data cannot be handled by any node along the forwarding path.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block having block processing control flags with the bit set indicating "Discard block if it can't be processed" unless it is expected that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
         </t>
         <t>
-One reason for a block to be removed is if it has its block processing control flags (<xref section="4.2.4" target="RFC9171"/>) have the bit set indicating "Discard block if it can't be processed" and the block type or type-specific data cannot be handled by any node along the forwarding path.
-The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block having block processing control flags with the bit set indicating "Discard block if it can't be processed" unless it is known that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
+A reason for modification of a covered block metadata is when a middlebox chooses to modify its block processing control flags because of local policy.
+For example, a firewall which does not allow specific block flags to be set and forces them to not be set.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-metadata</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to have its block processing control flags modified by a middlebox during the lifetime of the containing security operation.
+        </t>
+        <t>
+A reason for modification of a covered BTSD is when the other block is designed to be updated along the forwarding path.
+For example, a Hop Count block (<xref section="4.4.3" target="RFC9171"/>) is expected to be modified as the bundle is forwarded by each node.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to have its BTSD modified by a middlebox during the lifetime of the containing security operation.
+        </t>
+        <t>
+The requirement conditions above apply only to closed networks with well-controlled forwarding topology and uniform block-type support.
+In open or evolving BP deployments, security sources cannot rely on expectations for the presence or capabilities of middleboxes.
+        </t>
+        <t>
+Compliance with the requirement conditions in this section is the responsibility of each security source.
+Because block processing control flags are included in AAD metadata, a middlebox cannot alter a bundle by adjusting flags on a covered block.
+A security verifier or acceptor that detects an AAD Scope reference to a block with the "Discard block if it
+can't be processed" flag set <xref section="4.2.4" target="RFC9171"/> <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception the bundle in accordance with local policy.
         </t>
       </section>
     </section>
