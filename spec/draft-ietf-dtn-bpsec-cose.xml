@@ -2014,6 +2014,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
@@ -3306,8 +3307,9 @@ e9a50d7bb23e26feb3cc1ea8828601010002561fd25f64a2ee33e774abe16700bcfd
         <name>ML Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with the signer having an ML-DSA-87 keypair identified by a "kid".
+The signing private key in <xref target="fig-ex-sign-ml-keys"/> elides the public parameter because they can be fully derived from the private parameter (which is a "seed" form in accordance with <xref section="4" target="RFC9964"/>).
         </t>
-        <figure>
+        <figure anchor="fig-ex-sign-ml-keys">
           <name>Example Keys</name>
           <sourcecode type="cbor-elide"><![CDATA[
 [
