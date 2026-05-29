@@ -31,7 +31,7 @@
     <abstract>
       <t>
 This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
-A profile for COSE, focused on asymmetric-keyed algorithms, and for PKIX certificates are also defined for BPSec interoperation.
+A profile for COSE, focused on asymmetric-key algorithms, and for public key certificates are also defined for BPSec interoperation.
       </t>
     </abstract>
   </front>
@@ -849,7 +849,7 @@ Using implied keys has an interoperability risk, see <xref target="sec-threat-un
 A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
         </t>
         <t>
-The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and RSA keypairs.
+The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs.
 The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
         </t>
@@ -1147,9 +1147,9 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
             </tbody>
           </table>
           <t>
-When generating a BIB result from an RSA keypair, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
-When a COSE_Sign or COSE_Sign1 is used with an RSA keypair, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
-When a COSE signature is generated with an RSA keypair, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
+When generating a BIB result from an RSA private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an RSA private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+When a COSE signature is generated with an RSA private key, the signature uses a PSS salt in accordance with <xref section="2" target="RFC8230"/>.
           </t>
           <t>
 When generating a BCB result from an RSA public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
@@ -2206,7 +2206,7 @@ The final bundle is encoded as the following 180 octets in base-16:
 656c6c6f444ec359d2ff
         </sourcecode>
       </section>
-      <section anchor="sec-example-ops-ec-sign">
+      <section anchor="sec-example-ops-ecc-sign">
         <name>ECC Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with the signer having a P-384 curve ECC keypair identified by a "kid".
@@ -2232,11 +2232,11 @@ d908a7a4239d476cfdfd74d6c68836488ad1e60b0e7d',
 ]]></sourcecode>
         </figure>
         <t>
-The internal COSE structure is shown in <xref target="fig-ex-sign-ec2-struct"/>.
+The internal COSE structure is shown in <xref target="fig-ex-sign-ecc-struct"/>.
 The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
 The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target-block"/>.
         </t>
-        <figure anchor="fig-ex-sign-ec2-struct">
+        <figure anchor="fig-ex-sign-ecc-struct">
           <name><tt>Sig_structure</tt> CBOR diagnostic</name>
           <sourcecode type="cbor"><![CDATA[
 [
@@ -2249,7 +2249,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
 ]
 ]]></sourcecode>
         </figure>
-        <figure anchor="fig-ex-sign-ec2-asb">
+        <figure anchor="fig-ex-sign-ecc-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor"><![CDATA[
 [1], / targets /
@@ -3353,7 +3353,7 @@ G+yV1TS0SvSXcVoJUhHjWSiy+/RVx2o=
       <section>
         <name>Signing Source End-Entity Certificate</name>
         <t>
-This end-entity certificate corresponds with the private key used for signing in <xref target="sec-example-ops-ec-sign"/>.
+This end-entity certificate corresponds with the private key used for signing in <xref target="sec-example-ops-ecc-sign"/>.
 It contains a SAN authenticating the single security source from that example, an EKU authorizing the identity, and a Key Usage authorizing the signing.
         </t>
         <figure>
