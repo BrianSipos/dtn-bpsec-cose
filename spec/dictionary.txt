@@ -5,6 +5,7 @@ acceptor's
 acceptors
 acknowledgement
 acknowledgements
+Adleman
 AEAD
 AES
 alg
@@ -109,12 +110,14 @@ pre
 PSK
 PSS
 RESTful
+Rivest
 RKF
 RNG
 RSA
 RSAES
 serverAuth
 SHA
+Shamir
 Sig
 SMI
 smime
