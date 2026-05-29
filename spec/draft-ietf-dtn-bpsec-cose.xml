@@ -841,17 +841,17 @@ When generating a BPSec result, security sources <bcp14>SHALL</bcp14> use only C
 When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp14> handle COSE labels with with a tstr value.
         </t>
         <t>
+The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs.
+The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
+The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms,  message, and recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
+        </t>
+        <t>
 When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
 When available, each COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last layer for all signatures or recipients.
 See <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/> for specifics about key identifiers.
 When a key identifier is not available, BPSec verifiers and acceptors <bcp14>SHALL</bcp14> use the Security Source and the Bundle Source to imply which keys can be used for security operations.
 Using implied keys has an interoperability risk, see <xref target="sec-threat-unident-key"/> for details.
-A BPSec security operation always occurs within the context of the immutable primary block with its parameters (specifically the Source Node ID) and the security block with its optional Security Source.
-        </t>
-        <t>
-The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs.
-The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
-The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms and message/recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
+A BPSec security operation always occurs within the context of an immutable primary block with its fields (specifically the Source Node ID) and an abstract security block (ASB) with its Security Source EID.
         </t>
       </section>
       <section anchor="sec-interop-alg">
