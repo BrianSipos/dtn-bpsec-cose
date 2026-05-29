@@ -730,9 +730,13 @@ The first part <bcp14>SHALL</bcp14> be the encoded CBOR text string "BPSec".
 The second part <bcp14>SHALL</bcp14> be the encoded Security Source EID associated with the ASB containing this security operation.
 This is a CBOR array of length 2 in accordance with <xref section="4.2.5.1" target="RFC9171"/>.
             </li>
+            <li>
+The third part <bcp14>SHALL</bcp14> be the encoded form of the <xref target="sec-ASB-param-additional">Additional Protected parameter</xref>.
+This is a definite-length CBOR byte string.
+            </li>
           </ol>
           <t>
-The Security Source EID in this data will be identical to that of the external AAD in <xref target="sec-secctx-aad"/>.
+The Security Source EID and Additional Protected parameter in this data will be identical to that of the external AAD in <xref target="sec-secctx-aad"/>.
           </t>
           <t>
 A CDDL representation of this data is shown below in <xref target="fig-KDF-other-CDDL"/>.
