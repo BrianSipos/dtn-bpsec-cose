@@ -97,6 +97,7 @@ OCSP
 PartyU
 PartyV
 PEM
+PKC
 pkcs
 PKCs
 PKI
