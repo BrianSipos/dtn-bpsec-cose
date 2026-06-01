@@ -843,6 +843,15 @@ A tailored policy on a more controlled network could relax the requirement on No
 This section contains requirements which apply to the use of COSE within the BPSec security context defined in this document.
 Other variations of COSE within BPSec can be used but are not expected to be interoperable or usable by all security verifiers and acceptors.
       </t>
+      <t>
+This interoperability profile supports using shared symmetric keys with modern key strengths, as well as using elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs when needed by security policy.
+The focus of this profile is to enable interoperation between participating nodes (security sources, verifiers, and acceptors) on an open network, where explicit COSE parameters make it easier for verifiers and acceptors to avoid assumptions and avoid out-of-band parameters.
+The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms, message, and recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
+      </t>
+      <t>
+This profile also enables the use of COSE algorithms that are not explicitly part of this interoperability minimum set, including future algorithms not yet registered as COSE code points.
+Using such algorithms requires only that all participating nodes are known to support each code point being used.
+      </t>
       <section anchor="sec-COSE-messages">
         <name>COSE Messages</name>
         <t>
@@ -850,12 +859,14 @@ When generating a BPSec result, security sources <bcp14>SHALL</bcp14> use only C
 When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp14> handle COSE labels with with a tstr value.
         </t>
         <t>
-The algorithms required by this profile support using shared symmetric keys using modern key strengths, with recommended algorithms to support elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs.
-The focus of this profile is to enable interoperation between security sources and acceptors on an open network, where more explicit COSE parameters make it easier for BPSec acceptors to avoid assumptions and avoid out-of-band parameters.
-The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms,  message, and recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
+The algorithms required by this profile can be combined in different ways depending on the needs of security sources.
+An example of combining with breadth is single COSE_Sign message which contains multiple signatures (in layer 1) from the same source but using different key families (to combine traditional and post-quantum signing algorithms).
+An example of combining with depth is a a single COSE_Encrypt message which uses a single shared content encryption key (CEK) for target encryption (layer 0) and multiple recipients (layer 1) using different key wrapping or encapsulation algorithms.
+COSE messages conforming to this profile <bcp14>SHALL</bcp14> be limited to no more than two layers.
+Future use cases could update this profile to expand that constraint, and non-interoperable private use cases can also relax that constraint.
         </t>
         <t>
-When used in a BPSec result, each COSE message <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
+COSE messages conforming to this profile <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
 When available, each COSE message <bcp14>SHALL</bcp14> contain a key identifier in the last layer for all signatures or recipients.
 See <xref target="sec-sym-keys"/> and <xref target="sec-asym-keys"/> for specifics about key identifiers.
 When a key identifier is not available, BPSec verifiers and acceptors <bcp14>SHALL</bcp14> use the Security Source and the Bundle Source to imply which keys can be used for security operations.
@@ -866,7 +877,7 @@ A BPSec security operation always occurs within the context of an immutable prim
       <section anchor="sec-interop-alg">
         <name>Interoperability Algorithms</name>
         <t>
-The minimum set of COSE algorithms needed for interoperability in non-constrained devices is listed in this section and organized by the type of associated key material.
+The minimum set of COSE algorithms needed for interoperability is listed in this section and organized by the family of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
 It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>.
 The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
@@ -1004,7 +1015,7 @@ The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the has
 This is consistent with COSE requirements on derived keys for HMAC but more strict to apply to all content keys used for HMAC.
           </t>
           <t>
-When generating a BCB result from a symmetric content encryption key (CEK), sources <bcp14>SHALL</bcp14> use a COSE_Encrypt0 message or a COSE_Encrypt with a direct recipient.
+When generating a BCB result from a symmetric CEK, sources <bcp14>SHALL</bcp14> use a COSE_Encrypt0 message or a COSE_Encrypt with a direct recipient.
 When generating a BCB result from one or more symmetric KEK or KDK, sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
