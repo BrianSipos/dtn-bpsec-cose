@@ -839,7 +839,7 @@ This section contains requirements which apply to the use of COSE within the BPS
 Other variations of COSE within BPSec can be used but are not expected to be interoperable or usable by all security verifiers and acceptors.
       </t>
       <t>
-This interoperability profile supports using shared symmetric keys with modern key strengths, as well as using elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs when needed by security policy.
+This interoperability profile supports using shared symmetric keys with modern key strengths, as well as asymmetric (public and private) keypairs when needed by security policy.
 The focus of this profile is to enable interoperation between participating nodes (security sources, verifiers, and acceptors) on an open network, where explicit COSE parameters make it easier for verifiers and acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms, message, and recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
       </t>
@@ -939,7 +939,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are not a super-set of those available in <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
+The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
             </t>
           </aside>
           <t>
@@ -1031,7 +1031,7 @@ When processing a COSE_Mac or COSE_Encrypt recipient, a security verifier or acc
         <section>
           <name>ECC Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the elliptic curve cryptography (ECC) algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
           </t>
           <aside>
             <t>
@@ -1119,7 +1119,7 @@ ECDH-ES can provide forward secrecy by using the ephemeral key only for single m
         <section>
           <name>RSA Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the Rivest–Shamir–Adleman (RSA) algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
           </t>
           <aside>
             <t>
@@ -1677,7 +1677,7 @@ Even when a security acceptor is operating properly an attacker can attempt to e
 An invalid certificate exploit could lead to higher-level security issues and/or denial of service to the Node ID being impersonated.
         </t>
         <t>
-There are many reasons, described in <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
+There are many reasons, described in PKIX specifications <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
 Validating a certificate is a complex task and can require network connectivity outside of the primary BP convergence layer network path(s) if a mechanism such as OCSP <xref target="RFC6960"/> is used by the CA.
 The configuration and use of particular certificate validation methods are outside of the scope of this document.
         </t>
