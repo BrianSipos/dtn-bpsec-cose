@@ -3660,7 +3660,7 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
       <name>Acknowledgments</name>
       <t>
 Thanks to Lars Baumgaertner and Lukas Holst of the European Space Agency (ESA) for prototyping feedback.
-Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback.
+Thanks to David Koisser of SANCTUARY Systems GmbH, Rick Taylor of Aalyria Technologies, and Leonardo Babun of JHU/APL for specification review and feedback.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
