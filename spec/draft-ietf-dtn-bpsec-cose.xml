@@ -895,8 +895,8 @@ A BPSec security operation always occurs within the context of an immutable prim
         <t>
 The minimum set of COSE algorithms needed for interoperability is listed in this section and organized by the family of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been finalized by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>.
-The full set of COSE algorithms available is managed at <xref target="IANA-COSE"/>.
+It also does not address post-quantum algorithms which have been published by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>).
+The full set of COSE algorithms available is managed by IANA <xref target="IANA-COSE"/>.
         </t>
         <t>
 Each algorithm in this profile is marked as being US CNSS CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
@@ -1232,7 +1232,7 @@ There are currently no COSE algorithm code points registered for either direct M
         <name>Needed Header Parameters</name>
         <t>
 The set of COSE header parameters needed for interoperability is listed in this section.
-The full set of COSE header parameters available is managed at <xref target="IANA-COSE"/>.
+The full set of COSE header parameters available is managed by IANA <xref target="IANA-COSE"/>.
         </t>
         <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the header parameters in <xref target="tab-interop-hdrs"/>.
@@ -1932,7 +1932,7 @@ It is an implementation matter to choose and configure allowed algorithms on par
 Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
         </t>
         <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been identified in <xref target="CNSA2"/> but are not yet available as COSE code points allocated by published standards.
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been published by NIST, and identified in <xref target="CNSA2"/>, but are not all available as COSE code points allocated by published standards.
         </t>
       </section>
       <section>
