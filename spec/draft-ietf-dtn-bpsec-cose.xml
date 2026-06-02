@@ -179,11 +179,16 @@ The following terms are specific to this document.
           <dt>Participating Nodes:</dt>
           <dd>
 For each security operation, the collection of security source node and all possible security verifiers and acceptors.
-Different operations can have a different set of participating nodes.
+Different security operations can have a different set of participating nodes (see <xref target="sec-ops-participating"/>).
+          </dd>
+          <dt>Middlebox:</dt>
+          <dd>
+An intermediate BP node along a bundle's path between source and destination node, which may or may not be a participating node.
+A middlebox which is not a participating node can alter a bundle in ways which affect security operations (see <xref target="sec-ops-aad-scope"/> and <xref target="sec-threat-aad-mod"/>).
           </dd>
           <dt>Additional Header Maps:</dt>
           <dd>
-These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB.
+These are parameters to the COSE context which allow de-duplicating header parameters from COSE messages in an ASB (see <xref target="sec-ASB-param-additional"/> and <xref target="sec-ops-additional-hdrs"/>).
           </dd>
         </dl>
       </section>
@@ -862,6 +867,7 @@ An example of combining with depth is a a single COSE_Encrypt message which uses
 All of the COSE algorithms needed by this profile can operate within COSE messages having one or two layers.
 The messages COSE_Sign1, COSE_Mac0, and COSE_Encrypt0 are by definition limited to one layer.
 The messages COSE_Signature, COSE_Mac, and COSE_Encrypt are by definition at least two layers (the content layer and signature/recipient layer).
+Security sources <bcp14>SHALL NOT</bcp14> produce COSE messages with more than two layers.
 Implementations of this profile <bcp14>MAY</bcp14> be limited to no more than two COSE message layers.
 Future use cases could update this profile to expand that minimum, and implementations are free to support larger depths.
         </t>
@@ -1478,7 +1484,7 @@ This section explains various operational topics of this BPSec context, based on
 Many of these topics are related to capabilities that are not mandatory to use in the profiles of <xref target="sec-COSE-profile"/> and <xref target="sec-pkix-profile"/>.
 Therefore, this section discusses when their uses is appropriate and when it is not.
       </t>
-      <section>
+      <section anchor="sec-ops-participating">
         <name>Understanding Participating Nodes</name>
         <t>
 For each desired security operation, all security sources, verifiers, and acceptors which process that operation (<em>i.e.</em>, the participating nodes) need to implement and configure aspects of those operations which are carried as part of a security block (<em>i.e.</em>, BPSec parameters and results, COSE message types, and COSE header parameters) as well as aspects which are not part of the security block and are manged on each node (<em>e.g.</em>, key families and key stores, algorithm families and COSE algorithm processing).
@@ -1491,7 +1497,7 @@ In either case, the security operation will not reach its desired acceptor and e
         </t>
         <t>
 Beyond supporting algorithms, another critical aspect of all participating nodes is access to key material referenced by the security operation.
-If any participating node either does not have any needed key, or if a referencing key identifier is modified by an on-path attacker (see <xref target="sec-threat-unident-key"/>), or if the material itself is available but has expired (<em>e.g.</em>, PKIX validity time) then processing of the operation will fail.
+If any participating node either does not have any needed key, or if a referencing key identifier is modified by an on-path attacker (see <xref target="sec-threat-unident-key"/>), or if the material itself is available but has expired (see <xref target="sec-ops-participating-time"/>) then processing of the operation will fail.
 Similar to the example above, if key material is misaligned expected behavior will not occur.
         </t>
         <t>
@@ -1499,6 +1505,14 @@ Operating in a PKIX environment adds additional challenges beyond simple knowled
 When participating nodes are expected to possess PKCs the use of shorted thumbprints ("x5t" header) can be used to avoid sending large duplicate certificate data.
 But if any participating node does not contain the full certificate chain needed for an operation, or if some portion of that chain fails <xref target="sec-context-auth-valid-cert">path validation</xref> then the situation of <xref target="sec-threat-notrust-key"/> occurs and the expected behavior will not occur.
         </t>
+        <section anchor="sec-ops-participating-time">
+          <name>Time Keeping</name>
+          <t>
+A special consideration about the participating nodes is the ability to synchronize their time keepers to a sufficient accuracy.
+In a PKIX environment this is needed as part of PKC path validation to ensure that all certificates in a path are valid at the reference time (bundle creation time as defined in <xref target="sec-context-auth-valid-cert"/>).
+Even in a non-PKIX environment, there is still an expectation that shared keys will have an associated validity time limit used to control time-variant security policy or an associated data volume limit to avoid <xref target="sec-threat-overuse">key overuse</xref>.
+          </t>
+        </section>
       </section>
       <section anchor="sec-ops-multi-sig">
         <name>Use of Multiple Signatures</name>
@@ -1564,9 +1578,9 @@ It is expected that the ultimate choice of which families are used in actual sec
 Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
         </t>
         <t>
-For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available.
-If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available.
-In this case the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
+For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available: ESP384 (-51).
+If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available: ECDH-ES+HKDF-512 (-26).
+In these cases the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
         </t>
         <aside>
           <t>
@@ -1579,14 +1593,14 @@ A verifier or acceptor which does not constrain allowed algorithms is vulnerable
         </t>
       </section>
       <section anchor="sec-ops-pkc">
-        <name>Public Keys and Certificates</name>
+        <name>Use of Public Key Certificates</name>
         <t>
 Similar to how the choice of algorithm families is driven by administrative constraints, decisions regarding whether and how to use public key certificates with this BPSec context are expected to be heavily influenced by the needs and constraints of the administering entities.
         </t>
         <t>
 Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
 It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
-There are also algorithm-specific profiles such as <xref target="RFC8603"/> for CNSA 1.0 conformance.
+There are also algorithm-specific profiles, such as the one for CNSA 1.0 conformance <xref target="RFC8603"/>.
         </t>
         <t>
 For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
@@ -1623,8 +1637,8 @@ This is also not unique to this COSE security context, and will apply equally to
 Management of keys and certificates includes the entire life-cycle of those items, including distributing them to participating nodes, upkeep of time-limited items such as certificate chains, and decommissioning them after their effective lifetime has ended.
         </t>
       </section>
-      <section anchor="sec-ops-additional">
-        <name>Choice to use Additional Header Maps</name>
+      <section anchor="sec-ops-additional-hdrs">
+        <name>Use of Additional Header Maps</name>
         <t>
 The <xref target="sec-ASB-param-additional">additional header map parameters</xref> can be used to remove redundancies from multiple COSE messages in the same security block, but does not necessarily save encoded size (depending on if and which common header parameters are present in those COSE messages) and does add processing complexity to security verifiers and acceptors.
         </t>
@@ -1645,11 +1659,11 @@ Individual header parameters define their own requirements for protection when n
 The security source of every BPSec security operation using the COSE context can choose a specific <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> appropriate for that operation.
         </t>
         <t>
-The maximum AAD Scope, and default when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
+The default AAD Scope, used when no parameter is present, binds the security operation to the primary block of the bundle, the security block metadata and Security Source EID for the operation, and the target block metadata.
 Together these tightly constrain the ability of an attacker to replay either the target or security block (see <xref target="sec-threat-block-replay"/>).
         </t>
         <t>
-The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source.
+The minimum AAD Scope still includes the Security Source EID to ensure that the operation is always bound to its source (by identity, not by any proof-of-possession).
         </t>
         <t>
 For specific cases, possibly depending on how tightly coupled the cryptographic processing is with the BP and BPSec processing or what kind of block rearranging is expected to happen by middleboxes, the AAD Scope can be reduced to allow changes to either the security block or target block metadata.
@@ -1659,6 +1673,93 @@ It is <bcp14>RECOMMENDED</bcp14> to always include the primary block (number zer
 For other cases, where several blocks are expected to have similar lifetimes and there is a desire to cover them all by a single security operation, the AAD Scope can be expanded to include not just the target block but other blocks in the same bundle.
 These cases need more careful consideration (see <xref target="sec-threat-aad-mod"/>) due to the more complex inter-relationships between all of the blocks involved in such a security operation.
         </t>
+        <section>
+          <name>Covered Block Life Cycle Examples</name>
+          <t>
+This section contains examples which illustrate the effect and side-effects of AAD covering blocks beyond than the default scope.
+The situations illustrated in these examples can arise when security operations are sourced and accepted throughout a bundle's lifetime as it traverses across different administrative and security domains.
+          </t>
+          <t>
+In these examples, the edge-ward nodes (N10, N11, N12, and N13) are operated by one administrative domain and the interior nodes (N20, N21, N22) are operated by a different domain as part of a transit network.
+For the sake of simplicity, because this example is not about routing or time variance, these nodes are connected in a linear topology aligned with a single bundle flow from N10 to N13.
+          </t>
+          <figure anchor="fig-aad-scope-example-topo">
+            <name>Simplified linear path topology</name>
+            <artwork align="center" type="ascii-art"><![CDATA[
+   User net         Transit net        User net
+  .---------.    .--------------.    .---------.
+ /           \  /                \  /           \
+|  N10...N11......N20...N21...N22.....N12...N13  |
+ \           /  \                /  \           /
+  '---------'    '--------------'    '---------'
+]]></artwork>
+          </figure>
+          <t>
+The two examples in this section refer to the following set of security operations in two security blocks.
+          </t>
+          <ul>
+            <li>Block number 2: a BIB containing two security operations targeting the primary block and the payload block. These operations are added at the bundle source (N10) and are intended to have a lifetime identical to the bundle itself (accepted at destination N13). They also have verifiers in routers N11 and N12.</li>
+            <li>Block number 3: a BIB containing one operation covering (either as target or as AAD) block number 2 and the payload block. This operation has a different set of participating nodes: it is added by some gateway middlebox (N20) as it enters the transit network, is verified by N21, and is accepted by N22 (which results in block removal) as it leaves the transit network.</li>
+          </ul>
+          <t>
+This is depicted in <xref target="fig-aad-scope-example-success"/> with an abstract timeline indicating both wall-clock time and forwarding-path progress.
+In this situation, all security operation verification (indicated by "*") and acceptance (causing removal indicated by "R") succeed and the security behaves as expected.
+          </t>
+          <figure anchor="fig-aad-scope-example-success">
+            <name>Successful security timeline</name>
+            <artwork align="center" type="ascii-art"><![CDATA[
++-----------+
+|Primary #0 +-------------------------------------------->
++-----------+
+      |       +-----------+
+      |       | BIB    #3 +---------*-------R
+      |       +-----------+         |       |
++-----------+       |               |       |
+| BIB    #2 +--*----------------------------------*----R
++-----------+  |    |               |       |     |    |
++-----------+  |    |               |       |     |    |
+|Payload #1 +-------------------------------------------->
++-----------+  |    |               |       |     |    |
+      |        |    |               |       |     |    |
+------S--------V----S---------------V-------A-----V----A->
+     N10      N11  N20             N21     N22   N12  N13
+                       Timeline
+]]></artwork>
+          </figure>
+          <t>
+In an alternative example of <xref target="fig-aad-scope-example-failure"/> there is a middlebox (N30) which accepts (or simply removes) one of the security operations within block number 2 during the lifetime of covering block number 3.
+Because the middlebox removes the operation it alters the BTSD of block number 2 to remove the associated target and results from its ASB.
+Later verification of covering security block number 3 will fail (indicated by "X").
+Depending upon security policy, the entire bundle might be deleted by N21 or N22 and never progress further along the path.
+This second example results in security failure, but it is also caused by a middlebox affecting the lifetime of a security operation outside of its intended use.
+          </t>
+          <figure anchor="fig-aad-scope-example-failure">
+            <name>Failing security timeline</name>
+            <artwork align="center" type="ascii-art"><![CDATA[
++-----------+
+|Primary #0 +-------------------------------------------->
++-----------+
+      |       +-----------+
+      |       | BIB    #3 +---------X-------X
+      |       +-----------+         |       |
++-----------+       |               |       |
+| BIB    #2 +--*-------------M--------------------*----R
++-----------+  |    |        |      |       |     |    |
++-----------+  |    |        |      |       |     |    |
+|Payload #1 +-------------------------------------------->
++-----------+  |    |        |      |       |     |    |
+      |        |    |        |      |       |     |    |
+------S--------V----S--------A------V-------A-----V----A->
+     N10      N11  N20      N30    N21     N22   N12  N13
+                       Timeline
+]]></artwork>
+          </figure>
+          <t>
+Although these examples depict a linear topology with a predictable path, the logic of multiple interacting security domains is not confined to a linear situation.
+The same logic can apply when using either group symmetric keys (distributed to all participating nodes) with MAC integrity or using PKIX certificates (distributed to participating nodes) with signature integrity.
+In those cases the path can be arbitrary and any intermediate node in each security domain can act as an integrity verifier (for those security operations meant for its security domain).
+          </t>
+        </section>
       </section>
       <section anchor="sec-ops-rng">
         <name>Random and Unique Numbers for COSE</name>
@@ -1846,7 +1947,7 @@ When public key certificates are used, all of the security considerations of <xr
         <name>AAD-Covered Block Modification</name>
         <t>
 The <xref target="sec-ASB-param-AAD-scope">AAD Scope parameter</xref> can be used to refer to any other block within the same bundle (by its unique block number) at the time the associated security operation is added to a bundle.
-Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-secctx-aad">AAD value</xref> it will cause verification or acceptance of the containing security operation to fail.
+Because of this, if any block within the AAD coverage is modified (by any node along the bundle's forwarding path) in a way which affects the generated <xref target="sec-secctx-aad">AAD value</xref>, including its removal, that will cause verification or acceptance of the security operation to fail.
         </t>
         <t>
 One reason why such a modification would be made is that the other block has an expected lifetime shorter than the security operation.
@@ -1854,13 +1955,29 @@ For example, a Previous Node block (<xref section="4.4.1" target="RFC9171"/>) is
 The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block with an expected lifetime shorter than the containing security operation.
         </t>
         <t>
-Another reason for a modification is that the other block is designed to be updated along the forwarding path.
-For example, a Hop Count block (<xref section="4.4.3" target="RFC9171"/>) is expected to be modified as the bundle is forwarded by each node.
-The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to be modified by intermediate nodes during the lifetime of the containing security operation.
+A reason for a block to be removed is if it has its block processing control flags (<xref section="4.2.4" target="RFC9171"/>) have the flag set indicating "Discard block if it can't be processed" and the block type or type-specific data cannot be handled by any node along the forwarding path.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block having block processing control flags with the flag set indicating "Discard block if it can't be processed" unless it is expected that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
         </t>
         <t>
-One reason for a block to be removed is if it has its block processing control flags (<xref section="4.2.4" target="RFC9171"/>) have the bit set indicating "Discard block if it can't be processed" and the block type or type-specific data cannot be handled by any node along the forwarding path.
-The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block having block processing control flags with the bit set indicating "Discard block if it can't be processed" unless it is known that all possible receiving nodes can process the associated block type during the lifetime of the containing security operation.
+A reason for modification of an AAD-covered block metadata is when a middlebox chooses to modify its block processing control flags because of local policy.
+For example, a firewall which does not allow specific block flags to be set and forces them to not be set.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-metadata</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to have its block processing control flags modified by a middlebox during the lifetime of the containing security operation.
+        </t>
+        <t>
+A reason for modification of an AAD-covered BTSD is when the other block is designed to be updated along the forwarding path.
+For example, a Hop Count block (<xref section="4.4.3" target="RFC9171"/>) is expected to be modified as the bundle is forwarded by each node.
+Another example is an other BIB or BCB containing a security operation which is expected to be accepted (<em>i.e.</em>, removed from the other security block) by some middlebox independently of the AAD-covering security operation.
+The AAD Scope parameter <bcp14>SHALL NOT</bcp14> reference any other block using the flag <tt>AAD-btsd</tt> (<xref target="tab-AAD-scope-flags"/>) if that other block is expected to have its BTSD modified by a middlebox during the lifetime of the containing security operation.
+        </t>
+        <t>
+The requirement conditions above apply only to closed networks with well-controlled forwarding topology and uniform block-type support.
+In open or evolving BP deployments, security sources cannot rely on expectations for the presence or capabilities of middleboxes.
+        </t>
+        <t>
+Compliance with the requirement conditions in this section is the responsibility of each security source.
+Because block processing control flags are included in AAD metadata, a middlebox cannot alter a bundle by adjusting flags on an AAD-covered block.
+A security verifier or acceptor that detects an AAD Scope reference to a block with the "Discard block if it
+can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception the bundle in accordance with local policy.
         </t>
       </section>
     </section>
@@ -3652,11 +3769,11 @@ X509v3 extensions:
         CA:TRUE, pathlen:0
     X509v3 Key Usage: critical
         Certificate Sign, CRL Sign
-    X509v3 Extended Key Usage: 
+    X509v3 Extended Key Usage:
         1.3.6.1.5.5.7.3.35
-    X509v3 Subject Key Identifier: 
+    X509v3 Subject Key Identifier:
         1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
-    X509v3 Authority Key Identifier: 
+    X509v3 Authority Key Identifier:
         1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
@@ -3728,9 +3845,9 @@ X509v3 extensions:
         othername: 1.3.6.1.5.5.7.8.11::dtn://src/
     X509v3 Key Usage: critical
         Digital Signature
-    X509v3 Extended Key Usage: 
+    X509v3 Extended Key Usage:
         1.3.6.1.5.5.7.3.35
-    X509v3 Authority Key Identifier: 
+    X509v3 Authority Key Identifier:
         1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
@@ -3791,9 +3908,9 @@ X509v3 extensions:
         othername: 1.3.6.1.5.5.7.8.11::dtn://dst/
     X509v3 Key Usage: critical
         Key Agreement
-    X509v3 Extended Key Usage: 
+    X509v3 Extended Key Usage:
         1.3.6.1.5.5.7.3.35
-    X509v3 Authority Key Identifier: 
+    X509v3 Authority Key Identifier:
         1B:77:33:BE:83:75:66:6A:75:86:22:F2:AB:0A:17:60:3F:42:56:03
           </sourcecode>
         </figure>
@@ -3890,7 +4007,7 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
       <name>Acknowledgments</name>
       <t>
 Thanks to Lars Baumgaertner and Lukas Holst of the European Space Agency (ESA) for prototyping feedback.
-Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback.
+Thanks to David Koisser of SANCTUARY Systems GmbH, Rick Taylor of Aalyria Technologies, and Leonardo Babun of JHU/APL for specification review and feedback.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">

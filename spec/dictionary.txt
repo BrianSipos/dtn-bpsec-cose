@@ -1,5 +1,6 @@
 aad
 AAD
+Aalyria
 acceptor
 acceptor's
 acceptors
@@ -92,6 +93,7 @@ Koisser
 LLC
 LSbit
 Lukas
+middlebox
 middleboxes
 NIST
 nonRepudiation
@@ -100,6 +102,7 @@ OCSP
 PartyU
 PartyV
 PEM
+PKC
 pkcs
 PKCs
 PKI
