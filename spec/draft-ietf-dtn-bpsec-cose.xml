@@ -1681,7 +1681,7 @@ The situations illustrated in these examples can arise when security operations 
           </t>
           <t>
 In these examples, the edge-ward nodes (N10, N11, N12, and N13) are operated by one administrative domain and the interior nodes (N20, N21, N22) are operated by a different domain as part of a transit network.
-For the sake of simplicity, because this example is not about routing or time variance, these nodes are connected in a linear topology aligned with a single bundle flow.
+For the sake of simplicity, because this example is not about routing or time variance, these nodes are connected in a linear topology aligned with a single bundle flow from N10 to N13.
           </t>
           <figure anchor="fig-aad-scope-example-topo">
             <name>Simplified linear path topology</name>
@@ -1727,10 +1727,11 @@ In this situation, all security operation verification (indicated by "*") and ac
 ]]></artwork>
           </figure>
           <t>
-In an alternative example of <xref target="fig-aad-scope-example-failure"/> there is a middlebox (N30) which accepts one of the security operations within block number 2 during the lifetime of covering block number 3.
-Because the middlebox accepts the operation it alters the BTSD of block number 2 to remove the associated target and results from its ASB.
+In an alternative example of <xref target="fig-aad-scope-example-failure"/> there is a middlebox (N30) which accepts (or simply removes) one of the security operations within block number 2 during the lifetime of covering block number 3.
+Because the middlebox removes the operation it alters the BTSD of block number 2 to remove the associated target and results from its ASB.
 Later verification of covering security block number 3 will fail (indicated by "X").
 Depending upon security policy, the entire bundle might be deleted by N21 or N22 and never progress further along the path.
+This second example results in security failure, but it is also caused by a middlebox affecting the lifetime of a security operation outside of its intended use.
           </t>
           <figure anchor="fig-aad-scope-example-failure">
             <name>Failing security timeline</name>
@@ -1753,6 +1754,11 @@ Depending upon security policy, the entire bundle might be deleted by N21 or N22
                        Timeline
 ]]></artwork>
           </figure>
+          <t>
+Although these exmaples depict a linear topology with a predictable path, the logic of multiple interacting security domains is not confined to a linear situation.
+The same logic can apply when using either group symmetric keys (distributed to all participating nodes) with MAC integrity or using PKIX certificates (again distributed to participating nodes) with signature integrity.
+In those cases the path can be arbitrary and any intermediate node in each security domain can act as an integrity verifier (for those security operations meant for its security domain).
+          </t>
         </section>
       </section>
       <section anchor="sec-ops-rng">
