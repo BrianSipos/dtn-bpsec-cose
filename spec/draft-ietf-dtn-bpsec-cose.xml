@@ -1463,6 +1463,53 @@ Even in a non-PKIX environment, there is still an expectation that shared keys w
           </t>
         </section>
       </section>
+      <section anchor="sec-ops-multi-sig">
+        <name>Use of Multiple Signatures</name>
+        <t>
+The COSE profile in this document allows the use of COSE_Sign messages when multiple signatures are to be present in a single result, but it does not mandate when or why multiple signatures would be used by a security source.
+The following subsections give some examples of their use.
+        </t>
+        <section anchor="sec-ops-multi-sig-creds">
+          <name>Multiple Credentials</name>
+          <t>
+One possible need for multiple signatures is when the same security source is identified by multiple credentials (<em>i.e.</em>, EE PKCs) and thus associated with multiple private signing keys resulting in multiple distinct signatures (with associated public key identifiers).
+This need could manifest when the participating nodes (and their credentials) span multiple security or administrative domains, and a single security operation needs to be verified by all of the nodes.
+This could also manifest during overlapping credential/key validity time intervals, when an older credential is about to expire and a new credential has become valid, and not all participating nodes can be guaranteed to have either the old or new credential but they each have one credential.
+          </t>
+        </section>
+        <section>
+          <name>Multiple Algorithms</name>
+          <t>
+Another possible need for multiple signatures is to provide different signing algorithms for the same security operation.
+This could be because not all of the participating nodes support the same algorithms but there is a set that is known to be supported by all nodes.
+This could also be used to provide "dual signatures" (one traditional and one post-quantum) <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/> for a single target, although this form of signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set (meaning an on-path attacker can simply remove one or more of the signatures).
+          </t>
+        </section>
+      </section>
+      <section anchor="sec-ops-multi-recip">
+        <name>Use of Multiple Recipients</name>
+        <t>
+The COSE profile in this document allows the use of COSE_Mac and COSE_Encrypt messages when multiple recipients are to be present in a single result, but it does not mandate when or why multiple recipients would be used by a security source.
+The following subsections give some examples of their use.
+        </t>
+        <t>
+All of these multiple-recipient cases require the recipient layer to use key wrapping/encryption of the same content key, which means that the recipient algorithms cannot use a KDF as that would derive a different key for each recipient.
+        </t>
+        <section anchor="sec-ops-multi-recip-creds">
+          <name>Multiple Credentials</name>
+          <t>
+One possible need for multiple recipients is when the same security acceptor is identified by multiple credentials (<em>i.e.</em>, EE PKCs) and thus associated with multiple private unwrapping/decryption keys resulting in multiple distinct wrapped keys (with associated public key identifiers).
+This situation could occur for the same reasons as the multi-credential use case for signing in <xref target="sec-ops-multi-sig-creds"/>.
+          </t>
+        </section>
+        <section anchor="sec-ops-multi-recip-nodes">
+          <name>Intermediate Verifying Nodes</name>
+          <t>
+The simple case of point-to-point confidentiality involves a shared secret between exactly two participating nodes (the source and acceptor).
+When there are intermediate nodes that need to be verifiers of the operation and group keying is not available, one option is to use a single CEK for the operation and then wrap/encrypt the CEK using multiple recipients each directed at a single verifying or accepting node.
+          </t>
+        </section>
+      </section>
       <section anchor="sec-ops-alg-choice">
         <name>Choice of Key and Algorithm Families</name>
         <t>
@@ -2104,6 +2151,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-pquip-hybrid-signature-spectrums.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
