@@ -855,7 +855,7 @@ When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp
         </t>
         <t>
 The algorithms required by this profile can be combined in different ways depending on the needs of security sources.
-An example of combining with breadth is single COSE_Sign message which contains multiple signatures (in layer 1) from the same source but using different key families (to combine traditional and post-quantum signing algorithms).
+An example of combining with breadth is single COSE_Sign message which contains multiple signatures (in layer 1) from the same source but using different key families (see <xref target="sec-ops-multi-sig"/> for more detail).
 An example of combining with depth is a a single COSE_Encrypt message which uses a single shared content encryption key (CEK) for target encryption (layer 0) and multiple recipients (layer 1) using different key wrapping or encapsulation algorithms.
         </t>
         <t>
@@ -1517,7 +1517,7 @@ This could also manifest during overlapping credential/key validity time interva
 When not all participating nodes can be guaranteed to have either the old or new credential but possibly not both, signing with multiple credentials ensures that each node will be able to verify using one of them.
           </t>
         </section>
-        <section>
+        <section anchor="sec-ops-multi-sig-algs">
           <name>Multiple Algorithms</name>
           <t>
 Another possible need for multiple signatures is to provide different signing algorithms for the same security operation.
