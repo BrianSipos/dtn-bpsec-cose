@@ -24,7 +24,7 @@ dependencies = [
   "cbor2 >=5.6",
   "crcmod ~=1.7",
   "pycose @git+https://github.com/BrianSipos/pycose.git@sipos-combined-patches",
-  "cryptography >=41.0",
+  "cryptography >=47.0",
   "six",
 ]
 

@@ -5,6 +5,7 @@
   <xsl:template match="sourcecode[@type='pem']" />
   <xsl:template match="sourcecode[@type='x509dump']" />
   <xsl:template match="sourcecode[@type='cbor']" />
+  <xsl:template match="sourcecode[@type='cbor-elide']" />
   <xsl:template match="sourcecode[@type='cborseq']" />
   <xsl:template match="sourcecode[@type='cborhex']" />
   <xsl:template match="sourcecode[@type='cddl']" />
