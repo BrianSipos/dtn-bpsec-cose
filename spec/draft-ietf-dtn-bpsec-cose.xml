@@ -1024,7 +1024,7 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
           </table>
           <t>
 When generating a BIB result from a symmetric content key, sources <bcp14>SHALL</bcp14> use a COSE_Mac0 message or a COSE_Mac with a direct recipient.
-When generating a BIB result from one or more symmetric key-encryption key (KEK) or key-derivation key (KDK), sources <bcp14>SHALL</bcp14> use a COSE_Encrypt message with recipient(s) containing an indirect (wrapped or derived) CEK.
+When generating a BIB result from one or more symmetric key-encryption key (KEK) or key-derivation key (KDK), sources <bcp14>SHALL</bcp14> use a COSE_Mac message with recipient(s) containing an indirect (wrapped or derived) CEK.
           </t>
           <t>
 The key length used for HMAC algorithms <bcp14>SHALL</bcp14> be equal to the hash function output length.
@@ -1046,7 +1046,7 @@ For COSE_Mac and COSE_Encrypt key identifiers will be header parameter(s) in the
           </t>
           <t>
 When a COSE_Mac or COSE_Encrypt is used with a single recipient, the direct HKDF algorithms (code -10 and -11) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -3 through -5) to reduce message size and the need for symmetric key generation.
-When processing a COSE_Mac or COSE_Encrypt recipient, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+The use of HKDF also binds to the content layer algorithm code point and mitigates the possibility of a <xref target="sec-threat-downgrade">downgrade attack</xref>.
           </t>
         </section>
         <section>
@@ -1129,7 +1129,7 @@ When a COSE_Encrypt is used with an ECC public key, the security source <bcp14>S
           </t>
           <t>
 When a COSE_Encrypt is used with an ECC public key and a single recipient, the direct HKDF algorithms (code -25 through -28) are <bcp14>RECOMMENDED</bcp14> over the key wrapped algorithms (code -29 through -34) to reduce message size and the need for symmetric key generation.
-When processing a COSE_Encrypt with an ECC public key, a security verifier or acceptor <bcp14>SHALL</bcp14> process all KDF context data from the recipient headers in accordance with <xref section="5.2" target="RFC9053"/> even though the source is not required to provide any of those parameters.
+The use of HKDF also binds to the content layer algorithm code point and mitigates the possibility of a <xref target="sec-threat-downgrade">downgrade attack</xref>.
           </t>
           <t>
 The choice of whether to use ECDH in static-static (SS) or ephemeral-static (EH) mode depends on what security properties are needed for the operation.
