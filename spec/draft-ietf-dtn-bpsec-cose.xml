@@ -839,7 +839,7 @@ This section contains requirements which apply to the use of COSE within the BPS
 Other variations of COSE within BPSec can be used but are not expected to be interoperable or usable by all security verifiers and acceptors.
       </t>
       <t>
-This interoperability profile supports using shared symmetric keys with modern key strengths, as well as using elliptic curve cryptography (ECC) keypairs and Rivest–Shamir–Adleman (RSA) keypairs when needed by security policy.
+This interoperability profile supports using shared symmetric keys with modern key strengths, as well as asymmetric (public and private) keypairs when needed by security policy.
 The focus of this profile is to enable interoperation between participating nodes (security sources, verifiers, and acceptors) on an open network, where explicit COSE parameters make it easier for verifiers and acceptors to avoid assumptions and avoid out-of-band parameters.
 The requirements of this profile still allow the use of potentially not-easily-interoperable algorithms, message, and recipient configurations for use by private networks, where message size is more important than explicit COSE parameters.
       </t>
@@ -939,7 +939,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are not a super-set of those available in <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
+The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
             </t>
           </aside>
           <t>
@@ -1031,7 +1031,7 @@ When processing a COSE_Mac or COSE_Encrypt recipient, a security verifier or acc
         <section>
           <name>ECC Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the ECC algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the elliptic curve cryptography (ECC) algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
           </t>
           <aside>
             <t>
@@ -1119,7 +1119,7 @@ ECDH-ES can provide forward secrecy by using the ephemeral key only for single m
         <section>
           <name>RSA Algorithms</name>
           <t>
-Implementations conforming to this specification <bcp14>SHALL</bcp14> support the RSA algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the Rivest–Shamir–Adleman (RSA) algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
           </t>
           <aside>
             <t>
@@ -1169,6 +1169,41 @@ When a COSE signature is generated with an RSA private key, the signature uses a
           <t>
 When generating a BCB result from an RSA public key, implementations <bcp14>SHALL</bcp14> use a COSE_Encrypt message with a recipient containing a key-wrapped CEK.
 When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+          </t>
+        </section>
+        <section>
+          <name>ML Algorithms</name>
+          <t>
+Implementations conforming to this specification <bcp14>SHALL</bcp14> support the module-lattice-based (ML) algorithms in <xref target="tab-interop-algs-ml"/> if they will operate with ML key material.
+          </t>
+          <table anchor="tab-interop-algs-ml">
+            <name>ML Algorithms</name>
+            <thead>
+              <tr>
+                <th>BPSec Block</th>
+                <th>COSE Layer</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Conformance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
+                <td>ML-DSA-87</td>
+                <td>-50</td>
+                <td>CNSA 2.0</td>
+              </tr>
+            </tbody>
+          </table>
+          <t>
+When generating a BIB result from an ML private key, implementations <bcp14>SHALL</bcp14> use a COSE_Sign or COSE_Sign1 using the private key directly.
+When a COSE_Sign or COSE_Sign1 is used with an ML private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
+          </t>
+          <t>
+Uses of ML keys for creating or consuming a BCB result are not supported by this profile.
+There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public-Key Encryption (HPKE).
           </t>
         </section>
       </section>
@@ -1461,15 +1496,21 @@ The following subsections give some examples of their use.
           <t>
 One possible need for multiple signatures is when the same security source is identified by multiple credentials (<em>i.e.</em>, EE PKCs) and thus associated with multiple private signing keys resulting in multiple distinct signatures (with associated public key identifiers).
 This need could manifest when the participating nodes (and their credentials) span multiple security or administrative domains, and a single security operation needs to be verified by all of the nodes.
-This could also manifest during overlapping credential/key validity time intervals, when an older credential is about to expire and a new credential has become valid, and not all participating nodes can be guaranteed to have either the old or new credential but they each have one credential.
+          </t>
+          <t>
+This could also manifest during overlapping credential/key validity time intervals, when an older credential is about to expire and a new credential has become valid.
+When not all participating nodes can be guaranteed to have either the old or new credential but possibly not both, signing with multiple credentials ensures that each node will be able to verify using one of them.
           </t>
         </section>
         <section>
           <name>Multiple Algorithms</name>
           <t>
 Another possible need for multiple signatures is to provide different signing algorithms for the same security operation.
-This could be because not all of the participating nodes support the same algorithms but there is a set that is known to be supported by all nodes.
-This could also be used to provide "dual signatures" (one traditional and one post-quantum) <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/> for a single target, although this form of signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set (meaning an on-path attacker can simply remove one or more of the signatures).
+This could be because not all of the participating nodes support the same algorithms but there is a set that is known to have at least one algorithm supported by each node.
+          </t>
+          <t>
+This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/>.
+This form of parallel signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set because an on-path attacker can simply remove one or more of the signatures and the others will still be valid.
           </t>
         </section>
       </section>
@@ -1689,7 +1730,7 @@ Even when a security acceptor is operating properly an attacker can attempt to e
 An invalid certificate exploit could lead to higher-level security issues and/or denial of service to the Node ID being impersonated.
         </t>
         <t>
-There are many reasons, described in <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
+There are many reasons, described in PKIX specifications <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
 Validating a certificate is a complex task and can require network connectivity outside of the primary BP convergence layer network path(s) if a mechanism such as OCSP <xref target="RFC6960"/> is used by the CA.
 The configuration and use of particular certificate validation methods are outside of the scope of this document.
         </t>
@@ -2041,6 +2082,8 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-pquip-hybrid-signature-spectrums.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
@@ -3330,6 +3373,225 @@ e9a50d7bb23e26feb3cc1ea8828601010002561fd25f64a2ee33e774abe16700bcfd
 9cf12ea5f7d8414447abdef0ff
         </sourcecode>
       </section>
+      <section anchor="sec-example-ops-ml-sign">
+        <name>ML Keypair COSE_Sign1</name>
+        <t>
+This is an example of a signature with the signer having an ML-DSA-87 keypair identified by a "kid".
+The signing private key in <xref target="fig-ex-sign-ml-keys"/> elides the public parameter because they can be fully derived from the private parameter (which is a "seed" form in accordance with <xref section="4" target="RFC9964"/>).
+        </t>
+        <figure anchor="fig-ex-sign-ml-keys">
+          <name>Example Keys</name>
+          <sourcecode type="cbor-elide"><![CDATA[
+[
+  { / signing private key /
+    / kty / 1: 7, / AKP /
+    / kid / 2: 'ExampleA.10',
+    / alg / 3: -50, / ML-DSA-87 /
+    / ops / 4: [1, 2], / sign, verify /
+    / pub  / -1: h'fbcf...94e9', / elided 2592 octets /
+    / priv / -2: h'6aad3263218dc8d7314db377756bb82727c825fa10bcbf8c
+76e45c628f4328ec',
+  }
+]
+]]></sourcecode>
+        </figure>
+        <t>
+The internal COSE structure is shown in <xref target="fig-ex-sign-ml-struct"/>.
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-AAD-list"/>.
+The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target-block"/>.
+        </t>
+        <figure anchor="fig-ex-sign-ml-struct">
+          <name><tt>Sig_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[
+  "Signature1", / context /
+  h'a1013831', / protected /
+  h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
+692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
+404482a081c901010040', / external_aad /
+  h'6568656c6c6f' / payload /
+]
+]]></sourcecode>
+        </figure>
+        <figure anchor="fig-ex-sign-ml-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor-elide"><![CDATA[
+[1], / targets /
+3, / security context /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
+  [
+    5, / AAD-scope /
+    {0:0b1,-1:0b1} / primary metadata, target metadata /
+  ]
+],
+[
+  [ / target block #1 /
+    [ / result /
+      18, / COSE_Sign1 tag /
+      <<[
+        <<{ / protected /
+           / alg / 1: -50 / ML-DSA-87 /
+        }>>,
+        { / unprotected /
+          / kid / 4: 'ExampleA.10'
+        },
+        null, / payload detached /
+        h'fe60...2a30' / signature elided, total 4627 octets /
+      ]>>
+    ]
+  ]
+]
+]]></sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 4764 octets in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f890700028201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f42404482a081c9850b03000059124781
+0103018201662f2f7372632f818205a2000120018181821259122b8444a1013831a1
+044b4578616d706c65412e3130f6591213fe604a2c9c5263c6fd8e9b61ca6fe9e627
+88a4eae74e5791d47ea90a0212048d965f4909fe0bd2f88aca3fc2108e72fbb5a2bb
+e9416aa61b69b3e58fc2664442f7554780acafd68708ee30db69c96928f0cc0384f9
+792ccab02fe15a839a48b0066885cd70ae4c0b073aae1b18c4dd1132862d32d4c4c7
+4b811b476b56b0c6856b64384e4447b97845c25cc1f3f5fac75c376c5c8765c063b4
+77a4cd50950af80bf6ff30a2fd0d6a16d303fd1077fc9ff06573ebb0613cdb1865a1
+56d130c075f4a49b72987a924545d7548474dc7b06af2cdb863b73426fba59cafb12
+50a32a227cbec43f4db14f5e62a7c2c245f3cb800e26ec3e015d5e50a79ae2f6ed9d
+cd3bc938f15bbd01938479c4cf5dcbda12083c3837ce97f11028c6a10767f2b7135a
+b1adc877a35e4f20d19b339673b495badf8534b12e79f871c3f39ee72f3c6b994e40
+227b32a416829f2b31f3cf3503fa91e4d9183aa51bcc2ae6632b61216c33adf30ec6
+1994f59fd365a4ae52641f361c15fa0e8e888af884ba681004ec3aa90548cbfc4091
+527ad2972369c3e75e95a4ebb6953346a707528f4168a84ee58a45d85e177ca877b6
+9ed45b830c4ee029fd0338ce6b0c2a5de6102eede174f27bf5391da3a7a8ad4b2331
+52273e45bd8f80f227a62de9132b2f4c6ba4ed5559116bf86e730fae895b787fd6f8
+62da0518f6d06f74ae4c520a169f1d9d2d9f19e40be8032bedc9be881a93f0f5e931
+639a2176b8ad60db98ee7b5e8f978010504dee7e1bb447066164edfe0c03eb2bb761
+e5423f2662636a988da1d8b56c69c11ddea5cf3545aeb52ea12f5e1f90225b07ddbd
+e33017aede645ce05c13953c74f760480be6d8ab04c86a2ee64f649d669e482cc69c
+c69f208e94cf6876df51303cab48d1b864a334335377bde48f7e12188989033020f9
+27131c7f251ddcc1fa3a7942c35fd77b9abdd6a6b599c5e9d1b236f1b056da515763
+942cb9ab86667344e652175858f765de17e7cf352eca7d65b83cc2d5d989bde06187
+9a228e2068d0b7ee9dddc23310dd5efccab4bf4e2bd8cad948b0fb2e018833b2dd22
+49811cab277bc58d987c9b771726c4cd66422071b9751d12a9fbabad230447463387
+40593d5bc383aed19dcab738833176f0674df1e6a2f8dc4ddffc81cd215532cf6240
+647ed372498bee684200d6aba01e874ebdfd42bec240fecafadeb4a28381de7d51bf
+04131ca1e564ad584ec0c030f90d7ce6196fe1497724ee7e1bb0f65bd2f65c25d7f0
+035704a89c259c9c8a2e3c63371daaaf912b0d164651e80b2fee7fb5a0e7e716ad74
+d22f4abb56da2c521c310230c3efbb256fb4246ba2a74053ad94183879ae94030707
+45d6fda8e2e26a0ed949d972d2774b48b849deb1cf7fbe990efe19c6c1710c299f8a
+1e4d9b71987c998c2e637b6723e79fe2fb36f9aeb550c21c02bcc2aeee144d75ceef
+857f48a077c2296036b1885c9fa2e3dda4b01451967490cb311d52b59df80da84c83
+2c30f17b0fc5f23aa8850beb2ed6f30320815fd919e53c958c44ed260011a6370a51
+678da88bdb9d487cd9143bacfe8422d201c6e5de737731b5688ee197a024fbfe4cc4
+4c889c2420351dc5860cd289c023c617b52ded66bfe4c17fc042cb3cb943c58d3f94
+6c11853ef7cf9a4710b545b83f1ba2183e75a065704f887fc16cd82827f06ad4794b
+0d4fcf709aaab11159500e55f0c458262fad487c258c636f29b76285f875cb23e475
+101984f7c78671160bb173c29fa1ed128c3ecffaba42e1f79354846ab997089ca6dc
+402afb77556481dfeae633e7affb1546a63bd4808897a75b4974c2515ddceee96055
+5505fc3680c40263affc405d668a1e842be0bc9be35fb48c805eade0e75c7a904b7c
+17c54a28074c20b57aca8036b85653d5437d2cd32f75f1e62250ec88337deececfc9
+400b202fea7a438feae1288575c74313f1807668ba23e95da15e5f596e28d31a8190
+9f8b73e37b5a7af66e1c7f2c7f6348342ad2b6b61c41c45f9e8b15d7542d6484cdbc
+510c5d7d55c1ee2341a55e6120a7b93712f5138b95787fdae47f99801a7fe31c0a36
+b4e85155530a21ac64698e35501071ab067801a69296fc953b9c98d225ac2297f686
+bc035d365e2fbd8f1a08cce6c6df59968ab9da29505d2587f6593a5abd61f4f3ccd5
+0f5249bf946427f648987afb90e51c7a8507f4469f7e28e35f5bb86f069b9b01a768
+1374919c9d234c69f196daeeaa56f9bb1a2d41dae5b078ebc8c01010697846372e3f
+db3d9137f35555bffda9560be7c4d81dc6b98d1f85cfb1ed36fe21e67b27cb1ff1a2
+6ee9687ec7063a1350e113f2f4872c6732d071a53f4fc5d9408fbbad6de1e497e02a
+de984ce875b821bf00777271845edb48d1dcfeede5808df67428597e6cbd547e8600
+83e3753fee2ad8a92fd50d0ffa61a62aed569c3073d3e0146cbee7fe1606ced8d706
+0e5b998f04714ddd71fc32b1689b442dd95216b548ff62179ab48b1697f692083f76
+e04032b8a3443ddc977cb656d0232ff2bf8d9b25307e6c795e20d61ee27f8d9726bf
+67a00b41a25b668db48a628b84818f6345aa53ae45e83f527ba6051f7f92c5860ef9
+527dc8fb52e65b4b98cd30a89efabd89cd8471a70bf083a71d5eed8b07074ccbb685
+d402b27883c120b374e05832440b3d2fa72c03ea4ca56468874121f64e0abd08f95b
+cf15da84f78609aa32929d6d2370025374c26782277685e6075e32dd4e532974b98a
+017df5e4262fb1fc649b1f932fd31109d7850f2422725d78ccc5148154b910d19be4
+70e72badea5117ed0c4c51429317da7e976402f5fb8bfb890dfc7e8820ff759d720c
+8f426d546eb755f9d759387da63224fe93a34743e75c3550f5934ff3f9feefdc5e3a
+511284ad60cb179ab956ab0adf892993da7e1c6076105f7307253be683b8c6326149
+b327bea0bf3fab333a5dd1d4911e435974d018a354f1062196aaa1a51d5377f7c1e7
+0e2552add9a7d0cc6e2358e8d55c0c8bc763ad7ddee59d6810469224bd36b03ccec5
+60801e04865a9fe635a5809dec351a199d3b6a3a62f6843b33b04fbde7dcbf368139
+6768244664f7704146a94a9f3292cc32b0a0fab18a3e0f44138115448d392703b88c
+46ed7ca4358c46fea338a41ad1e8f1893f318e7926bf64159191d142e3e2756144c4
+b1950c6f017b007212b7aec0695faafdae3e55f721f8b1155ac0d12292cd6616c67c
+2cfa3bf39171c09686599fce0028435cfa7605183b66bab161a05d8f44448ab7d047
+317216ae86825fe6d0ea1c43ec3d55743f9f9050e6577fecf61eb47ef528b79f7fa3
+0c11007728bdb4ca72441f6978088c7f13442b76df2cf9055b692fed9e0ff09ca7d8
+88eb932d88f6936e13fea6911f0ddee4e2a5ee75e0ff3510ec9e8d630032897d321e
+97486c550b089d699a8eba2c7ee732ca74b6c8f557e22457d05be79f3d44467d1b0d
+b8e30d47fe2dd1432379a915b419df1931c0d7a1622a71cdf9ce2f29b3583f8a52e1
+c081d9c6700a27aa1cce21f9bdfa9e1ce7b2a8d3635a374c82bcf949792977b72b6f
+1a471fc4a500d1e6b2e2ab71d5da142e11a50b9eba33e6eb0f16e38acadec3a9e5b3
+727315ab5c1175d27ce8300e77cc1e4d4210c6b9706af0c98d51da641eb328a6983b
+3e3f09ad5107f01ce04712409459ad7130d0789185ed1c9623c7a4256da0d8d54049
+bb47fc1b355528662721b34706b256ce48bc49f47d4741aff5cc7d9138a172393d25
+3d4b02fd6d6796b6810f3398f99a18e59c8dabd6fb9ccb39db55905e2790986536f8
+e7d7106bc85427f7bd519151f3598f57dd50c515a9393113506d8b84e885eff0536c
+45707da97d4171bf4e6d1a62ccefc27219acaa7d09ba29f5fc335abdbf2050bf843c
+e8405bd0daeff2e38b65669298c9d5e0bfe59a99cbd77064a1fc741292c9066d7ca6
+448bb0fedfae12924753e0026bdcae8eb917ffda4050476b07dbc51037a85ce7c87c
+22da246316a9d7acd717a0e6c901d180db968e9a20e0e1b63e21371275d8c323c0ca
+cf673a84d176b7dbe3341cb2f9636f58657a5f823ba6a6c3962bb93e2fd675e88439
+d5a4a0741ca6e57feb57ea6dfe935ce8091af5160fb2d8bb3b4d49516f92784c0994
+e7050f2e4bd86b5988f594e6f4754d50d7f31a6bde1de8a76a66e25d60b1d709c2c5
+4da1d1469a48105fe2531d51ac56402b5573c548fea65c5da74a4fc907607abe1414
+b863143faa88b5c717a0187fa4f1859eac069d464a47060066df19dfb014392c416a
+608c0fc8c22a4e4d18e96c8112056d80af32e9d2bd3b4c8b572fb4fd6454a515eb2a
+7abf52041a5475da0ffc6b9c54f20f1fb00d7d7c7686d795a895c832e0f2066a3bba
+c09e79d0498fdac3d853a3fe09101fb3fa694e2d7f23ffede312da4b8a4a767e385a
+18d03de0fc4fd6d82db3fc556f98eb164c20b206036c6a9e5056d53cb2376daf3947
+312b6402583e5944d63060619cd98e0a0e4e2fd1ed9b3e4532b68548b93e542d5d15
+70342ab95e130db28e43c6bb5feaaea0ece99fced47f1f59dd58c3ef5661a0a1662f
+61600df6d3e78e300d381ef79428ff7087a94725af9a3d9fb94cf87ecb121fc58631
+9630d63b538ef05cee9a0d6d696e0e727bac95103f213edd50b5d9b124e2c35b61ec
+539fd5c1cf7b87309467e626becda9d684d72a333907d34437644e204251cda5ef35
+633e39cc62c9f16f85ef04b39017b3f969150e44fd72b3fca4f6636097527211bc55
+3e8333ae2fffd0d2a9d125ec476a005729e31650b876b5fb240b0b233a262265e4e5
+aa125056c708d58ff2585894b0889ec40b32ccd9e78051afa98320a1f9c9e7cbc1bb
+f113bbc85ddd24b00f89d30ef0042fdfdd0c5c37de5842cd09f2a28b3b742c9c6ef9
+9d323e4baad0efb6e876a78501a70431720b300f3845aebe2097241e1a1d6962aad7
+4a121f804ff5a98d6691983e9262d6b703a16c16bb4c3515b8c99a57cd2fdd76efba
+17289ba191fd7698459f1d7c5fd290a66004e41c30dc97994be61ec96fa2838c02bd
+1ce9c8859acdbbbf09805b06bdcfdf107e89c1a0291b1124ba2ca5ffe18f68cb0ab4
+e3bcecdf4d050a062f229890404609b10c938b4e7eaaeaa06d84fedb3feed1ac717d
+95fbce7d3c18b99abcd00f9c04e24bd5c45379ec50578664e87ddf1c5007a7dca208
+3c5b3ab4762eac1621f058397f79d13b8ac89099d1590077fc3d39bc4c65d2a19db7
+69580874485ff7ef9997a3e9e13a454215ba2a3bfe2f6f0eda2c095fd81404b60d47
+ac0e92daf03ef6bd8fc85805af664d6c0039b0f22bf0006eb9abdc8aee91a7570042
+5210d7e6b1548384ec4e15822aa003100f09ff247b5617f4d02b92818da9d4ed5e45
+0fac24ffcec9f94b79788470cf32f805b85d201899c22247a2178c694b99fc297906
+e370d955b1f79babd4e4fa611a56bbca62239f3553b8dd49c8e90cae7bff2cf90f94
+36d217a81750f7aa947757268f888d978c4eaabee5215f12c9c6e96fddb2dbd0a793
+7c0ff49423f7dd418e8ffcf4bd0812b2e1a9de574816caf231c5088383be311f8cca
+b5c7881bf42fbabfd5641a665b82ee5ec8aa591bad064ffb28492adee608e554767d
+4e85edaaf9f7e68a955c228cb0a9f93b64e100efc03c68f725e73ee8d563bc8e9912
+0eb36511018a98f7108b7b190ab9e28ed35cb7bccb6fb3189d61425ba0f9c08c20c4
+684795a3988c124c210be61a4549b043954dceb3766dac9ce780a745bd0ebfdbf2d0
+03f96b4923c7be77a100cfce4d67ce81ca290debf2eed43e453c61a1f0cbb27eeb1a
+1f054b901d08c38a64c6835cd988287a461a5d795a8669519a2684aad6e19d91817a
+ac771cd7565cc14cd78a8b6f5c66e640e3948ab6e6bafd58b7020d2806688aad4c50
+2b1427abe8c42edf859689fa51b042f1d6c1d0817a380060e90e046c87083b6fc6c0
+570e2bb5c2ddd7eecba3ec4ff9ef16dcd314697df84fd2a42159a884b28de9dfa8c6
+8e181f2ae7d1f6ebde04f127df78a4a2d677091340c58e4d855e62cac1d3463307ba
+812bff2234978d42b4b9135b66563e6f852a2b25d47828530ddaff4cd660067d09cb
+bc8c7adfd23fc356d515a8f822b2e4f96bdf927c6a186f5ab66f39b6909d5d9d3adc
+cf9c2f36c88f0d2cd9faaede7d9a343c0123e7e0405640bd19619c530138f2eaf91a
+eafd5140b8d3af98ae233a25366433bffaa5a9a5ed0879fcb1f640f4f418f21b88f7
+7d986751cb12405e4918baaacbe7fcd93decab057ed05fe3d6d0bf61c12bf92d2dd2
+ab67779a847c57af57bcc0558a33c247e3bd30e39cf1e88f54beab53fec3c5b95285
+8ba59e8b23bc03ab4270c32649d8ef98bf2bca30f429217b77f23ceb054664c85908
+ea86625a1f060e89c8d8407c9ccaed93a7b7bbd9294593d9dff3030f346f94bf1036
+3d91a2a4e4e8e921265460c4f6084649728799000000000000000000000000000000
+000000000000000000000000050a0f151b242a308601010002466568656c6c6f444e
+c359d2ff
+        </sourcecode>
+      </section>
     </section>
     <section anchor="sec-example-pkc">
       <name>Example Public Key Certificates</name>
@@ -3613,7 +3875,7 @@ bpsec-context-use<ContextId, ParamPair, ResultPair> = [
       <name>Acknowledgments</name>
       <t>
 Thanks to Lars Baumgaertner and Lukas Holst of the European Space Agency (ESA) for prototyping feedback.
-Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback. 
+Thanks to David Koisser of SANCTUARY Systems GmbH and Leonardo Babun of JHU/APL for specification review and feedback.
       </t>
     </section>
     <section removeInRFC="true" numbered="false">
