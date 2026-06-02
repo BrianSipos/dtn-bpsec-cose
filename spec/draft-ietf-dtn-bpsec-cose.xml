@@ -1496,15 +1496,21 @@ The following subsections give some examples of their use.
           <t>
 One possible need for multiple signatures is when the same security source is identified by multiple credentials (<em>i.e.</em>, EE PKCs) and thus associated with multiple private signing keys resulting in multiple distinct signatures (with associated public key identifiers).
 This need could manifest when the participating nodes (and their credentials) span multiple security or administrative domains, and a single security operation needs to be verified by all of the nodes.
-This could also manifest during overlapping credential/key validity time intervals, when an older credential is about to expire and a new credential has become valid, and not all participating nodes can be guaranteed to have either the old or new credential but they each have one credential.
+          </t>
+          <t>
+This could also manifest during overlapping credential/key validity time intervals, when an older credential is about to expire and a new credential has become valid.
+When not all participating nodes can be guaranteed to have either the old or new credential but possibly not both, signing with multiple credentials ensures that each node will be able to verify using one of them.
           </t>
         </section>
         <section>
           <name>Multiple Algorithms</name>
           <t>
 Another possible need for multiple signatures is to provide different signing algorithms for the same security operation.
-This could be because not all of the participating nodes support the same algorithms but there is a set that is known to be supported by all nodes.
-This could also be used to provide "dual signatures" (one traditional and one post-quantum) <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/> for a single target, although this form of signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set (meaning an on-path attacker can simply remove one or more of the signatures).
+This could be because not all of the participating nodes support the same algorithms but there is a set that is known to have at least one algorithm supported by each node.
+          </t>
+          <t>
+This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/>.
+This form of parallel signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set because an on-path attacker can simply remove one or more of the signatures and the others will still be valid.
           </t>
         </section>
       </section>
@@ -2076,6 +2082,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-pquip-hybrid-signature-spectrums.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
