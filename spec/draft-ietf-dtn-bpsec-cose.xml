@@ -1755,8 +1755,8 @@ This second example results in security failure, but it is also caused by a midd
 ]]></artwork>
           </figure>
           <t>
-Although these exmaples depict a linear topology with a predictable path, the logic of multiple interacting security domains is not confined to a linear situation.
-The same logic can apply when using either group symmetric keys (distributed to all participating nodes) with MAC integrity or using PKIX certificates (again distributed to participating nodes) with signature integrity.
+Although these examples depict a linear topology with a predictable path, the logic of multiple interacting security domains is not confined to a linear situation.
+The same logic can apply when using either group symmetric keys (distributed to all participating nodes) with MAC integrity or using PKIX certificates (distributed to participating nodes) with signature integrity.
 In those cases the path can be arbitrary and any intermediate node in each security domain can act as an integrity verifier (for those security operations meant for its security domain).
           </t>
         </section>
