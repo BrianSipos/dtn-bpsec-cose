@@ -867,6 +867,7 @@ An example of combining with depth is a a single COSE_Encrypt message which uses
 All of the COSE algorithms needed by this profile can operate within COSE messages having one or two layers.
 The messages COSE_Sign1, COSE_Mac0, and COSE_Encrypt0 are by definition limited to one layer.
 The messages COSE_Signature, COSE_Mac, and COSE_Encrypt are by definition at least two layers (the content layer and signature/recipient layer).
+Security sources <bcp14>SHALL NOT</bcp14> produce COSE messages with more than two layers.
 Implementations of this profile <bcp14>MAY</bcp14> be limited to no more than two COSE message layers.
 Future use cases could update this profile to expand that minimum, and implementations are free to support larger depths.
         </t>
