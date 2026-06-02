@@ -855,10 +855,25 @@ When processing a BPSec result, security verifiers and acceptors <bcp14>MAY</bcp
         </t>
         <t>
 The algorithms required by this profile can be combined in different ways depending on the needs of security sources.
-An example of combining with breadth is single COSE_Sign message which contains multiple signatures (in layer 1) from the same source but using different key families (to combine traditional and post-quantum signing algorithms).
+An example of combining with breadth is single COSE_Sign message which contains multiple signatures (in layer 1) from the same source but using different key families (see <xref target="sec-ops-multi-sig"/> for more detail).
 An example of combining with depth is a a single COSE_Encrypt message which uses a single shared content encryption key (CEK) for target encryption (layer 0) and multiple recipients (layer 1) using different key wrapping or encapsulation algorithms.
-COSE messages conforming to this profile <bcp14>SHALL</bcp14> be limited to no more than two layers.
-Future use cases could update this profile to expand that constraint, and non-interoperable private use cases can also relax that constraint.
+        </t>
+        <t>
+All of the COSE algorithms needed by this profile can operate within COSE messages having one or two layers.
+The messages COSE_Sign1, COSE_Mac0, and COSE_Encrypt0 are by definition limited to one layer.
+The messages COSE_Signature, COSE_Mac, and COSE_Encrypt are by definition at least two layers (the content layer and signature/recipient layer).
+Implementations of this profile <bcp14>MAY</bcp14> be limited to no more than two COSE message layers.
+Future use cases could update this profile to expand that minimum, and implementations are free to support larger depths.
+        </t>
+        <t>
+To ensure interoperability, implementations of this profile have only a guaranteed minimum breadth of messages.
+All implementations of this profile <bcp14>SHALL</bcp14> support at least 10 signatures per COSE_Signature message.
+All implementations of this profile <bcp14>SHALL</bcp14> support at least 10 recipients per COSE_Mac or COSE_Encrypt message.
+Future use cases could update this profile to expand that minimum, and implementations are free to support much larger breadths.
+        </t>
+        <t>
+This profile imposes no minimum capabilities of the internal key store, credential store, or trust store of an implementation.
+Whether or not an implementation uses COSE Key objects internally, how key identifiers are managed, or how time-variance of key, credential, or trust validity are handled have no effect on its ability to perform COSE messaging.
         </t>
         <t>
 COSE messages conforming to this profile <bcp14>SHALL</bcp14> contain an explicit algorithm identifier in the first (content) layer in accordance with <xref target="RFC9052"/>.
@@ -1502,7 +1517,7 @@ This could also manifest during overlapping credential/key validity time interva
 When not all participating nodes can be guaranteed to have either the old or new credential but possibly not both, signing with multiple credentials ensures that each node will be able to verify using one of them.
           </t>
         </section>
-        <section>
+        <section anchor="sec-ops-multi-sig-algs">
           <name>Multiple Algorithms</name>
           <t>
 Another possible need for multiple signatures is to provide different signing algorithms for the same security operation.
