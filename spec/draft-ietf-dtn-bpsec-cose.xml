@@ -2017,7 +2017,8 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Specifications of new entries need to define how they relate to the AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Experts are encouraged to be biased towards approving registrations unless they are abusive, frivolous, or actively harmful (not merely esthetically displeasing or architecturally dubious).
         </t>
         <t>
 The value range is negative 16-bit integer.
@@ -2071,7 +2072,8 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Specifications of new entries need to define how they relate to the AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Experts are encouraged to be biased towards approving registrations unless they are abusive, frivolous, or actively harmful (not merely esthetically displeasing or architecturally dubious).
         </t>
         <t>
 The value range is a bit position within an unsigned 64-bit integer.
