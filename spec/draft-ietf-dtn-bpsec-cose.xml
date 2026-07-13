@@ -31,7 +31,10 @@
     <abstract>
       <t>
 This document defines a security context suitable for using CBOR Object Signing and Encryption (COSE) algorithms within Bundle Protocol Security (BPSec) integrity and confidentiality blocks.
-A profile for COSE, focused on asymmetric-key algorithms, and for public key certificates are also defined for BPSec interoperation.
+A profile for COSE, organized by algorithm families, and for public key certificates are included for BPSec interoperation.
+      </t>
+      <t>
+This document updates BPSec RFC 9172 by providing Concise Data Definition Language (CDDL) rules for security block content.
       </t>
     </abstract>
   </front>
@@ -342,7 +345,7 @@ Although the additional header items are all treated as unprotected from the per
 The expected use of additional header map is to contain a certificate (chain) or identifier (see <xref target="sec-asym-keys"/>) which applies to all results in the same security block.
           </t>
           <t>
-Following the same pattern as COSE, when both additional header maps are present in a single security block they <bcp14>SHALL</bcp14> not contain any duplicated labels.
+Following the same pattern as COSE, when both additional header maps are present in a single security block they <bcp14>SHALL NOT</bcp14> contain any duplicated labels.
 Security verifiers and acceptors <bcp14>SHALL</bcp14> treat a pair of additional header maps containing duplicated labels as invalid.
           </t>
           <t>
@@ -824,7 +827,7 @@ If the NODE-ID validation result is Failure or if the result is Absent and secur
         <section anchor="sec-context-auth-policy-rec">
           <name>Policy Recommendations</name>
           <t>
-A RECOMMENDED security policy is to enable the use of OCSP checking when internet connectivity is present.
+A <bcp14>RECOMMENDED</bcp14> security policy is to enable the use of OCSP checking when internet connectivity is present.
 A <bcp14>RECOMMENDED</bcp14> security policy is that if an Extended Key Usage is present that it needs to contain <tt>id-kp-bundleSecurity</tt> of <xref target="IANA-SMI"/> to be usable as an end-entity certificate for COSE security results.
 A <bcp14>RECOMMENDED</bcp14> security policy is to require a validated Node ID (of <xref target="sec-context-auth-valid-nodeid"/>) and to ignore any other identifiers in the end-entity certificate.
           </t>
@@ -1224,7 +1227,7 @@ When a COSE_Sign or COSE_Sign1 is used with an ML private key, the top-layer hea
           </t>
           <t>
 Uses of ML keys for creating or consuming a BCB result are not supported by this profile.
-There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public-Key Encryption (HPKE).
+There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public Key Encryption (HPKE).
           </t>
         </section>
       </section>
@@ -1984,7 +1987,7 @@ can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14
     <section anchor="sec-iana">
       <name>IANA Considerations</name>
       <t>
-Registration procedures referred to in this section are defined in <xref target="RFC8126"/>.
+Registration procedures referred to in this section are defined in BCP 26 <xref target="RFC8126"/>.
       </t>
       <section anchor="sec-iana-bundle">
         <name>Bundle Protocol</name>
@@ -2014,7 +2017,8 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Specifications of new entries need to define how they relate to the AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Experts are encouraged to be biased towards approving registrations unless they are abusive, frivolous, or actively harmful (not merely aesthetically displeasing or architecturally dubious).
         </t>
         <t>
 The value range is negative 16-bit integer.
@@ -2068,7 +2072,8 @@ Within the "Bundle Protocol" registry group <xref target="IANA-BUNDLE"/>, the IA
         </t>
         <t>
 The registration policy for this registry is Specification Required.
-Specifications of new entries need to define how they relate to AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Specifications of new entries need to define how they relate to the AAD generation procedure of <xref target="sec-secctx-aad"/>.
+Experts are encouraged to be biased towards approving registrations unless they are abusive, frivolous, or actively harmful (not merely aesthetically displeasing or architecturally dubious).
         </t>
         <t>
 The value range is a bit position within an unsigned 64-bit integer.
@@ -2107,6 +2112,7 @@ The value range is a bit position within an unsigned 64-bit integer.
     <displayreference target="CCSDS-SDLS" to="SDLS"/>
     <displayreference target="NIST-FIPS-140" to="FIPS-140"/>
     <displayreference target="NIST-SP800-57" to="SP800-57"/>
+    <!-- Include references per https://authors.ietf.org/references-in-rfcxml -->
     <references>
       <name>References</name>
       <references>
@@ -2150,7 +2156,6 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8613.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8949.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9052.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9172.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9174.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9360.xml"/>
@@ -2211,6 +2216,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
@@ -3741,7 +3747,7 @@ It does, however, include an Extended Key Usage (EKU) value <tt>id-kp-bundleSecu
         </t>
         <figure>
           <name>CA Certificate Content</name>
-          <sourcecode type="x509dump">
+          <artwork type="x509dump"><![CDATA[
 Version: 3 (0x2)
 Serial Number:
     15:15:ff:a7:40:a4:bd:73:f5:ba
@@ -3793,7 +3799,7 @@ BggqhkjOPQQDAwNoADBlAjBQLyBu8JDNdPcOkHpJZuH9BIbshDBEn3H+SNBubiS9
 sRgqWp+gphgvVUBlo+na0TACMQCv0zQ7tVQHG7n8i3fw6hLNrk4UrwfXX91tcp3M
 a9Z6MI8EU1mRAmqkM63oRHeNGS0=
 -----END CERTIFICATE-----
-          </sourcecode>
+]]></artwork>
         </figure>
         <figure>
           <name>CA Private Key PEM</name>
@@ -3815,7 +3821,7 @@ It contains a SAN authenticating the single security source from that example, a
         </t>
         <figure>
           <name>Signing Certificate Content</name>
-          <sourcecode type="x509dump">
+          <artwork type="x509dump"><![CDATA[
 Version: 3 (0x2)
 Serial Number:
     6f:fe:89:dc:b7:6e:d3:72:ea:7a
@@ -3867,7 +3873,7 @@ AjBHljyxGGWxBmV5pz6Mgkn2k8MH9Am0+4ZGzRcEvMORA9R6371sJ0OYpuy1pPrd
 rwcCMQDrxYHocIePcAKYQnAAaNbn4pm/GaiTFgoQJWQn1tTMy3CyeocQMB0if57Y
 w6Xw0+Y=
 -----END CERTIFICATE-----
-          </sourcecode>
+]]></artwork>
         </figure>
       </section>
       <section>
@@ -3878,7 +3884,7 @@ It contains a SAN identifying the single security acceptor from that example, an
         </t>
         <figure>
           <name>Key-Agreement Certificate Content</name>
-          <sourcecode type="x509dump">
+          <artwork type="x509dump"><![CDATA[
 Version: 3 (0x2)
 Serial Number:
     3f:24:0b:cd:a6:f7:fc:3c:29:de
@@ -3930,7 +3936,7 @@ AjArcmaF95pLvgjxXBYa7mtDhEEgnYVsZytcWFu74yLx/7u/mUEsK0AgOrV+uTTo
 pqoCMAINw25QZUv9t8r+7lEmAo1em5730riu0Axq1yv0jF0LebLSYP6/fWe0cCwt
 /zk1CA==
 -----END CERTIFICATE-----
-          </sourcecode>
+]]></artwork>
         </figure>
       </section>
     </section>
