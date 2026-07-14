@@ -34,7 +34,7 @@ This document defines a security context suitable for using CBOR Object Signing 
 A profile for COSE, organized by algorithm families, and for public key certificates are included for BPSec interoperation.
       </t>
       <t>
-This document updates BPSec RFC 9172 by providing Concise Data Definition Language (CDDL) rules for security block content.
+This document updates BPSec RFC 9172 by providing Concise Data Definition Language (CDDL) rules for extensible security block content.
       </t>
     </abstract>
   </front>
