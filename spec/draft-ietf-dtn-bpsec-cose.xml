@@ -2397,7 +2397,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
           <sourcecode type="cbor"><![CDATA[
 [
   "MAC0", / context /
-  h'a10105', / protected /
+  h'a10106', / protected /
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
