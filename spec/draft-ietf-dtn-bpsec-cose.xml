@@ -819,7 +819,7 @@ For each end-entity certificate contained in or identified by a COSE context res
           <section anchor="sec-context-auth-valid-nodeid">
             <name>Node ID Authentication</name>
             <t>
-If required by security policy, for each end-entity certificate referenced by a COSE context integrity result a security verifier or acceptor <bcp14>SHALL</bcp14> validate the certificate NODE-ID in accordance with <xref section="6" target="RFC6125"/> using the NODE-ID reference identifier from the Security Source of the containing security block.
+If required by security policy, for each end-entity certificate referenced by a COSE context integrity result a security verifier or acceptor <bcp14>SHALL</bcp14> validate the certificate NODE-ID in accordance with <xref section="6" target="RFC9525"/> using the NODE-ID reference identifier from the Security Source of the containing security block.
 If the NODE-ID validation result is Failure or if the result is Absent and security policy requires an authenticated Node ID, a security verifier or acceptor <bcp14>SHALL</bcp14> treat the result as failed.
             </t>
           </section>
@@ -1541,7 +1541,7 @@ Another possible need for multiple signatures is to provide different signing al
 This could be because not all of the participating nodes support the same algorithms but there is a set that is known to have at least one algorithm supported by each node.
           </t>
           <t>
-This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> <xref target="I-D.ietf-pquip-hybrid-signature-spectrums"/>.
+This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> as explained in <xref section="13" target="RFC9958"/>.
 This form of parallel signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set because an on-path attacker can simply remove one or more of the signatures and the others will still be valid.
           </t>
         </section>
@@ -1849,7 +1849,7 @@ Even when a security acceptor is operating properly an attacker can attempt to e
 An invalid certificate exploit could lead to higher-level security issues and/or denial of service to the Node ID being impersonated.
         </t>
         <t>
-There are many reasons, described in PKIX specifications <xref target="RFC5280"/> and <xref target="RFC6125"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
+There are many reasons, described in PKIX specifications <xref target="RFC5280"/> and <xref target="RFC9525"/>, why a certificate can fail to validate, including using the certificate outside of its validity time interval, using purposes for which it was not authorized, or using it after it has been revoked by its CA.
 Validating a certificate is a complex task and can require network connectivity outside of the primary BP convergence layer network path(s) if a mechanism such as OCSP <xref target="RFC6960"/> is used by the CA.
 The configuration and use of particular certificate validation methods are outside of the scope of this document.
         </t>
@@ -2146,7 +2146,6 @@ The value range is a bit position within an unsigned 64-bit integer.
         </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5280.xml"/>
-        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6125.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6960.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8126.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
@@ -2159,6 +2158,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9172.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9174.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9360.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9525.xml"/>
       </references>
       <references>
         <name>Informative References</name>
@@ -2221,8 +2221,8 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
-        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-pquip-hybrid-signature-spectrums.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
