@@ -133,7 +133,7 @@ class BaseTest(unittest.TestCase):
                 ],
             ],
         )
-        if self._ADDL_PROT_ENC:
+        if self._ADDL_PROT_ENC and asb.parameters is not None:
             asb.parameters.insert(0, (3, self._ADDL_PROT_ENC))
         return asb.encode_item()
 
