@@ -20,7 +20,7 @@ class BaseTest(unittest.TestCase):
 
     _SECSRC_EID = EndpointId('dtn://src/')
     ''' ASB security source field '''
-    _ADDL_PROTECTED: bytes = b''
+    _ADDL_PROT_ENC: bytes = b''
     ''' ASB additional protected parameter (encoded) '''
 
     def __init__(self, *args, **kwargs):
@@ -59,7 +59,7 @@ class BaseTest(unittest.TestCase):
             crc_type,  # CRC type
             EndpointId('dtn://dst/svc').encode_item(),
             EndpointId('dtn://src/svc').encode_item(),
-            self._SECSRC_EID.encode_item(),
+            EndpointId('dtn://src/').encode_item(),
             [delta // datetime.timedelta(milliseconds=1), 0],
             1000000,
             b''
@@ -92,7 +92,7 @@ class BaseTest(unittest.TestCase):
         parts = [
             "BPSec",
             self._SECSRC_EID.encode_item(),
-            self._ADDL_PROTECTED,
+            self._ADDL_PROT_ENC,
         ]
         return dump_cborseq(parts)
 
@@ -109,7 +109,7 @@ class BaseTest(unittest.TestCase):
             self._get_aad_scope(),  # scope
             self._get_primary_item(),  # primary-ctx
         ] + self._block_identity(self._get_target_item()) + [  # target-ctx
-            self._ADDL_PROTECTED,
+            self._ADDL_PROT_ENC,
         ]
 
     def _get_asb_item(self, result: KeyValPair) -> list:
@@ -118,19 +118,24 @@ class BaseTest(unittest.TestCase):
         :param result: The single result item for target block number 1.
         :return: The ASB as a CBOR item.
         '''
-        return SecurityBlockData(
-            targets=[1],
+        asb = SecurityBlockData(
+            targets=[
+                self._get_target_item()[1],
+            ],
             context_id=3,  # COSE
             security_source=self._SECSRC_EID,
             parameters=[
                 (5, self._get_aad_scope()),
             ],
             results=[
-                [  # target block #1
+                [  # target block results
                     result,
                 ],
             ],
-        ).encode_item()
+        )
+        if self._ADDL_PROT_ENC:
+            asb.parameters.insert(0, (3, self._ADDL_PROT_ENC))
+        return asb.encode_item()
 
     def _get_asb_enc(self, asb_dec: list) -> bytes:
         ''' Encode ASB array as a CBOR sequence.
