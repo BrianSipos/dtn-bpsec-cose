@@ -19,7 +19,7 @@ class TestExample(BaseTest):
                 self._SECSRC_EID.encode_item(),
             ),
         ]
-    
+
     def _get_payload_item(self) -> list:
         return super()._get_target_item()
 
@@ -36,7 +36,7 @@ class TestExample(BaseTest):
                 self._get_primary_item(),  # primary-ctx
             ]
             + self._block_identity(self._get_payload_item())
-            + [ self._get_payload_item()[4] ]
+            + [self._get_payload_item()[4]]
             + self._block_identity(self._get_target_item())
             + [  # target-ctx
                 self._ADDL_PROT_ENC,
