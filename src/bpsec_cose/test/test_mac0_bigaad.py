@@ -9,6 +9,40 @@ from .base import BaseTest
 
 class TestExample(BaseTest):
 
+    def _get_target_item(self) -> list:
+        return [
+            6,  # type code: previous node
+            2,  # always #2
+            0,  # flags
+            0,  # CRC type
+            cbor2.dumps(
+                self._SECSRC_EID.encode_item(),
+            ),
+        ]
+
+    def _get_payload_item(self) -> list:
+        return super()._get_target_item()
+
+    def _get_aad_scope(self) -> dict[int, int]:
+        return {0: 0b01, 1: 0b11, -1: 0b01}
+
+    def _get_aad_array(self) -> list:
+        return (
+            [
+                self._SECSRC_EID.encode_item(),
+                self._get_aad_scope(),  # scope
+            ]
+            + [
+                self._get_primary_item(),  # primary-ctx
+            ]
+            + self._block_identity(self._get_payload_item())
+            + [self._get_payload_item()[4]]
+            + self._block_identity(self._get_target_item())
+            + [  # target-ctx
+                self._ADDL_PROT_ENC,
+            ]
+        )
+
     def test(self):
         # 384-bit key (SHA-384 output size)
         key = SymmetricKey(
@@ -94,5 +128,6 @@ class TestExample(BaseTest):
         self._logger.info('Loopback verify: %s', verify_valid)
 
         target_enc = cbor2.dumps(target_dec)
-        bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc])
+        payload_enc = cbor2.dumps(self._get_payload_item())
+        bundle = self._assemble_bundle([prim_enc, bpsec_enc, target_enc, payload_enc])
         self._print_bundle(bundle)

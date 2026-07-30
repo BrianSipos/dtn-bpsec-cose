@@ -690,13 +690,15 @@ external_aad /= bstr .cborseq AAD-list
 AAD-list = [
     security-source: eid,
     AAD-scope,
+    ; present when AAD-scope covers block number zero
+    ; copy of primary block including array framing
+    ? primary-block,
     *AAD-block,
     ; copy of additional-protected (or default empty bstr)
     additional-protected
 ]
 ; each AAD item is a group, not a sub-array
 AAD-block = (
-    ? primary-block,   ; present for block number zero
     ? block-metadata,  ; present if AAD-metadata flag set
     ? bstr,            ; present if AAD-btsd flag set
 )
@@ -2290,7 +2292,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
   1, / block num /
   0, / flags /
   2, / CRC type /
-  <<"hello">>, / block-type-specific-data /
+  h'6568656c6c6f', / block-type-specific-data /
   h'4ec359d2' / CRC value /
 ]
 ]]></sourcecode>
@@ -2342,7 +2344,7 @@ This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-
 {0:0b1, -1:0b1}, / AAD-scope /
 [7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
   [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
-1, 1, 0, / target block-metadata /
+1, 1, 0, / block-metadata for target /
 '' / additional-protected /
         </sourcecode>
       </figure>
@@ -2351,7 +2353,7 @@ The only differences between these examples which use ECC or RSA keypairs and a 
 This would not be a change to a protected header so, given the same private key, there would be no change to the signature or wrapped-key data.
       </t>
       <t>
-Because each of the COSE_Encrypt examples using key wrap or encapsulation (<xref target="sec-example-ops-encrypt-sym-kw"/>, <xref target="sec-example-ops-encrypt-ecc-kw"/>, <xref target="sec-example-ops-rsa-recip"/>) use the same CEK within the same AAD, the target ciphertext is also identical.
+Because each of the COSE_Encrypt examples using key wrap or encapsulation (<xref target="sec-example-ops-encrypt-sym-kw"/>, <xref target="sec-example-ops-encrypt-ecc-kw"/>, <xref target="sec-example-ops-encrypt-rsa"/>) use the same CEK within the same AAD, the target ciphertext is also identical.
 The target block after application of the encryption is shown in <xref target="fig-ex-encrypt-target-final"/>.
       </t>
       <figure anchor="fig-ex-encrypt-target-final">
@@ -2367,7 +2369,7 @@ The target block after application of the encryption is shown in <xref target="f
 ]
 ]]></sourcecode>
       </figure>
-      <section>
+      <section anchor="sec-example-ops-mac0">
         <name>Symmetric Key COSE_Mac0</name>
         <t>
 This is an example of a MAC with recipient having a 384-bit symmetric key (same size of the hash output) identified by a "kid".
@@ -2401,7 +2403,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
-  h'6568656c6c6f' / payload /
+  h'6568656c6c6f' / target BTSD /
 ]
 ]]></sourcecode>
         </figure>
@@ -2450,7 +2452,7 @@ The final bundle is encoded as the following 180 octets in base-16:
 656c6c6f444ec359d2ff
         </sourcecode>
       </section>
-      <section anchor="sec-example-ops-ecc-sign">
+      <section anchor="sec-example-ops-sign-ecc">
         <name>ECC Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with the signer having a P-384 curve ECC keypair identified by a "kid".
@@ -2489,7 +2491,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
-  h'6568656c6c6f' / payload /
+  h'6568656c6c6f' / target BTSD /
 ]
 ]]></sourcecode>
         </figure>
@@ -2632,7 +2634,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
-  h'6568656c6c6f' / payload /
+  h'6568656c6c6f' / target BTSD /
 ]
 ]]></sourcecode>
         </figure>
@@ -3332,7 +3334,7 @@ The final bundle is encoded as the following 199 octets in base-16:
 562ca0e0a335caf954c79f9e4c2c24016df09f662069c0441631e85aff
         </sourcecode>
       </section>
-      <section anchor="sec-example-ops-rsa-recip">
+      <section anchor="sec-example-ops-encrypt-rsa">
         <name>RSA Keypair COSE_Encrypt</name>
         <t>
 This is an example of an encryption with a recipient having a 3072-bit RSA keypair identified by a "kid".
@@ -3511,7 +3513,7 @@ e9a50d7bb23e26feb3cc1ea8828601010002561fd25f64a2ee33e774abe16700bcfd
 9cf12ea5f7d8414447abdef0ff
         </sourcecode>
       </section>
-      <section anchor="sec-example-ops-ml-sign">
+      <section anchor="sec-example-ops-sign-ml">
         <name>ML Keypair COSE_Sign1</name>
         <t>
 This is an example of a signature with the signer having an ML-DSA-87 keypair identified by a "kid".
@@ -3547,7 +3549,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
-  h'6568656c6c6f' / payload /
+  h'6568656c6c6f' / target BTSD /
 ]
 ]]></sourcecode>
         </figure>
@@ -3730,6 +3732,96 @@ ea86625a1f060e89c8d8407c9ccaed93a7b7bbd9294593d9dff3030f346f94bf1036
 c359d2ff
         </sourcecode>
       </section>
+      <section anchor="sec-example-ops-mac0-bigaad">
+        <name>COSE_Mac0 with expanded AAD Scope</name>
+        <t>
+This is an example of a MAC using the same key material from the example in <xref target="sec-example-ops-mac0"/> but with a target of a Previous Node block and AAD covering the primary and payload blocks.
+This operation illustrates a real use case for one-hop authentication by targeting a limited-lifetime block and using key material that, in a real deployment, would be a shared secret with that single neighbor node.
+        </t>
+        <aside><t>
+This also shows a situation where accepting a security operation is not sufficient to perform the full authentication of the target, which involves comparing that the security source EID matches the Previous Node EID contained within the target BTSD.
+Such comparison is outside the scope of this security context processing and thus outside the scope of this document.
+        </t></aside>
+        <t>
+This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-scope"/>, which corresponds to the external AAD of <xref target="fig-ex-bigaad-list"/>.
+        </t>
+      <figure anchor="fig-ex-bigaad-list">
+        <name>Expanded-scope AAD-list CBOR-sequence diagnostic</name>
+        <sourcecode type="cborseq">
+[1, "//src/"], / security source /
+{0:0b1, 1: 0b11, -1:0b1}, / AAD-scope /
+[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+  [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
+1, 1, 0, / block-metadata for block #1 /
+h'6568656c6c6f', / BTSD for block #1 /
+6, 2, 0, / block-metadata for target /
+'' / additional-protected /
+        </sourcecode>
+      </figure>
+        <t>
+The internal COSE structure is shown in <xref target="fig-ex-mac-struct"/>.
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-bigaad-list"/>.
+The <tt>payload</tt> is the encoded target BTSD from <xref target="fig-ex-target-block"/>.
+        </t>
+        <figure anchor="fig-ex-mac-bigaad-struct">
+          <name><tt>MAC_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[
+  "MAC0", / context /
+  h'a10106', / protected /
+  h'8201662f2f7372632fa3000101032001890700028201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a00
+0f42404482a081c9010100466568656c6c6f06020040', / external_aad /
+  h'8201662f2f7372632f' / target BTSD /
+]
+]]></sourcecode>
+        </figure>
+        <figure anchor="fig-ex-mac-bigaad-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[2], / targets /
+3, / security context /
+1, / flags: params-present /
+[1, "//src/"], / security source /
+[ / parameters /
+  [
+    5, / AAD-scope /
+    / primary metadata, block #1 all, target metadata /
+    {0:0b1, 1: 0b11, -1:0b1}
+  ]
+],
+[
+  [ / target block #2 /
+    [ / result /
+      17, / COSE_Mac0 tag /
+      <<[
+        <<{ / protected /
+           / alg / 1: 6 / HMAC 384 384 /
+        }>>,
+        { / unprotected /
+          / kid / 4: 'ExampleA.1'
+        },
+        null, / payload detached /
+        h'd0218bcc266210d32be089950e733ef3ff8b502df628710c7085b72a29
+eb0867d2deaa71c2cab26a9efba0465e9b5521' / tag /
+      ]>>
+    ]
+  ]
+]
+]]></sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 197 octets in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f890700028201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f42404482a081c9850b03000058628102
+03018201662f2f7372632f818205a30001010320018181821158458443a10106a104
+4a4578616d706c65412e31f65830d0218bcc266210d32be089950e733ef3ff8b502d
+f628710c7085b72a29eb0867d2deaa71c2cab26a9efba0465e9b5521850602000049
+8201662f2f7372632f8601010002466568656c6c6f444ec359d2ff
+        </sourcecode>
+      </section>
     </section>
     <section anchor="sec-example-pkc">
       <name>Example Public Key Certificates</name>
@@ -3816,7 +3908,7 @@ G+yV1TS0SvSXcVoJUhHjWSiy+/RVx2o=
       <section>
         <name>Signing Source End-Entity Certificate</name>
         <t>
-This end-entity certificate corresponds with the private key used for signing in <xref target="sec-example-ops-ecc-sign"/>.
+This end-entity certificate corresponds with the private key used for signing in <xref target="sec-example-ops-sign-ecc"/>.
 It contains a SAN authenticating the single security source from that example, an EKU authorizing the identity, and a Key Usage authorizing the signing.
         </t>
         <figure>
