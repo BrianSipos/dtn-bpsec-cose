@@ -3738,6 +3738,10 @@ c359d2ff
 This is an example of a MAC using the same key material from the example in <xref target="sec-example-ops-mac0"/> but with a target of a Previous Node block and AAD covering the primary and payload blocks.
 This operation illustrates a real use case for one-hop authentication by targeting a limited-lifetime block and using key material that, in a real deployment, would be a shared secret with that single neighbor node.
         </t>
+        <aside><t>
+This also shows a situation where accepting a security operation is not sufficient to perform the full authentication of the target, which involves comparing that the security source EID matches the Previous Node EID contained within the target BTSD.
+Such comparison is outside the scope of this security context processing and thus outside the scope of this document.
+        </t></aside>
         <t>
 This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-scope"/>, which corresponds to the external AAD of <xref target="fig-ex-bigaad-list"/>.
         </t>
