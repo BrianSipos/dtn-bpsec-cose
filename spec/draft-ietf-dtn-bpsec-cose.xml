@@ -3848,7 +3848,7 @@ This example uses the same AAD Scope as <xref target="sec-example-ops-mac0"/> bu
           <name>AAD-list CBOR-sequence diagnostic</name>
           <sourcecode type="cborseq"><![CDATA[
 [1, "//src/"], / security source /
-{0:0b1, 1: 0b11, -1:0b1}, / AAD-scope /
+{0:0b1,-1:0b1}, / AAD-scope /
 [7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
   [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
 1, 1, 0, / block-metadata for target /
@@ -3876,7 +3876,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fix-ex-payloa
         <figure anchor="fig-ex-mac-addlprot-asb">
           <name>Abstract Security Block CBOR diagnostic</name>
           <sourcecode type="cbor"><![CDATA[
-[2], / targets /
+[1], / targets /
 3, / security context /
 1, / flags: params-present /
 [1, "//src/"], / security source /
