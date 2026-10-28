@@ -22,7 +22,7 @@ class TestExample(BaseTest):
             }
         )
         public_key = copy.deepcopy(private_key)
-        del public_key[keyparam.OKPKpD]
+        del public_key[keyparam.OKPKpD.identifier]
         self._logger.info('Private Key: %s', cbor2diag(private_key.encode()))
 
         # Primary block
