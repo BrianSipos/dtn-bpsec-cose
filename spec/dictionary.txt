@@ -10,6 +10,7 @@ Adleman
 AEAD
 AES
 alg
+AMMOS
 APL
 ASB
 Babun
@@ -19,6 +20,7 @@ BCP
 BIB
 BPA
 BPSec
+BSL
 bstr
 btsd
 BTSD

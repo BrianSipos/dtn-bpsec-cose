@@ -354,7 +354,7 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> handle empty header map pa
           </t>
           <t>
 Security verifiers and acceptors <bcp14>SHALL</bcp14> treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result in the security block (across all security targets).
-For single-layer messages (<em>i.e.</em>, COSE_Encrypt0, COSE_MAC0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
+For single-layer messages (<em>i.e.</em>, COSE_Encrypt0, COSE_Mac0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
 If the same header label is present in a additional header map and a COSE layer's headers the item in the result header <bcp14>SHALL</bcp14> take precedence (<em>i.e.</em>, the additional header items are added only if they are not already present in a layer's header).
           </t>
           <t>
@@ -2230,6 +2230,15 @@ The value range is a bit position within an unsigned 64-bit integer.
           <front>
             <title>Bundle Protocol Security (BPSec) COSE Context</title>
             <author fullname="Brian Sipos" initials="B." surname="Sipos">
+              <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
+            </author>
+            <date/>
+          </front>
+        </reference>
+        <reference anchor="github-bsl" target="https://github.com/NASA-AMMOS/BSL/">
+          <front>
+            <title>Bundle Protocol Security Library (BSL)</title>
+            <author>
               <organization abbrev="JHU/APL">The Johns Hopkins University Applied Physics Laboratory</organization>
             </author>
             <date/>
@@ -4211,7 +4220,7 @@ Thanks to David Koisser of SANCTUARY Systems GmbH, Rick Taylor of Aalyria Techno
     <section removeInRFC="true" numbered="false">
       <name>Implementation Status</name>
       <t>
-[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/>, <xref target="github-dtn-bpsec-cose"/>, <xref target="github-dtn-demo-agent"/>, and <xref target="gitlab-wireshark"/>.]
+[NOTE to the RFC Editor: please remove this section before publication, as well as the reference to <xref target="RFC7942"/>, <xref target="github-bsl"/>, <xref target="github-dtn-bpsec-cose"/>, <xref target="github-dtn-demo-agent"/>, and <xref target="gitlab-wireshark"/>.]
       </t>
       <t>
 This section records the status of known implementations of the
@@ -4229,11 +4238,15 @@ implementations or their features. Readers are advised to note that
 other implementations can exist.
       </t>
       <t>
-A limited implementation of this COSE Context has been added to the <xref target="github-dtn-demo-agent"/> to help with interoperability testing.
+A limited implementation of this COSE Context has been added to the Python demo agent <xref target="github-dtn-demo-agent"/> to help with interoperability testing for all COSE message types and algorithms supported by the upstream <tt>pycose</tt> library.
       </t>
       <t>
-As of the time of writing a COSE Context dissector has been accepted to the default development branch of the Wireshark project <xref target="gitlab-wireshark"/>.
-That dissector integrates the full-featured COSE dissector on top of BPSec, so will scale with any future additions to COSE itself.
+A production implementation of this COSE Context has been added to version 2.0 of the NASA-AMMOS BSL project <xref target="github-bsl"/> with support for some messages (COSE_Encrypt0, COSE_Mac0, and single-recipient COSE_Encrypt and COSE_Mac) and only symmetric keyed algorithms.
+Development is underway to support COSE_Sign1 and specific asymmetric signature algorithms in a forthcoming release.
+      </t>
+      <t>
+A COSE Context dissector has been added to release version 4.6 the Wireshark project <xref target="gitlab-wireshark"/>.
+That dissector integrates the full-featured COSE message dissector on top of BPSec, so will scale with any future additions to COSE itself.
       </t>
       <t>
 An example implementation of this COSE Context has been created as a GitHub project <xref target="github-dtn-bpsec-cose"/> and is intended to use as a proof-of-concept and as a source of data for the examples in <xref target="sec-example-ops"/>.
