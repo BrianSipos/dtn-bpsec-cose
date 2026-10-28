@@ -885,8 +885,11 @@ Future use cases could update this profile to expand that minimum, and implement
         <t>
 To ensure interoperability, all implementations <bcp14>SHALL</bcp14> support at least 10 parameters per header map.
 Implementations <bcp14>SHOULD</bcp14> support at least 50 parameters per header map to enable future expansion.
-Implementations <bcp14>SHALL</bcp14> support at least 16 bytes length for the "kid" and "kid context" parameters.
+        </t>
+        <t>
+Implementations <bcp14>SHALL</bcp14> support at least 16 bytes length for the "kid", "kid context", and "static key id" parameters.
 This length is enough to support using Universally Unique IDentifiers (UUIDs) <xref target="RFC9562"/> for those values.
+All other header parameters listed in <xref target="sec-interop-hdr"/> have lengths bounded by their definitions and associated algorithms (<em>e.g.</em>, the thumbprints contain byte strings output by specific hash algorithms).
         </t>
         <t>
 This profile imposes no minimum capabilities of the internal key store, credential store, or trust store of an implementation.
