@@ -116,6 +116,7 @@ pre
 PSK
 PSS
 reachability
+responder
 RESTful
 Rivest
 RKF
@@ -131,6 +132,7 @@ smime
 subjectAltName
 TBD
 TCPCL
+TLS
 tstr
 uint
 unencoded
