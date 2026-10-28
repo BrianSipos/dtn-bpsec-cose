@@ -10,6 +10,7 @@ Adleman
 AEAD
 AES
 alg
+AMMOS
 anycast
 APL
 ASB
@@ -20,6 +21,7 @@ BCP
 BIB
 BPA
 BPSec
+BSL
 bstr
 btsd
 BTSD
