@@ -10,6 +10,7 @@ Adleman
 AEAD
 AES
 alg
+anycast
 APL
 ASB
 Babun
@@ -112,6 +113,7 @@ plaintext
 pre
 PSK
 PSS
+reachability
 RESTful
 Rivest
 RKF
