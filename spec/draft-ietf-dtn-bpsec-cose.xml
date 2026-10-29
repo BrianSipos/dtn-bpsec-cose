@@ -883,6 +883,15 @@ All implementations of this profile <bcp14>SHALL</bcp14> support at least 10 rec
 Future use cases could update this profile to expand that minimum, and implementations are free to support much larger breadths.
         </t>
         <t>
+To ensure interoperability, all implementations <bcp14>SHALL</bcp14> support at least 10 parameters per header map.
+Implementations <bcp14>SHOULD</bcp14> support at least 25 parameters per header map to enable future expansion.
+        </t>
+        <t>
+Implementations <bcp14>SHALL</bcp14> support at least 16 bytes length for the "kid", "kid context", and "static key id" parameters.
+This length is enough to support using Universally Unique IDentifiers (UUIDs) <xref target="RFC9562"/> for those values.
+All other header parameters listed in <xref target="sec-interop-hdr"/> have lengths bounded by their definitions and associated algorithms (<em>e.g.</em>, the thumbprints contain byte strings output by specific hash algorithms).
+        </t>
+        <t>
 This profile imposes no minimum capabilities of the internal key store, credential store, or trust store of an implementation.
 Whether or not an implementation uses COSE Key objects internally, how key identifiers are managed, or how time-variance of key, credential, or trust validity are handled have no effect on its ability to perform COSE messaging.
         </t>
@@ -2221,6 +2230,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9562.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
