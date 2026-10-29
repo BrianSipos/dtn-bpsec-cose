@@ -1,3 +1,4 @@
+
 aad
 AAD
 Aalyria
@@ -77,6 +78,7 @@ HKDF
 HMAC
 HPKE
 IANA
+IDentifiers
 IESG
 IETF
 interoperable
@@ -140,6 +142,7 @@ untrusted
 Untrusted
 URI
 UTF
+UUIDs
 verifier
 verifiers
 Wireshark
