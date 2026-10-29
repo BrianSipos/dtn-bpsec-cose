@@ -884,7 +884,7 @@ Future use cases could update this profile to expand that minimum, and implement
         </t>
         <t>
 To ensure interoperability, all implementations <bcp14>SHALL</bcp14> support at least 10 parameters per header map.
-Implementations <bcp14>SHOULD</bcp14> support at least 50 parameters per header map to enable future expansion.
+Implementations <bcp14>SHOULD</bcp14> support at least 25 parameters per header map to enable future expansion.
         </t>
         <t>
 Implementations <bcp14>SHALL</bcp14> support at least 16 bytes length for the "kid", "kid context", and "static key id" parameters.
