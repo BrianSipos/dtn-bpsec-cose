@@ -2277,11 +2277,10 @@ The value range is a bit position within an unsigned 64-bit integer.
     <section anchor="sec-example-ops">
       <name>Example Security Operations</name>
       <t>
-These examples are intended to have the correct structure of COSE security blocks but in some cases use simplified algorithm parameters or smaller key sizes than are required by the actual COSE profile defined in this documents.
-Each example indicates how it differs from the actual profile if there is a meaningful difference.
+These examples are intended to cover a variety of different security services, BPSec parameters, and COSE algorithms using the security context defined in this document.
       </t>
       <t>
-All of these examples operate within the context of the bundle primary block of <xref target="fig-ex-primary-block"/> with a security target block of <xref target="fix-ex-payload-block"/>.
+All of these examples operate within the context of a bundle having primary block of <xref target="fig-ex-primary-block"/> with a payload block of <xref target="fix-ex-payload-block"/>.
 All example figures use the extended diagnostic notation <xref target="RFC8610"/>.
       </t>
       <figure anchor="fig-ex-primary-block">
@@ -2317,7 +2316,7 @@ All example figures use the extended diagnostic notation <xref target="RFC8610"/
 ]]></sourcecode>
       </figure>
       <t>
-Together these form an original bundle without any security operations present.
+Together these form an original bundle without any security operations or extension blocks present.
 This bundle is encoded as the following 77 octets in base-16:
       </t>
       <sourcecode type="cborhex">
@@ -3770,9 +3769,9 @@ The initial bundle is encoded as the following 92 octets in base-16:
 2f2f7372632f8601010002466568656c6c6f444ec359d2ff
         </sourcecode>
         <t>
-This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-scope"/>, which corresponds to the external AAD of <xref target="fig-ex-bigaad-aad-list"/>.
+This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-scope"/>, which corresponds to the external AAD of <xref target="fig-ex-mac-bigaad-aad-list"/>.
         </t>
-        <figure anchor="fig-ex-bigaad-aad-list">
+        <figure anchor="fig-ex-mac-bigaad-aad-list">
           <name>Expanded-scope AAD-list CBOR-sequence diagnostic</name>
           <sourcecode type="cborseq"><![CDATA[
 [1, "//src/"], / security source /
@@ -3787,7 +3786,7 @@ h'6568656c6c6f', / BTSD for block #1 /
       </figure>
         <t>
 The internal COSE structure is shown in <xref target="fig-ex-mac-bigaad-struct"/>.
-The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-bigaad-aad-list"/>.
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-mac-bigaad-aad-list"/>.
 The <tt>payload</tt> is the encoded target BTSD from the Previous Node block.
         </t>
         <figure anchor="fig-ex-mac-bigaad-struct">
@@ -3852,7 +3851,7 @@ f628710c7085b72a29eb0867d2deaa71c2cab26a9efba0465e9b5521850602000049
       <section anchor="sec-example-ops-mac0-addlprot">
         <name>COSE_Mac0 with Additional Protected Map</name>
         <t>
-This is an example of a MAC using the same key material from the example in <xref target="sec-example-ops-mac0"/> but identifying the key through an <xref target="sec-ASB-param-additional">Additional Protected parameter</xref>.
+This is an example of a MAC using the same initial bundle and key material from the example in <xref target="sec-example-ops-mac0"/> but identifying the key through an <xref target="sec-ASB-param-additional">Additional Protected parameter</xref>.
 Although the target and AAD Scope is the same as the other example, the presence of the additional protected header causes the full AAD (and thus the MAC tag) to be different.
         </t>
         <aside><t>
@@ -3939,6 +3938,91 @@ The final bundle is encoded as the following 184 octets in base-16:
 018181821158398443a10106a0f6583073d54e469fcc5e66f4a3dd81a1486012f08c
 4d662a15eaba7516d1aa2ed6d23785659682317543ba5fc7e7dd19d46d9886010100
 02466568656c6c6f444ec359d2ff
+        </sourcecode>
+      </section>
+      <section anchor="sec-example-ops-mac0-primary">
+        <name>COSE_Mac0 targeting Primary Block</name>
+        <t>
+This is an example of a MAC using the same initial bundle and key material from the example in <xref target="sec-example-ops-mac0"/> but with a target of the primary block and a default AAD covering the security block metadata.
+        </t>
+        <t>
+This case is specifically useful because it demonstrates not just the default AAD Scope, but the fact that the primary block is covered as block zero by AAD, as target block metadata, and as the target itself.
+This multiple coverage is due to the definition of external AAD in <xref target="sec-secctx-aad"/> and is not harmful or wasteful as the AAD is entirely internal to the security processing on the node.
+        </t>
+        <t>
+This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-scope"/>, which corresponds to the external AAD of <xref target="fig-ex-mac-primary-aad-list"/>.
+        </t>
+        <figure anchor="fig-ex-mac-primary-aad-list">
+          <name>Default scope AAD-list CBOR-sequence diagnostic</name>
+          <sourcecode type="cborseq"><![CDATA[
+[1, "//src/"], / security source /
+{0:0b1, -1:0b1, -2:0b1}, / AAD-scope /
+[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+  [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
+[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+  [813110400000, 0 ], 1000000, h'82a081c9'], / metadata for target /
+11, 3, 0, / block-metadata for security block #2 /
+'' / additional-protected /
+]]></sourcecode>
+      </figure>
+        <t>
+The internal COSE structure is shown in <xref target="fig-ex-mac-primary-struct"/>.
+The <tt>external_aad</tt> is the encoded data from <xref target="fig-ex-mac-primary-aad-list"/>.
+The <tt>payload</tt> is the encoded target BTSD from the Previous Node block.
+        </t>
+        <figure anchor="fig-ex-mac-primary-struct">
+          <name><tt>MAC_structure</tt> CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[
+  "MAC0", / context /
+  h'a10106', / protected /
+  h'8201662f2f7372632fa3000120012101890700028201692f2f6473742f737663
+8201692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a00
+0f42404482a081c9890700028201692f2f6473742f7376638201692f2f7372632f73
+76638201662f2f7372632f821b000000bd51281400001a000f42404482a081c90b03
+0040', / external_aad /
+  h'890700028201692f2f6473742f7376638201692f2f7372632f7376638201662f
+2f7372632f821b000000bd51281400001a000f42404482a081c9' / payload /
+]
+]]></sourcecode>
+        </figure>
+        <figure anchor="fig-ex-mac-primary-asb">
+          <name>Abstract Security Block CBOR diagnostic</name>
+          <sourcecode type="cbor"><![CDATA[
+[0], / targets /
+3, / security context /
+0, / flags:  /
+[1, "//src/"], / security source /
+[
+  [ / target block #0 /
+    [ / result /
+      17, / COSE_Mac0 tag /
+      <<[
+        <<{ / protected /
+           / alg / 1: 6 / HMAC 384 384 /
+        }>>,
+        { / unprotected /
+          / kid / 4: 'ExampleA.1'
+        },
+        null, / payload detached /
+        h'68010e09352d7ecf30735a4f26d4be26842fcac50e81720f59a467354e
+ec3d7fac79a46274c92504f0cd06ab6793a2d9' / tag /
+      ]>>
+    ]
+  ]
+]
+]]></sourcecode>
+        </figure>
+        <t>
+The final bundle is encoded as the following 172 octets in base-16:
+        </t>
+        <sourcecode type="cborhex">
+9f890700028201692f2f6473742f7376638201692f2f7372632f7376638201662f2f
+7372632f821b000000bd51281400001a000f42404482a081c9850b03000058588101
+03008201662f2f7372632f8181821158458443a10106a1044a4578616d706c65412e
+31f6583068010e09352d7ecf30735a4f26d4be26842fcac50e81720f59a467354eec
+3d7fac79a46274c92504f0cd06ab6793a2d98601010002466568656c6c6f444ec359
+d2ff
         </sourcecode>
       </section>
     </section>

@@ -51,7 +51,7 @@ ty = [
 [tool.pytest.ini_options]
 testpaths="bpsec_cose/test"
 log_cli="True"
-log_cli_level="info"
+log_cli_level="warning"
 log_format = "%(asctime)s [%(levelname)s] %(message)s"
 
 [tool.pylint.MAIN]

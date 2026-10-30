@@ -67,7 +67,7 @@ class BaseTest(unittest.TestCase):
         self._replace_crc(dec, crc_type)
         return dec
 
-    def _get_target_item(self) -> list:
+    def _get_payload_item(self) -> list:
         crc_type = DEFAULT_CRC_TYPE
         dec = [
             1,  # type code: payload
@@ -79,6 +79,10 @@ class BaseTest(unittest.TestCase):
         ]
         self._replace_crc(dec, crc_type)
         return dec
+
+    def _get_target_item(self) -> list:
+        # default target is the payload
+        return self._get_payload_item()
 
     def _block_identity(self, item: list) -> list:
         ''' Block identity is the first three fields of canonical block array.
@@ -124,16 +128,17 @@ class BaseTest(unittest.TestCase):
             ],
             context_id=3,  # COSE
             security_source=self._SECSRC_EID,
-            parameters=[
-                (5, self._get_aad_scope()),
-            ],
+            parameters=[],
             results=[
                 [  # target block results
                     result,
                 ],
             ],
         )
-        if self._ADDL_PROT_ENC and asb.parameters is not None:
+        # add scope if different from default
+        if (aad_scope := self._get_aad_scope()) != {0:1, -1:1, -2:1}:
+            asb.parameters.append((5, aad_scope))
+        if self._ADDL_PROT_ENC:
             asb.parameters.insert(0, (3, self._ADDL_PROT_ENC))
         return asb.encode_item()
 

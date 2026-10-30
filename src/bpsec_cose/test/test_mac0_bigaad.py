@@ -20,9 +20,6 @@ class TestExample(BaseTest):
             ),
         ]
 
-    def _get_payload_item(self) -> list:
-        return super()._get_target_item()
-
     def _get_aad_scope(self) -> dict[int, int]:
         return {0: 0b01, 1: 0b11, -1: 0b01}
 
