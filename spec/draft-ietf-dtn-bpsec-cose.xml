@@ -46,7 +46,7 @@ The Bundle Protocol Security (BPSec) Specification <xref target="RFC9172"/> defi
 The CBOR Object Signing and Encryption (COSE) specifications <xref target="RFC9052"/> and <xref target="RFC9053"/> defines a structure, encoding, and algorithms to use for cryptographic signing and encryption.
       </t>
       <t>
-This document describes how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context"/>.
+This document defines how to use the algorithms and encodings of COSE within BPSec blocks to apply those algorithms to Bundle security in <xref target="sec-bpsec-context"/>.
 A bare minimum of interoperability algorithms and algorithm parameters is specified by this document in <xref target="sec-COSE-profile"/>.
 The focus of the recommended algorithms is to allow BPSec to be used in a Public Key Infrastructure (PKI) as described in <xref target="sec-pkix-env"/> using a certificate profile defined in <xref target="sec-pkix-profile"/>.
       </t>
@@ -57,7 +57,7 @@ Examples of public key certificates are provided in <xref target="sec-example-pk
       <section>
         <name>Scope</name>
         <t>
-This document describes a profile of COSE which is tailored for use in BPSec and a method of including full COSE messages within BPSec security blocks.
+This document defines a profile of COSE which is tailored for use in BPSec and a method of including full COSE messages within BPSec security blocks.
 This document does not address:
         </t>
         <ul spacing="normal">
@@ -127,7 +127,7 @@ Each BPSec security context is identified by a code point present in an ASB.
           </dd>
           <dt>Abstract Security Block (ASB):</dt>
           <dd>
-The structure of a bundle integrity block (BIB) an a bundle confidentiality block (BCB).
+The structure of the block-type-specific data content for a bundle integrity block (BIB) and a bundle confidentiality block (BCB).
           </dd>
           <dt>(Security) Parameter:</dt>
           <dd>
@@ -240,7 +240,7 @@ Including the primary block as part of AAD ensures that security target block-ty
           </dd>
           <dt>Other Canonical Block BTSD:</dt>
           <dd>
-Including the BTSD of an other, non-target block as part of AAD ensures that that other block's BTSD does not change after the security operation is added.
+Including the BTSD content from another (non-target) block as part of AAD ensures that that other block's BTSD does not change after the security operation is added.
 This can guarantee that not only has the security target BTSD not changed but the additional blocks' BTSD have not changed.
           </dd>
           <dt>Other Canonical Block Metadata:</dt>
@@ -350,15 +350,16 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> treat a pair of additional
           </t>
           <t>
 Security sources <bcp14>SHOULD NOT</bcp14> include an additional header parameter which represents an empty map.
+Such an empty map expands the ASB size but does not add any information to the operations. 
 Security verifiers and acceptors <bcp14>SHALL</bcp14> handle empty header map parameters, specifically the Additional Protected parameter because it is part of the external AAD.
           </t>
           <t>
 Security verifiers and acceptors <bcp14>SHALL</bcp14> treat the aggregate of both additional header maps as being present in the <tt>unprotected</tt> header map of the highest-layers of the COSE message of each result in the security block (across all security targets).
-For single-layer messages (<em>i.e.</em>, COSE_Encrypt0, COSE_Mac0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients.
+For single-layer messages (<em>i.e.</em>, COSE_Encrypt0, COSE_Mac0, and COSE_Sign1) the additional headers apply to the message itself (layer 0) and for other messages the additional headers apply to the final recipients or signers.
 If the same header label is present in a additional header map and a COSE layer's headers the item in the result header <bcp14>SHALL</bcp14> take precedence (<em>i.e.</em>, the additional header items are added only if they are not already present in a layer's header).
           </t>
           <t>
-Additional header maps <bcp14>SHALL</bcp14> NOT contain any private key material.
+Additional header maps <bcp14>SHALL NOT</bcp14> contain any private key material.
 The security parameters are all stored in the bundle as plaintext and are visible to any bundle handlers.
           </t>
           <figure anchor="fig-additional-cddl">
@@ -380,7 +381,7 @@ The AAD Scope parameter <bcp14>SHALL</bcp14> be encoded as a CBOR map containing
           </t>
           <t>
 Non-negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as block numbers in the bundle containing the AAD Scope parameter.
-Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the IANA registry defined in <xref target="sec-iana-bundle"/>.
+Negative integer AAD Scope keys <bcp14>SHALL</bcp14> be interpreted as special (non-block-number) identifiers according to the "BPSec COSE AAD Scope Special Keys" registry defined in <xref target="sec-iana-bundle"/>.
 That registry contains the following initial values from <xref target="tab-AAD-scope-keys"/> as well as reserved blocks for experimental and private use.
           </t>
           <table anchor="tab-AAD-scope-keys">
@@ -406,8 +407,8 @@ That registry contains the following initial values from <xref target="tab-AAD-s
             </tbody>
           </table>
           <t>
-AAD Scope values <bcp14>SHALL</bcp14> be interpreted as bit flags according to the IANA registry defined in <xref target="sec-iana-bundle"/> with initial values defined in <xref target="tab-AAD-scope-flags"/>.
-Any AAD Scope value bits <bcp14>SHALL</bcp14> NOT all be set to zero, which would represent the lack of presence in the AAD and serves no purpose.
+AAD Scope values <bcp14>SHALL</bcp14> be interpreted as bit flags according to the "BPSec COSE AAD Scope Flags" registry defined in <xref target="sec-iana-bundle"/> with initial values defined in <xref target="tab-AAD-scope-flags"/>.
+Any AAD Scope value bits <bcp14>SHALL NOT</bcp14> all be set to zero, which would represent the lack of presence in the AAD and serves no purpose.
 When the map key identifies the primary block (block number zero) the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the primary block has no BTSD.
 When the map key identifies the containing security block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the security block BTSD does not yet exist.
 When the map key identifies the target block the bits <bcp14>SHALL</bcp14> only have <tt>AAD-metadata</tt> set, as the target block BTSD is already part of the security operation (integrity or confidentiality).
@@ -479,7 +480,7 @@ This avoids the need for value-mapping between code points of the two registries
         <t>
 When embedding COSE messages, the message CBOR structure <bcp14>SHALL</bcp14> be encoded as a byte string used as the result value.
 This allows a security verifier or acceptor to skip over unwanted results without needing to decode the result structure.
-When embedding COSE messages, the CBOR-tagged form <bcp14>SHALL</bcp14> NOT be used.
+When embedding COSE messages, the CBOR-tagged form <bcp14>SHALL NOT</bcp14> be used.
 The Result ID values already provide the same information as the COSE tags (using the same code points).
         </t>
         <t>
@@ -802,7 +803,7 @@ Generating a result which is likely to be discarded is wasteful of bundle size a
             <t>
 Because of the standard policy of using separate certificates for transport, signing, and encryption (see <xref target="sec-pkix-multiple-certs"/>) a single Node ID is likely to be associated with multiple certificates, and any or all of those certificates <bcp14>MAY</bcp14> be present within an "x5bag" in an <xref target="sec-ASB-param-additional">Additional Protected parameter</xref>.
 When present, a security verifier or acceptor <bcp14>SHALL</bcp14> use an "x5chain" or "x5t" to identify an end-entity certificate to use for result processing.
-Security verifiers and acceptors <bcp14>SHALL</bcp14> NOT assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient (see <xref target="sec-asym-keys"/>).
+Security verifiers and acceptors <bcp14>SHALL NOT</bcp14> assume that a validated certificate containing a NODE-ID matching a security source is enough to associate a certificate with a COSE message or recipient (see <xref target="sec-asym-keys"/>).
             </t>
           </section>
           <section anchor="sec-context-auth-valid-cert">
@@ -1430,6 +1431,7 @@ Any end-entity certificate associated with a BIB security source or BCB result r
       <t>
 This section contains requirements on public key certificates (PKCs) used with the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
 The profile here mandates specific data to be present in certificate authority (CA) and end-entity (EE) certificates but does not mandate any specific key types or signing algorithms to be used (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-ops-pkc"/>).
+The requirements in this section are consistent with the CA/Browser Forum baseline requirements <xref target="CABF-BR"/> commonly supported by CAs and the Intergovernmental Certification Authority <xref target="CCSDS-IGCA"/> planned for space agency use.
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1454,13 +1456,14 @@ The identifier type NODE-ID is defined in <xref section="4.4.1" target="RFC9174"
 All BPSec CA certificates <bcp14>SHOULD</bcp14> contain both a Subject Key Identifier extension in accordance with <xref section="4.2.1.2" target="RFC5280"/> and an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
 All BPSec end-entity certificates <bcp14>SHOULD</bcp14> contain an Authority Key Identifier extension in accordance with <xref section="4.2.1.1" target="RFC5280"/>.
 Security verifiers and acceptors <bcp14>SHOULD NOT</bcp14> rely on either a Subject Key Identifier and an Authority Key Identifier being present in any received certificate.
-Including key identifiers simplifies the work of an entity needing to assemble a certification chain.
+Including key identifiers simplifies the work of a validating entity needing to assemble a certification chain, but cannot be assumed to be always present.
       </t>
       <t>
-All BPSec CA certificates <bcp14>SHOULD</bcp14> contain an Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
+All BPSec CA certificates <bcp14>SHOULD</bcp14> contain an Extended Key Usage (EKU) extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
 When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHALL</bcp14> contain an Extended Key Usage extension in accordance with <xref section="4.2.1.12" target="RFC5280"/>.
 When the PKIX Extended Key Usage extension is present, it <bcp14>SHALL</bcp14> contain a key purpose <tt>id-kp-bundleSecurity</tt> of <xref target="IANA-SMI"/>.
 The <tt>id-kp-bundleSecurity</tt> purpose <bcp14>MAY</bcp14> be combined with other purposes in the same certificate.
+The presence of the EKU in an end-entity certificate positively identifies its purpose to secure BP content, and the presence within a CA certificate positively conveys its limited issuing purpose.
       </t>
       <t>
 When allowed by CA policy, a BPSec end-entity certificate <bcp14>SHALL</bcp14> contain a Key Usage extension in accordance with <xref section="4.2.1.3" target="RFC5280"/> marked as critical.
@@ -1817,7 +1820,33 @@ Although the requirement here is for uniqueness, the expected mechanism of gener
 This is needed for the ECDH-ES algorithms to ensure that the sender key is truly ephemeral and enable forward secrecy.
 Although the requirement here is for uniqueness, the expected mechanism of generating ephemeral ECDH keys is to use an RNG.
           </dd>
+          <dt>Signature nonce generation:</dt>
+          <dd>
+This is needed for some of the signature algorithms that do not have a purely deterministic mode of operation.
+For algorithms which do have a deterministic mode the nonce can be derived from the <tt>Sig_Structure</tt> data, in other cases the expected mechanism is to use an RNG.
+          </dd>
         </dl>
+      </section>
+      <section anchor="sec-ops-ocsp">
+        <name>Use of OCSP for PKIX Validation</name>
+        <t>
+The certificate profile in <xref target="sec-pkix-profile"/> allows and policy recommendations in <xref target="sec-context-auth-policy-rec"/> enables the use of OCSP during certificate validation.
+The use of OCSP enables prompt revocation of long-lived certificates but entails online access between the validating entity and an OCSP responder.
+        </t>
+        <t>
+It is an operational decision for the issuing CA on whether or not to include an OCSP URI within certificates.
+When a URI is included, it is also a consideration for how access can be managed from multiple vantage points.
+The use of geographic load balancing or anycast could be used to provide OCSP service among different long-delay IP enclaves.
+        </t>
+        <t>
+It is also an operational decision for the validating entity to enable the use of OCSP when such a URI is present within certificates.
+This decision can be unconditional or could be conditioned on the URI based on expected reachability of the OCSP responder.
+        </t>
+        <t>
+An alternative to using OCSP across long-delay networks is to use short-term auto-renewed (STAR) certificates <xref target="RFC8739"/> supported by online validation of a NODE-ID <xref target="RFC9891"/> by the issuing CA.
+A hierarchical arrangement of intermediate CAs can allow the issuing CA to be localized to the end-entities for which it issues certificates.
+In that way the end entity can be issued a sequence of identity certificates with no need for online access between the validating entity and an OCSP responder for the issuing CA.
+        </t>
       </section>
     </section>
     <section anchor="sec-security">
@@ -1946,7 +1975,7 @@ It is an implementation matter to choose and configure allowed algorithms on par
 Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
         </t>
         <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been published by NIST, and identified in <xref target="CNSA2"/>, but are not all available as COSE code points allocated by published standards.
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been published by NIST, and identified in <xref target="CNSA2"/>, but are not yet all available as COSE code points registered by IANA.
         </t>
       </section>
       <section>
@@ -1991,7 +2020,8 @@ In open or evolving BP deployments, security sources cannot rely on expectations
 Compliance with the requirement conditions in this section is the responsibility of each security source.
 Because block processing control flags are included in AAD metadata, a middlebox cannot alter a bundle by adjusting flags on an AAD-covered block.
 A security verifier or acceptor that detects an AAD Scope reference to a block with the "Discard block if it
-can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception the bundle in accordance with local policy.
+can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception of the bundle in accordance with local policy.
+The use of logging enhances diagnostics for failing security configurations.
         </t>
       </section>
     </section>
@@ -2120,6 +2150,7 @@ The value range is a bit position within an unsigned 64-bit integer.
     </section>
   </middle>
   <back>
+    <displayreference target="CCSDS-IGCA" to="IGCA"/>
     <displayreference target="CCSDS-SDLS" to="SDLS"/>
     <displayreference target="NIST-FIPS-140" to="FIPS-140"/>
     <displayreference target="NIST-SP800-57" to="SP800-57"/>
@@ -2173,6 +2204,16 @@ The value range is a bit position within an unsigned 64-bit integer.
       </references>
       <references>
         <name>Informative References</name>
+        <reference anchor="CABF-BR" target="https://cabforum.org/working-groups/server/baseline-requirements/documents/CA-Browser-Forum-TLS-BR-2.0.6.pdf">
+          <front>
+            <title>Baseline Requirements for the Issuance and Management of Publicly-Trusted TLS Server Certificates</title>
+            <author>
+              <organization>CA/Browser Forum</organization>
+            </author>
+            <date day="5" month="August" year="2024"/>
+          </front>
+        <refcontent>Version 2.0.6</refcontent>
+        </reference>
         <reference anchor="NIST-SP800-57" target="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">
           <front>
             <title>Recommendation for Key Management - Part 1: General</title>
@@ -2191,6 +2232,16 @@ The value range is a bit position within an unsigned 64-bit integer.
               <organization>US National Institute of Standards and Technology</organization>
             </author>
             <date month="March" year="2019"/>
+          </front>
+        </reference>
+        <reference anchor="CCSDS-IGCA" target="https://ccsds.org/publications/allpubs/entry/3145/">
+          <front>
+            <title>Intergovernmental Certification Authority</title>
+            <seriesInfo name="CCSDS" value="357.1-O-1"/>
+            <author>
+              <organization>Consultative Committee for Space Data Systems</organization>
+            </author>
+            <date month="December" year="2024"/>
           </front>
         </reference>
         <reference anchor="CCSDS-SDLS" target="https://public.ccsds.org/Pubs/350x5g2.pdf">
@@ -2227,12 +2278,14 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8739.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9053.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9171.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9173.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9562.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9891.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
@@ -2361,7 +2414,7 @@ This results in a consistent <tt>AAD-list</tt> as shown in <xref target="fig-ex-
         <sourcecode type="cborseq"><![CDATA[
 [1, "//src/"], / security source /
 {0:0b1, -1:0b1}, / AAD-scope /
-[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+[7, 0, 2, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
   [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
 1, 1, 0, / block-metadata for target /
 '' / additional-protected /
@@ -2506,7 +2559,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fix-ex-payloa
           <sourcecode type="cbor"><![CDATA[
 [
   "Signature1", / context /
-  h'a10126', / protected /
+  h'a1013832', / protected /
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
@@ -2649,7 +2702,7 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fix-ex-payloa
           <sourcecode type="cbor"><![CDATA[
 [
   "Signature1", / context /
-  h'a1013824', / protected /
+  h'a1013825', / protected /
   h'8201662f2f7372632fa200012001890700028201692f2f6473742f7376638201
 692f2f7372632f7376638201662f2f7372632f821b000000bd51281400001a000f42
 404482a081c901010040', / external_aad /
@@ -3777,7 +3830,7 @@ This example uses expanded AAD Scope as explained in <xref target="sec-ops-aad-s
           <sourcecode type="cborseq"><![CDATA[
 [1, "//src/"], / security source /
 {0:0b1, 1: 0b11, -1:0b1}, / AAD-scope /
-[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+[7, 0, 2, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
   [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
 1, 1, 0, / block-metadata for block #1 /
 h'6568656c6c6f', / BTSD for block #1 /
@@ -3868,7 +3921,7 @@ This example uses the same AAD Scope as <xref target="sec-example-ops-mac0"/> bu
           <sourcecode type="cborseq"><![CDATA[
 [1, "//src/"], / security source /
 {0:0b1,-1:0b1}, / AAD-scope /
-[7, 0, 0, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
+[7, 0, 2, [1, "//dst/svc"], [1, "//src/svc"], [1, "//src/"],
   [813110400000, 0 ], 1000000, h'82a081c9'], / primary-block /
 1, 1, 0, / block-metadata for target /
 h'a1044a4578616d706c65412e31' / additional-protected /
@@ -3905,14 +3958,14 @@ The <tt>payload</tt> is the encoded target BTSD from <xref target="fix-ex-payloa
     <<{
       / kid / 4: 'ExampleA.1'
     }>>
-  ]
+  ],
   [
     5, / AAD-scope /
     {0:0b1,-1:0b1} / primary metadata, target metadata /
   ]
 ],
 [
-  [ / target block #2 /
+  [ / target block #1 /
     [ / result /
       17, / COSE_Mac0 tag /
       <<[
@@ -3954,7 +4007,7 @@ All of the example certificates contain a validity time interval extending a sho
 This root CA certificate and private key are included for completeness in testing <xref target="sec-context-auth-valid-cert">path validation</xref> with a full chain.
 This root CA does not allow any intermediates purely as an example, while a typical deployed PKI would separate a root CA from intermediate signing CA(s).
 It also does not include any Certificate Policies, Name Constraints, or Policy Constraints extensions as an operational CA might do to express or control how its subordinates are validated and used.
-It does, however, include an Extended Key Usage (EKU) value <tt>id-kp-bundleSecurity</tt> which indicates that this certificate tree is authorized for securing BP data.
+It does, however, include an EKU value <tt>id-kp-bundleSecurity</tt> which indicates that this certificate tree is authorized for securing BP data.
         </t>
         <figure>
           <name>CA Certificate Content</name>
