@@ -22,7 +22,7 @@ class TestExample(BaseTest):
             self._get_aad_scope(),  # scope
             self._get_primary_item(),  # primary-ctx
             self._get_primary_item(),  # target-meta
-        ] + self._block_identity(self._get_bpsec_item(BlockType.BIB)) + [ # secblk-meta
+        ] + self._block_identity(self._get_bpsec_item(BlockType.BIB)) + [  # secblk-meta
             self._ADDL_PROT_ENC,
         ]
 

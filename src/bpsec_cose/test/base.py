@@ -135,11 +135,12 @@ class BaseTest(unittest.TestCase):
                 ],
             ],
         )
-        # add scope if different from default
-        if (aad_scope := self._get_aad_scope()) != {0:1, -1:1, -2:1}:
-            asb.parameters.append((5, aad_scope))
-        if self._ADDL_PROT_ENC:
-            asb.parameters.insert(0, (3, self._ADDL_PROT_ENC))
+        if asb.parameters is not None:
+            # add scope if different from default
+            if (aad_scope := self._get_aad_scope()) != {0: 1, -1: 1, -2: 1}:
+                asb.parameters.append((5, aad_scope))
+            if self._ADDL_PROT_ENC:
+                asb.parameters.insert(0, (3, self._ADDL_PROT_ENC))
         return asb.encode_item()
 
     def _get_asb_enc(self, asb_dec: list) -> bytes:
