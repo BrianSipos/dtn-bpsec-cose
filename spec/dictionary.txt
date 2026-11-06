@@ -53,6 +53,7 @@ Crypto
 cryptographic
 cryptographically
 ctx
+Cybersecurity
 de
 decrypt
 decrypting
@@ -63,6 +64,7 @@ DSA
 dtn
 DTN
 ECC
+ECCG
 ECDH
 EdDSA
 EE
