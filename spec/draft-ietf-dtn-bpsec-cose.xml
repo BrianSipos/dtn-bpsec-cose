@@ -914,11 +914,11 @@ It also does not address post-quantum (PQ) algorithms which have been published 
 The full set of code points available is managed by IANA in the "COSE algorithms" registry <xref target="IANA-COSE"/>.
         </t>
         <t>
-Each algorithm in this profile is marked as being conformant to US Committee on National Security Systems (CNSS) "CNSA 1.0" <xref target="CNSA1"/> or "CNSA 2.0" <xref target="CNSA2"/> or the European Cybersecurity Certification Group (ECCG) Agreed Cryptographic Mechanisms "ECCG" <xref target="ECCG"/> to aid in further narrowing of network-specific profiles and implementations.
+Each algorithm in this profile is marked as being conformant to US Committee on National Security Systems (CNSS) Commercial National Security Algorithm Suite version 1 "CNSAv1" <xref target="CNSA1"/> or version 2 "CNSAv2" <xref target="CNSA2"/> or the European Cybersecurity Certification Group (ECCG) Agreed Cryptographic Mechanisms version 2 "ACMv2" <xref target="ACM2"/> to aid in further narrowing of network-specific profiles and implementations.
 All of these algorithms in this profile are approved by US NIST FIPS 140-3 <xref target="NIST-FIPS-140"/>, however FIPS 140 certification involves review of software and hardware design and implementation detail outside the scope of this document.
         </t>
         <t>
-The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0, ECCG, and the CCSDS Space Data Link Security rationale green book <xref target="CCSDS-SDLS"/>.
+The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSAv1, ACMv2, and the CCSDS Space Data Link Security rationale green book <xref target="CCSDS-SDLS"/>.
 The breadth of algorithm variety is intended to cover many different current use cases beyond simple symmetric key security and be compatible with current PKIX mechanisms and strategies.
         </t>
         <section>
@@ -944,28 +944,28 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
               <tr>
                 <td>SHA-256</td>
                 <td>-16</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-512/256</td>
                 <td>-17</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-384</td>
                 <td>-43</td>
-                <td>CNSA 1.0 and 2.0, ECCG</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-512</td>
                 <td>-44</td>
-                <td>CNSA 2.0, ECCG</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
             </tbody>
           </table>
           <t>
 These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
-The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSA 1.0 and ECCG minimum strength for protecting data.
+The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSAv1 and ACMv2 minimum strength for protecting data.
           </t>
         </section>
         <section>
@@ -975,7 +975,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
+The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSAv1 or v2 conformant.
             </t>
           </aside>
           <t>
@@ -998,28 +998,28 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>0</td>
                 <td>HMAC 384/384</td>
                 <td>6</td>
-                <td>CNSA 1.0 and 2.0, ECCG</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0</td>
                 <td>HMAC 512/512</td>
                 <td>7</td>
-                <td>CNSA 2.0, ECCG</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>0</td>
                 <td>A256GCM</td>
                 <td>3</td>
-                <td>CNSA 1.0 and 2.0, ECCG</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>A256KW</td>
                 <td>-5</td>
-                <td>CNSA 1.0 and 2.0, ECCG</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity or Confidentiality</td>
@@ -1033,7 +1033,7 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>1</td>
                 <td>direct+HKDF-SHA-512</td>
                 <td>-11</td>
-                <td>CNSA 1.0 and 2.0, ECCG</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1071,10 +1071,10 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
+The ECC-based algorithms are CNSAv1 conformant only when used with a key having curve P-384.
             </t>
             <t>
-The current ECDH-based algorithms using AES key wrap (code -29 through -34) use HKDF with SHA-256, so do not conform to CNSA 1.0.
+The current ECDH-based algorithms using AES key wrap (code -29 through -34) use HKDF with SHA-256, so do not conform to CNSAv1.
             </t>
           </aside>
           <table anchor="tab-interop-algs-ecc">
@@ -1094,42 +1094,42 @@ The current ECDH-based algorithms using AES key wrap (code -29 through -34) use 
                 <td>0 or 1</td>
                 <td>ESP384</td>
                 <td>-51</td>
-                <td>CNSA 1.0, ECCG</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
                 <td>ESP512</td>
                 <td>-52</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-ES + HKDF-512</td>
                 <td>-26</td>
-                <td>CNSA 1.0, ECCG</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-SS + HKDF-512</td>
                 <td>-28</td>
-                <td>CNSA 1.0, ECCG</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-ES + A256KW</td>
                 <td>-31</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-SS + A256KW</td>
                 <td>-34</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1159,7 +1159,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The RSA-based algorithms are CNSA 1.0 and ECCG conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+The RSA-based algorithms are CNSAv1 and ACMv2 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
             </t>
           </aside>
           <table anchor="tab-interop-algs-rsa">
@@ -1179,21 +1179,21 @@ The RSA-based algorithms are CNSA 1.0 and ECCG conformant <xref target="CNSA1"/>
                 <td>0 or 1</td>
                 <td>PS384</td>
                 <td>-38</td>
-                <td>CNSA 1.0, ECCG</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
                 <td>PS512</td>
                 <td>-39</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>RSAES-OAEP w/ SHA-512</td>
                 <td>-42</td>
-                <td>CNSA 1.0, ECCG</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1229,14 +1229,14 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
                 <td>0 or 1</td>
                 <td>ML-DSA-65</td>
                 <td>-49</td>
-                <td>ECCG</td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
                 <td>ML-DSA-87</td>
                 <td>-50</td>
-                <td>CNSA 2.0, ECCG</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1601,7 +1601,7 @@ It is expected that the ultimate choice of which families are used in actual sec
 Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
         </t>
         <t>
-For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available: ESP384 (-51).
+For example, if the constraints are ECC keys using NIST curves meeting CNSAv1 minimum strength then only one integrity algorithm is available: ESP384 (-51).
 If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available: ECDH-ES+HKDF-512 (-26).
 In these cases the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
         </t>
@@ -1623,7 +1623,7 @@ Similar to how the choice of algorithm families is driven by administrative cons
         <t>
 Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
 It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
-There are also algorithm-specific profiles, such as the one for CNSA 1.0 conformance <xref target="RFC8603"/>.
+There are also algorithm-specific profiles, such as the one for CNSAv1 conformance <xref target="RFC8603"/>.
         </t>
         <t>
 For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
@@ -1985,7 +1985,7 @@ The enforcement of acceptable algorithms applies to the security source node as 
       <section anchor="sec-future-algs">
         <name>Future PQ and PQ/T Algorithm Families</name>
         <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST, and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ECCG"/>, but are not yet all available as COSE algorithm code points registered by IANA.
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST, and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ACM2"/>, but are not yet all available as COSE algorithm code points registered by IANA.
 In addition, one recommendation of the ECCG is to use PQ algorithms only in hybrid forms combined with traditional algorithms.
         </t>
         <t>
@@ -2296,7 +2296,7 @@ The value range is a bit position within an unsigned 64-bit integer.
             <date month="December" year="2024"/>
           </front>
         </reference>
-        <reference anchor="ECCG" target="">
+        <reference anchor="ACM2" target="">
           <front>
             <title>Agreed Cryptographic Mechanisms</title>
             <author>

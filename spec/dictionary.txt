@@ -7,6 +7,7 @@ acceptor's
 acceptors
 acknowledgement
 acknowledgements
+ACMv
 Adleman
 AEAD
 AES
@@ -40,6 +41,7 @@ ciphersuite
 ciphertext
 clientAuth
 CNSA
+CNSAv
 CNSS
 CoAP
 conformant
