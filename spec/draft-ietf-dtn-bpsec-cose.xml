@@ -910,8 +910,8 @@ A BPSec security operation always occurs within the context of an immutable prim
         <t>
 The minimum set of COSE algorithms needed for interoperability is listed in this section and organized by the family of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been published by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>).
-The full set of COSE algorithms available is managed by IANA <xref target="IANA-COSE"/>.
+It also does not address post-quantum (PQ) algorithms which have been published by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/>, <xref target="sec-threat-algo-vuln"/>, and <xref target="sec-future-algs"/>).
+The full set of code points available is managed by IANA in the "COSE algorithms" registry <xref target="IANA-COSE"/>.
         </t>
         <t>
 Each algorithm in this profile is marked as being conformant to US Committee on National Security Systems (CNSS) "CNSA 1.0" <xref target="CNSA1"/> or "CNSA 2.0" <xref target="CNSA2"/> or the European Cybersecurity Certification Group (ECCG) Agreed Cryptographic Mechanisms "ECCG" <xref target="ECCG"/> to aid in further narrowing of network-specific profiles and implementations.
@@ -1207,7 +1207,7 @@ When generating a BCB result from an RSA public key, implementations <bcp14>SHAL
 When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
           </t>
         </section>
-        <section>
+        <section anchor="sec-interop-alg-ml">
           <name>ML Algorithms</name>
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the module-lattice-based (ML) algorithms in <xref target="tab-interop-algs-ml"/> if they will operate with ML key material.
@@ -1245,8 +1245,7 @@ When generating a BIB result from an ML private key, implementations <bcp14>SHAL
 When a COSE_Sign or COSE_Sign1 is used with an ML private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
           </t>
           <t>
-Uses of ML keys for creating or consuming a BCB result are not supported by this profile.
-There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public Key Encryption (HPKE).
+Uses of ML keys for creating or consuming a BCB result are not supported by this profile (see <xref target="sec-future-algs"/>).
           </t>
         </section>
       </section>
@@ -1608,7 +1607,7 @@ In these cases the choice of algorithm is completely determined by operational c
         </t>
         <aside>
           <t>
-There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging post-quantum algorithm needs.
+There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging needs for <xref target="sec-future-algs">PQ and PQ/T algorithms</xref>.
           </t>
         </aside>
         <t>
@@ -1979,10 +1978,23 @@ It is an implementation matter to choose and configure allowed algorithms on par
       <section anchor="sec-threat-algo-vuln">
         <name>Threat: Algorithm Vulnerabilities</name>
         <t>
-Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
+Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the "COSE Algorithms" registry <xref target="IANA-COSE"/>.
+The enforcement of acceptable algorithms applies to the security source node as well as all verifier and acceptor nodes (as discussed in <xref target="sec-threat-downgrade"/>).
+        </t>
+      </section>
+      <section anchor="sec-future-algs">
+        <name>Future PQ and PQ/T Algorithm Families</name>
+        <t>
+Specifically for the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST, and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ECCG"/>, but are not yet all available as COSE algorithm code points registered by IANA.
+In addition, one recommendation of the ECCG is to use PQ algorithms only in hybrid forms combined with traditional algorithms.
         </t>
         <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been published by NIST, and identified in <xref target="CNSA2"/>, but are not yet all available as COSE code points registered by IANA.
+For using a PQ signature within BIB results beyond the <xref target="sec-interop-alg-ml">ML-DSA family</xref>, drafts exist for other NIST algorithms FN-DSA <xref target="I-D.ietf-cose-falcon"/> and SLH-DSA <xref target="I-D.ietf-cose-sphincs-plus"/>.
+To address PQ/T hybrid signature needs, a draft exists for using composite construction of signatures and keys <xref target="I-D.ietf-jose-pq-composite-sigs"/> which is compatible with similar hybrid use in other IETF protocols.
+        </t>
+        <t>
+For using a PQ key encapsulation mechanism (KEM) within BCB results, there are drafts for both direct ML-KEM use in a COSE recipient <xref target="I-D.ietf-cose-pqc-kem"/> and within Hybrid Public Key Encryption (HPKE) <xref target="I-D.ietf-cose-hpke"/> as both PQ-only and PQ/T hybrids <xref target="I-D.ietf-cose-hpke-pq-pqt"/>.
+
         </t>
       </section>
       <section>
@@ -2305,6 +2317,12 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-jose-pq-composite-sigs"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-falcon.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-sphincs-plus.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-pqc-kem.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke-pq-pqt.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>Bundle Protocol Security (BPSec) COSE Context</title>

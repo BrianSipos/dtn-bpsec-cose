@@ -49,6 +49,7 @@ COSE
 CRC
 crit
 CRLs
+CRQC
 Crypto
 cryptographic
 cryptographically
@@ -74,6 +75,7 @@ encodings
 endian
 ESA
 FIPS
+FN
 GCM
 GmbH
 HKDF
@@ -116,6 +118,7 @@ PKI
 pkix
 PKIX
 plaintext
+PQ
 pre
 PSK
 PSS
@@ -131,6 +134,7 @@ serverAuth
 SHA
 Shamir
 Sig
+SLH
 SMI
 smime
 subjectAltName
