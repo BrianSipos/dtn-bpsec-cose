@@ -1160,7 +1160,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The RSA-based algorithms are CNSAv1 and ACMv2 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+The RSA-based algorithms are CNSAv1 and ACMv2 conformant only when used with a key modulus of 3072 bits or larger.
             </t>
           </aside>
           <table anchor="tab-interop-algs-rsa">
