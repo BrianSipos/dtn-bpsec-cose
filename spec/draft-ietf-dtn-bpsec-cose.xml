@@ -926,11 +926,6 @@ The breadth of algorithm variety is intended to cover many different current use
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/> if they will operate with public key certificates.
           </t>
-          <aside>
-            <t>
-The SHA-256 hash algorithm is the interoperability minimum support for both certificate thumbprints <xref target="RFC9360"/> and for COSE key thumbprints <xref target="RFC9679"/>.
-            </t>
-          </aside>
           <table anchor="tab-interop-algs-hash">
             <name>Hash Algorithms</name>
             <thead>
@@ -970,6 +965,7 @@ The SHA-256 hash algorithm is the interoperability minimum support for both cert
           </table>
           <t>
 These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
+The SHA-256 hash algorithm is the interoperability minimum support for both certificate thumbprints <xref target="RFC9360"/> and for COSE key thumbprints <xref target="RFC9679"/>.
 The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSAv1 and ACMv2 minimum strength for protecting data.
           </t>
         </section>
