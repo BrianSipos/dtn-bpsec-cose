@@ -1568,6 +1568,7 @@ This could be because not all of the participating nodes support the same algori
           <t>
 This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> as explained in <xref section="13" target="RFC9958"/>.
 This form of parallel signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set because an on-path attacker can simply remove one or more of the signatures and the others will still be valid.
+Proper hybrid signature algorithms are discussed in <xref target="sec-future-algs"/>.
           </t>
         </section>
       </section>
@@ -1987,24 +1988,6 @@ Because this use of COSE leaves the specific algorithms chosen for BIB and BCB u
 The enforcement of acceptable algorithms applies to the security source node as well as all verifier and acceptor nodes (as discussed in <xref target="sec-threat-downgrade"/>).
         </t>
       </section>
-      <section anchor="sec-future-algs">
-        <name>Future PQ and PQ/T Algorithm Families</name>
-        <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST, and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ACM2"/>, but are not yet all available as COSE algorithm code points registered by IANA.
-In addition, one recommendation of the ECCG is to use PQ algorithms only in hybrid forms combined with traditional algorithms.
-        </t>
-        <t>
-This section is non-normative and not part of the current profile in <xref target="sec-COSE-profile"/> because the referenced internet drafts do not yet make permanent registrations in IANA.
-        </t>
-        <t>
-For using a PQ signature within BIB results beyond the <xref target="sec-interop-alg-ml">ML-DSA family</xref>, drafts exist for other NIST algorithms FN-DSA <xref target="I-D.ietf-cose-falcon"/> and SLH-DSA <xref target="I-D.ietf-cose-sphincs-plus"/>.
-To address PQ/T hybrid signature needs, a draft exists for using composite construction of signatures and keys <xref target="I-D.ietf-jose-pq-composite-sigs"/> in a way which is compatible with hybrid use in other IETF protocols and related cryptographic libraries.
-        </t>
-        <t>
-For using a PQ key encapsulation mechanism (KEM) within BCB results, there are drafts for both direct ML-KEM use in a COSE recipient <xref target="I-D.ietf-cose-pqc-kem"/> and within Hybrid Public Key Encryption (HPKE) <xref target="I-D.ietf-cose-hpke"/> as both PQ-only and PQ/T hybrids <xref target="I-D.ietf-cose-hpke-pq-pqt"/>.
-HPKE itself represents a future pathway for COSE to support more advanced encryption and recipient cipher-suites in a way which shares common processing with other IETF protocols and related cryptographic libraries.
-        </t>
-      </section>
       <section>
         <name>Inherited Security Considerations</name>
         <t>
@@ -2049,6 +2032,24 @@ Because block processing control flags are included in AAD metadata, a middlebox
 A security verifier or acceptor that detects an AAD Scope reference to a block with the "Discard block if it
 can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception of the bundle in accordance with local policy.
 The use of logging enhances diagnostics for failing security configurations.
+        </t>
+      </section>
+      <section anchor="sec-future-algs">
+        <name>Future PQ and PQ/T Algorithm Families</name>
+        <t>
+This section is non-normative and not part of the current profile in <xref target="sec-COSE-profile"/> because the referenced internet drafts do not yet make permanent registrations in the COSE algorithms registry.
+        </t>
+        <t>
+For the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ACM2"/>.
+In addition, one recommendation of the ECCG is to use PQ algorithms only in hybrid forms combined with traditional algorithms.
+        </t>
+        <t>
+For using a PQ signature within BIB results beyond the <xref target="sec-interop-alg-ml">ML-DSA family</xref>, drafts exist for other NIST algorithms FN-DSA <xref target="I-D.ietf-cose-falcon"/> and SLH-DSA <xref target="I-D.ietf-cose-sphincs-plus"/>.
+To address PQ/T hybrid signature needs, a draft exists for using composite construction of signatures and keys <xref target="I-D.ietf-jose-pq-composite-sigs"/> in a way which is compatible with hybrid use in other IETF protocols and related cryptographic libraries.
+        </t>
+        <t>
+For using a PQ key encapsulation mechanism (KEM) within BCB results, there are drafts for both direct ML-KEM use in a COSE recipient <xref target="I-D.ietf-cose-pqc-kem"/> and within Hybrid Public Key Encryption (HPKE) <xref target="I-D.ietf-cose-hpke"/> as both PQ-only and PQ/T hybrids <xref target="I-D.ietf-cose-hpke-pq-pqt"/>.
+HPKE itself represents a future pathway for COSE to support more advanced encryption and recipient cipher-suites in a way which shares common processing with other IETF protocols and related cryptographic libraries.
         </t>
       </section>
     </section>
