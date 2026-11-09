@@ -926,6 +926,11 @@ The breadth of algorithm variety is intended to cover many different current use
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the non-keyed hash algorithms in <xref target="tab-interop-algs-hash"/> if they will operate with public key certificates.
           </t>
+          <aside>
+            <t>
+The SHA-256 hash algorithm is the interoperability minimum support for both certificate thumbprints <xref target="RFC9360"/> and for COSE key thumbprints <xref target="RFC9679"/>.
+            </t>
+          </aside>
           <table anchor="tab-interop-algs-hash">
             <name>Hash Algorithms</name>
             <thead>
