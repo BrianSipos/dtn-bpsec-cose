@@ -1997,7 +1997,7 @@ To address PQ/T hybrid signature needs, a draft exists for using composite const
         </t>
         <t>
 For using a PQ key encapsulation mechanism (KEM) within BCB results, there are drafts for both direct ML-KEM use in a COSE recipient <xref target="I-D.ietf-cose-pqc-kem"/> and within Hybrid Public Key Encryption (HPKE) <xref target="I-D.ietf-cose-hpke"/> as both PQ-only and PQ/T hybrids <xref target="I-D.ietf-cose-hpke-pq-pqt"/>.
-HPKE itself represents a future pathway for COSE to support more advanced encryption and recipient ciphersuites in a way which shares common processing with other IETF protocols and related cryhptographic libraries.
+HPKE itself represents a future pathway for COSE to support more advanced encryption and recipient cipher-suites in a way which shares common processing with other IETF protocols and related cryptographic libraries.
         </t>
       </section>
       <section>
