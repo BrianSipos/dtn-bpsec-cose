@@ -910,15 +910,15 @@ A BPSec security operation always occurs within the context of an immutable prim
         <t>
 The minimum set of COSE algorithms needed for interoperability is listed in this section and organized by the family of associated key material.
 This profile intentionally does not prohibit the use of any other algorithms in specific implementations, devices, or networks and is meant only to provide a starting point for general purpose implementations.
-It also does not address post-quantum algorithms which have been published by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-threat-algo-vuln"/>).
-The full set of COSE algorithms available is managed by IANA <xref target="IANA-COSE"/>.
+It also does not address post-quantum (PQ) algorithms which have been published by NIST but are still undergoing standardization in the IETF (see <xref target="sec-ops-alg-choice"/>, <xref target="sec-threat-algo-vuln"/>, and <xref target="sec-future-algs"/>).
+The full set of code points available is managed by IANA in the "COSE algorithms" registry <xref target="IANA-COSE"/>.
         </t>
         <t>
-Each algorithm in this profile is marked as being US CNSS CNSA 1.0 conformant <xref target="CNSA1"/> or CNSA 2.0 conformant <xref target="CNSA2"/> to aid in further narrowing of network-specific profiles and implementations.
+Each algorithm in this profile is marked as being conformant to US Committee on National Security Systems (CNSS) Commercial National Security Algorithm Suite version 1 "CNSAv1" <xref target="CNSA1"/> or version 2 "CNSAv2" <xref target="CNSA2"/> or the European Cybersecurity Certification Group (ECCG) Agreed Cryptographic Mechanisms version 2 "ACMv2" <xref target="ACM2"/> to aid in further narrowing of network-specific profiles and implementations.
 All of these algorithms in this profile are approved by US NIST FIPS 140-3 <xref target="NIST-FIPS-140"/>, however FIPS 140 certification involves review of software and hardware design and implementation detail outside the scope of this document.
         </t>
         <t>
-The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSA 1.0 and the CCSDS Space Data Link Security rationale green book <xref target="CCSDS-SDLS"/>.
+The threshold for minimum security strength to be included in this interoperability minimum is roughly equivalent to CNSAv1, ACMv2, and the CCSDS Space Data Link Security rationale green book <xref target="CCSDS-SDLS"/>.
 The breadth of algorithm variety is intended to cover many different current use cases beyond simple symmetric key security and be compatible with current PKIX mechanisms and strategies.
         </t>
         <section>
@@ -944,28 +944,29 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
               <tr>
                 <td>SHA-256</td>
                 <td>-16</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-512/256</td>
                 <td>-17</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-384</td>
                 <td>-43</td>
-                <td>CNSA 1.0 and 2.0</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>SHA-512</td>
                 <td>-44</td>
-                <td>CNSA 2.0</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
             </tbody>
           </table>
           <t>
 These algorithms are currently used in the <tt>COSE_CertHash</tt> of "x5t" header parameters, which are expected to be included as unprotected (see <xref target="sec-asym-keys"/>).
-The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSA 1.0 minimum strength for protecting data.
+The SHA-256 hash algorithm is the interoperability minimum support for both certificate thumbprints <xref target="RFC9360"/> and for COSE key thumbprints <xref target="RFC9679"/>.
+The truncated algorithms are useful for certificate filtering using shorter thumbprints, so are included here even though they fall below the CNSAv1 and ACMv2 minimum strength for protecting data.
           </t>
         </section>
         <section>
@@ -975,7 +976,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSA 1.0 or 2.0 conformant.
+The symmetric keyed algorithms here are not a super-set of those available in the BPSec default security contexts <xref target="RFC9173"/>, this list includes only those which are CNSAv1 or v2 conformant.
             </t>
           </aside>
           <t>
@@ -998,28 +999,28 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>0</td>
                 <td>HMAC 384/384</td>
                 <td>6</td>
-                <td>CNSA 1.0 and 2.0</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0</td>
                 <td>HMAC 512/512</td>
                 <td>7</td>
-                <td>CNSA 2.0</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>0</td>
                 <td>A256GCM</td>
                 <td>3</td>
-                <td>CNSA 1.0 and 2.0</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity or Confidentiality</td>
                 <td>1</td>
                 <td>A256KW</td>
                 <td>-5</td>
-                <td>CNSA 1.0 and 2.0</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity or Confidentiality</td>
@@ -1033,7 +1034,7 @@ The "direct" algorithm is really just a recipient placeholder to allow using a c
                 <td>1</td>
                 <td>direct+HKDF-SHA-512</td>
                 <td>-11</td>
-                <td>CNSA 1.0 and 2.0</td>
+                <td>CNSAv1 and v2, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1071,10 +1072,10 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The ECC-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key having curve P-384.
+The ECC-based algorithms are CNSAv1 conformant only when used with a key having curve P-384.
             </t>
             <t>
-The current ECC-based algorithms using AES key wrap (code -29 through -34) use HKDF with SHA-256, so do not conform to CNSA 1.0.
+The current ECDH-based algorithms using AES key wrap (code -29 through -34) use HKDF with SHA-256, so do not conform to CNSAv1.
             </t>
           </aside>
           <table anchor="tab-interop-algs-ecc">
@@ -1094,42 +1095,42 @@ The current ECC-based algorithms using AES key wrap (code -29 through -34) use H
                 <td>0 or 1</td>
                 <td>ESP384</td>
                 <td>-51</td>
-                <td>CNSA 1.0</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
                 <td>ESP512</td>
                 <td>-52</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-ES + HKDF-512</td>
                 <td>-26</td>
-                <td>CNSA 1.0</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-SS + HKDF-512</td>
                 <td>-28</td>
-                <td>CNSA 1.0</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-ES + A256KW</td>
                 <td>-31</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>ECDH-SS + A256KW</td>
                 <td>-34</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1159,7 +1160,7 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
           </t>
           <aside>
             <t>
-The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only when used with a key modulus of 3072 bits or larger.
+The RSA-based algorithms are CNSAv1 and ACMv2 conformant only when used with a key modulus of 3072 bits or larger.
             </t>
           </aside>
           <table anchor="tab-interop-algs-rsa">
@@ -1179,21 +1180,21 @@ The RSA-based algorithms are CNSA 1.0 conformant <xref target="CNSA1"/> only whe
                 <td>0 or 1</td>
                 <td>PS384</td>
                 <td>-38</td>
-                <td>CNSA 1.0</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
                 <td>PS512</td>
                 <td>-39</td>
-                <td></td>
+                <td>ACMv2</td>
               </tr>
               <tr>
                 <td>Confidentiality</td>
                 <td>1</td>
                 <td>RSAES-OAEP w/ SHA-512</td>
                 <td>-42</td>
-                <td>CNSA 1.0</td>
+                <td>CNSAv1, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1207,7 +1208,7 @@ When generating a BCB result from an RSA public key, implementations <bcp14>SHAL
 When a COSE_Encrypt is used with an RSA public key, the recipient layer <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
           </t>
         </section>
-        <section>
+        <section anchor="sec-interop-alg-ml">
           <name>ML Algorithms</name>
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the module-lattice-based (ML) algorithms in <xref target="tab-interop-algs-ml"/> if they will operate with ML key material.
@@ -1227,9 +1228,16 @@ Implementations conforming to this specification <bcp14>SHALL</bcp14> support th
               <tr>
                 <td>Integrity</td>
                 <td>0 or 1</td>
+                <td>ML-DSA-65</td>
+                <td>-49</td>
+                <td>ACMv2</td>
+              </tr>
+              <tr>
+                <td>Integrity</td>
+                <td>0 or 1</td>
                 <td>ML-DSA-87</td>
                 <td>-50</td>
-                <td>CNSA 2.0</td>
+                <td>CNSAv2, ACMv2</td>
               </tr>
             </tbody>
           </table>
@@ -1238,8 +1246,7 @@ When generating a BIB result from an ML private key, implementations <bcp14>SHAL
 When a COSE_Sign or COSE_Sign1 is used with an ML private key, the top-layer headers <bcp14>SHALL</bcp14> include a public key identifier (see <xref target="sec-asym-keys"/>).
           </t>
           <t>
-Uses of ML keys for creating or consuming a BCB result are not supported by this profile.
-There are currently no COSE algorithm code points registered for either direct ML-KEM use or ML-KEM within Hybrid Public Key Encryption (HPKE).
+Uses of ML keys for creating or consuming a BCB result are not supported by this profile (see <xref target="sec-future-algs"/>).
           </t>
         </section>
       </section>
@@ -1557,6 +1564,7 @@ This could be because not all of the participating nodes support the same algori
           <t>
 This could also be used to provide parallel signatures (one traditional and one post-quantum) for a single target, which is not the same as a "hybrid" signature <xref target="RFC9794"/> as explained in <xref section="13" target="RFC9958"/>.
 This form of parallel signature in COSE is "separable" and can only be enforced by verifier policy requiring a specific valid signing set because an on-path attacker can simply remove one or more of the signatures and the others will still be valid.
+Proper hybrid signature algorithms are discussed in <xref target="sec-future-algs"/>.
           </t>
         </section>
       </section>
@@ -1595,13 +1603,13 @@ It is expected that the ultimate choice of which families are used in actual sec
 Each of those nodes will be administered by some controlling entity which itself will need to adhere to both interoperability requirements as well as security conformance requirements (both general and mission-specific).
         </t>
         <t>
-For example, if the constraints are ECC keys using NIST curves meeting CNSA 1.0 minimum strength then only one integrity algorithm is available: ESP384 (-51).
+For example, if the constraints are ECC keys using NIST curves meeting CNSAv1 minimum strength then only one integrity algorithm is available: ESP384 (-51).
 If there is a need for forward secrecy of confidentiality targets, then only one encryption recipient algorithm is available: ECDH-ES+HKDF-512 (-26).
 In these cases the choice of algorithm is completely determined by operational constraints and no other metric of suitability is needed.
         </t>
         <aside>
           <t>
-There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging post-quantum algorithm needs.
+There is an expectation that the BPSec COSE interoperability minimums will be expanded in the future to handle yet emerging needs for <xref target="sec-future-algs">PQ and PQ/T algorithms</xref>.
           </t>
         </aside>
         <t>
@@ -1617,7 +1625,7 @@ Similar to how the choice of algorithm families is driven by administrative cons
         <t>
 Much of the complexity of PKIX is in how its various extensions can be combined by issuers and how they must be validated by security processors.
 It is expected that each PKIX environment will have detailed and specific needs and constraints for extensions for administrative purposes beyond those needed by this specification.
-There are also algorithm-specific profiles, such as the one for CNSA 1.0 conformance <xref target="RFC8603"/>.
+There are also algorithm-specific profiles, such as the one for CNSAv1 conformance <xref target="RFC8603"/>.
         </t>
         <t>
 For example, if a security source provides integrity with an "x5t" parameter identifying an associated end-entity certificate, then all possible security verifiers and acceptors of that operation need to be able to handle and validate that entire referenced certificate chain and each of its contained PKIX extensions.
@@ -1972,10 +1980,8 @@ It is an implementation matter to choose and configure allowed algorithms on par
       <section anchor="sec-threat-algo-vuln">
         <name>Threat: Algorithm Vulnerabilities</name>
         <t>
-Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the IANA registry <xref target="IANA-COSE"/>.
-        </t>
-        <t>
-Specifically for the case of vulnerability to a cryptographically relevant quantum computer, algorithms for signing and key encapsulation have been published by NIST, and identified in <xref target="CNSA2"/>, but are not yet all available as COSE code points registered by IANA.
+Because this use of COSE leaves the specific algorithms chosen for BIB and BCB use up to the applications securing bundle data, it is important to use only COSE algorithms which are marked as "recommended" in the "COSE Algorithms" registry <xref target="IANA-COSE"/>.
+The enforcement of acceptable algorithms applies to the security source node as well as all verifier and acceptor nodes (as discussed in <xref target="sec-threat-downgrade"/>).
         </t>
       </section>
       <section>
@@ -2022,6 +2028,24 @@ Because block processing control flags are included in AAD metadata, a middlebox
 A security verifier or acceptor that detects an AAD Scope reference to a block with the "Discard block if it
 can't be processed" flag set <bcp14>SHOULD</bcp14> log the violation, and <bcp14>MAY</bcp14> reject reception of the bundle in accordance with local policy.
 The use of logging enhances diagnostics for failing security configurations.
+        </t>
+      </section>
+      <section anchor="sec-future-algs">
+        <name>Future PQ and PQ/T Algorithm Families</name>
+        <t>
+This section is non-normative and not part of the current profile in <xref target="sec-COSE-profile"/> because the referenced internet drafts do not yet make permanent registrations in the COSE algorithms registry.
+        </t>
+        <t>
+For the case of vulnerability to a cryptographically relevant quantum computer (CRQC), algorithms for signing and key encapsulation have been published by NIST and identified by CNSS <xref target="CNSA2"/> and ECCG <xref target="ACM2"/>.
+In addition, one recommendation of the ECCG is to use PQ algorithms only in hybrid forms combined with traditional algorithms.
+        </t>
+        <t>
+For using a PQ signature within BIB results beyond the <xref target="sec-interop-alg-ml">ML-DSA family</xref>, drafts exist for other NIST algorithms FN-DSA <xref target="I-D.ietf-cose-falcon"/> and SLH-DSA <xref target="I-D.ietf-cose-sphincs-plus"/>.
+To address PQ/T hybrid signature needs, a draft exists for using composite construction of signatures and keys <xref target="I-D.ietf-jose-pq-composite-sigs"/> in a way which is compatible with hybrid use in other IETF protocols and related cryptographic libraries.
+        </t>
+        <t>
+For using a PQ key encapsulation mechanism (KEM) within BCB results, there are drafts for both direct ML-KEM use in a COSE recipient <xref target="I-D.ietf-cose-pqc-kem"/> and within Hybrid Public Key Encryption (HPKE) <xref target="I-D.ietf-cose-hpke"/> as both PQ-only and PQ/T hybrids <xref target="I-D.ietf-cose-hpke-pq-pqt"/>.
+HPKE itself represents a future pathway for COSE to support more advanced encryption and recipient cipher-suites in a way which shares common processing with other IETF protocols and related cryptographic libraries.
         </t>
       </section>
     </section>
@@ -2274,6 +2298,15 @@ The value range is a bit position within an unsigned 64-bit integer.
             <date month="December" year="2024"/>
           </front>
         </reference>
+        <reference anchor="ACM2" target="">
+          <front>
+            <title>Agreed Cryptographic Mechanisms</title>
+            <author>
+              <organization>European Cybersecurity Certification Group</organization>
+            </author>
+            <date month="April" year="2025"/>
+          </front>
+        </reference>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
@@ -2289,6 +2322,12 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-cfrg-aead-limits.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-jose-pq-composite-sigs"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-falcon.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-sphincs-plus.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-pqc-kem.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke-pq-pqt.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>Bundle Protocol Security (BPSec) COSE Context</title>

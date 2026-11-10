@@ -7,6 +7,7 @@ acceptor's
 acceptors
 acknowledgement
 acknowledgements
+ACMv
 Adleman
 AEAD
 AES
@@ -40,6 +41,7 @@ ciphersuite
 ciphertext
 clientAuth
 CNSA
+CNSAv
 CNSS
 CoAP
 conformant
@@ -49,10 +51,12 @@ COSE
 CRC
 crit
 CRLs
+CRQC
 Crypto
 cryptographic
 cryptographically
 ctx
+Cybersecurity
 de
 decrypt
 decrypting
@@ -63,6 +67,7 @@ DSA
 dtn
 DTN
 ECC
+ECCG
 ECDH
 EdDSA
 EE
@@ -72,6 +77,7 @@ encodings
 endian
 ESA
 FIPS
+FN
 GCM
 GmbH
 HKDF
@@ -114,6 +120,7 @@ PKI
 pkix
 PKIX
 plaintext
+PQ
 pre
 PSK
 PSS
@@ -129,6 +136,7 @@ serverAuth
 SHA
 Shamir
 Sig
+SLH
 SMI
 smime
 subjectAltName
