@@ -691,15 +691,13 @@ external_aad /= bstr .cborseq AAD-list
 AAD-list = [
     security-source: eid,
     AAD-scope,
-    ; present when AAD-scope covers block number zero
-    ; copy of primary block including array framing
-    ? primary-block,
     *AAD-block,
     ; copy of additional-protected (or default empty bstr)
     additional-protected
 ]
 ; each AAD item is a group, not a sub-array
 AAD-block = (
+    ? primary-block,   ; present for block number zero
     ? block-metadata,  ; present if AAD-metadata flag set
     ? bstr,            ; present if AAD-btsd flag set
 )
