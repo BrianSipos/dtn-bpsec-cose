@@ -1063,7 +1063,7 @@ When a COSE_Mac or COSE_Encrypt is used with a single recipient, the direct HKDF
 The use of HKDF also binds to the content layer algorithm code point and mitigates the possibility of a <xref target="sec-threat-downgrade">downgrade attack</xref>.
           </t>
         </section>
-        <section>
+        <section anchor="sec-interop-alg-ecc">
           <name>ECC Algorithms</name>
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the elliptic curve cryptography (ECC) algorithms in <xref target="tab-interop-algs-ecc"/> if they will operate with ECC key material using NIST curves.
@@ -1151,7 +1151,7 @@ ECDH-SS can reduce message size and allows key generation to happen outside of t
 ECDH-ES can provide forward secrecy by using the ephemeral key only for single messages, but also requires the source to generate a new key when needed.
           </t>
         </section>
-        <section>
+        <section anchor="sec-interop-alg-rsa">
           <name>RSA Algorithms</name>
           <t>
 Implementations conforming to this specification <bcp14>SHALL</bcp14> support the Rivest–Shamir–Adleman (RSA) algorithms in <xref target="tab-interop-algs-rsa"/> if they will operate with RSA key material.
@@ -1449,6 +1449,27 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> reject as invalid Version 
 Security verifiers and acceptors <bcp14>SHALL</bcp14> accept certificates that contain an empty Subject field or contain a Subject without a Common Name.
 Security verifiers and acceptors <bcp14>SHALL</bcp14> use the Subject Alternative Name extension for identity information in end-entity certificates.
       </t>
+      <t>
+The Subject Public Key Info field is a mandatory part of any certificate, as explained in <xref section="4.1.2.7" target="RFC5280"/>, and its content includes an "algorithm identifier" as well as the algorithm-specific public key data.
+For the algorithms included in the COSE profile of <xref target="sec-COSE-profile"/>, corresponding public key algorithm identifiers and structures are defined in the following specifications.
+      </t>
+      <dl>
+        <dt>ECC families:</dt>
+        <dd>
+Public keys for ECDSA or ECDH (see <xref target="sec-interop-alg-ecc"/>) use public key algorithm <tt>id-ecPublicKey</tt> <xref target="RFC5758"/> generally, or use <tt>id-ecDH</tt> <xref target="RFC5480"/> for narrow limiting.
+CNSAv1 restricts this to only <tt>id-ecPublicKey</tt> <xref section="5.4.1" target="RFC8603"/>.
+        </dd>
+        <dt>RSA families:</dt>
+        <dd>
+Public keys for RSASSA-PSS or RSAES-OAEP (see <xref target="sec-interop-alg-rsa"/>) use public key algorithm <tt>rsaEncryption</tt> <xref target="RFC3279"/> generally, or use <tt>id-RSASSA-PSS</tt> or <tt>id-RSAES-OAEP</tt> <xref target="RFC4055"/> for narrow limiting.
+CNSAv1 restricts this to only <tt>rsaEncryption</tt> in <xref section="5.4.2" target="RFC8603"/>.
+        </dd>
+        <dt>ML families:</dt>
+        <dd>
+Public keys for ML-DSA (see <xref target="sec-interop-alg-ml"/>) use separate public key algorithms <tt>id-ml-dsa-44</tt>, <tt>id-ml-dsa-65</tt>, and <tt>id-ml-dsa-87</tt> <xref target="RFC9881"/>.
+CNSAv2 restricts this to only <tt>id-ml-dsa-87</tt> in <xref section="6.4" target="I-D.jenkins-cnsa2-pkix-profile"/>.
+        </dd>
+      </dl>
       <t>
 All BPSec end-entity certificates <bcp14>SHALL</bcp14> contain a Basic Constraints extension in accordance with <xref section="4.2.1.9" target="RFC5280"/> marked as critical.
       </t>
@@ -2305,8 +2326,12 @@ The value range is a bit position within an unsigned 64-bit integer.
             <date month="April" year="2025"/>
           </front>
         </reference>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3279.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4055.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5480.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5758.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8603.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8739.xml"/>
@@ -2316,6 +2341,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9562.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9679.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9794.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9881.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9891.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9958.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9964.xml"/>
@@ -2326,6 +2352,7 @@ The value range is a bit position within an unsigned 64-bit integer.
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-pqc-kem.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke.xml"/>
         <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-cose-hpke-pq-pqt.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.jenkins-cnsa2-pkix-profile.xml"/>
         <reference anchor="github-dtn-bpsec-cose" target="https://github.com/BrianSipos/dtn-bpsec-cose/">
           <front>
             <title>Bundle Protocol Security (BPSec) COSE Context</title>
