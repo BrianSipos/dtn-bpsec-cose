@@ -69,6 +69,7 @@ DTN
 ECC
 ECCG
 ECDH
+ECDSA
 EdDSA
 EE
 eid
@@ -132,6 +133,7 @@ RKF
 RNG
 RSA
 RSAES
+RSASSA
 serverAuth
 SHA
 Shamir
