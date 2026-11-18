@@ -1436,7 +1436,7 @@ Any end-entity certificate associated with a BIB security source or BCB result r
       <t>
 This section contains requirements on public key certificates (PKCs) used with the COSE context, while <xref target="sec-asym-keys"/> contains requirements for how such certificates are transported or identified.
 The profile here mandates specific data to be present in certificate authority (CA) and end-entity (EE) certificates but does not mandate any specific key types or signing algorithms to be used (see <xref target="sec-ops-alg-choice"/> and <xref target="sec-ops-pkc"/>).
-The requirements in this section are consistent with the CA/Browser Forum baseline requirements <xref target="CABF-BR"/> commonly supported by CAs and the Intergovernmental Certification Authority <xref target="CCSDS-IGCA"/> planned for space agency use.
+The requirements in this section are consistent with the CA/Browser Forum baseline requirements for TLS Server certificates <xref target="CABF-TLS"/> and S/MIME certificates <xref target="CABF-SMIME"/>, commonly supported by CAs, and with the Intergovernmental Certification Authority <xref target="CCSDS-IGCA"/> planned for space agency use.
       </t>
       <t>
 All end-entity X.509 certificates used for BPSec <bcp14>SHALL</bcp14> conform to <xref target="RFC5280"/>, or any updates or successors to that profile.
@@ -1451,23 +1451,23 @@ Security verifiers and acceptors <bcp14>SHALL</bcp14> use the Subject Alternativ
       </t>
       <t>
 The Subject Public Key Info field is a mandatory part of any certificate, as explained in <xref section="4.1.2.7" target="RFC5280"/>, and its content includes an "algorithm identifier" as well as the algorithm-specific public key data.
-For the algorithms included in the COSE profile of <xref target="sec-COSE-profile"/>, corresponding public key algorithm identifiers and structures are defined in the following specifications.
+For the algorithms included in this <xref target="sec-COSE-profile">COSE profile</xref>, corresponding end-entity public key algorithm identifiers and structures are defined in the following specifications.
       </t>
       <dl>
         <dt>ECC families:</dt>
         <dd>
 Public keys for ECDSA or ECDH (see <xref target="sec-interop-alg-ecc"/>) use public key algorithm <tt>id-ecPublicKey</tt> <xref target="RFC5758"/> generally, or use <tt>id-ecDH</tt> <xref target="RFC5480"/> for narrow limiting.
-CNSAv1 restricts this to only <tt>id-ecPublicKey</tt> <xref section="5.4.1" target="RFC8603"/>.
+This is restricted to only <tt>id-ecPublicKey</tt> by CNSAv1 in <xref section="5.4.1" target="RFC8603"/> and CA/B Forum <xref target="CABF-SMIME"/>.
         </dd>
         <dt>RSA families:</dt>
         <dd>
 Public keys for RSASSA-PSS or RSAES-OAEP (see <xref target="sec-interop-alg-rsa"/>) use public key algorithm <tt>rsaEncryption</tt> <xref target="RFC3279"/> generally, or use <tt>id-RSASSA-PSS</tt> or <tt>id-RSAES-OAEP</tt> <xref target="RFC4055"/> for narrow limiting.
-CNSAv1 restricts this to only <tt>rsaEncryption</tt> in <xref section="5.4.2" target="RFC8603"/>.
+This is restricted to only <tt>rsaEncryption</tt> by CNSAv1 in <xref section="5.4.2" target="RFC8603"/> and CA/B Forum <xref target="CABF-SMIME"/>.
         </dd>
         <dt>ML families:</dt>
         <dd>
 Public keys for ML-DSA (see <xref target="sec-interop-alg-ml"/>) use separate public key algorithms <tt>id-ml-dsa-44</tt>, <tt>id-ml-dsa-65</tt>, and <tt>id-ml-dsa-87</tt> <xref target="RFC9881"/>.
-CNSAv2 restricts this to only <tt>id-ml-dsa-87</tt> in <xref section="6.4" target="I-D.jenkins-cnsa2-pkix-profile"/>.
+This is restricted to only <tt>id-ml-dsa-87</tt> by CNSAv2 in <xref section="6.4" target="I-D.jenkins-cnsa2-pkix-profile"/>.
         </dd>
       </dl>
       <t>
@@ -2247,7 +2247,7 @@ The value range is a bit position within an unsigned 64-bit integer.
       </references>
       <references>
         <name>Informative References</name>
-        <reference anchor="CABF-BR" target="https://cabforum.org/working-groups/server/baseline-requirements/documents/CA-Browser-Forum-TLS-BR-2.0.6.pdf">
+        <reference anchor="CABF-TLS" target="https://cabforum.org/working-groups/server/baseline-requirements/documents/CA-Browser-Forum-TLS-BR-2.0.6.pdf">
           <front>
             <title>Baseline Requirements for the Issuance and Management of Publicly-Trusted TLS Server Certificates</title>
             <author>
@@ -2255,7 +2255,17 @@ The value range is a bit position within an unsigned 64-bit integer.
             </author>
             <date day="5" month="August" year="2024"/>
           </front>
-        <refcontent>Version 2.0.6</refcontent>
+          <refcontent>Version 2.0.6</refcontent>
+        </reference>
+        <reference anchor="CABF-SMIME" target="https://cabforum.org/uploads/CA-Browser-Forum-SMIMEBR-1.0.16.pdf">
+          <front>
+            <title>Baseline Requirements for the Issuance and Management of Publicly-Trusted S/MIME Certificates</title>
+            <author>
+              <organization>CA/Browser Forum</organization>
+            </author>
+            <date day="28" month="September" year="2026"/>
+          </front>
+          <refcontent>Version 1.0.16</refcontent>
         </reference>
         <reference anchor="NIST-SP800-57" target="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">
           <front>
