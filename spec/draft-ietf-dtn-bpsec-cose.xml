@@ -1457,12 +1457,12 @@ For the algorithms included in this <xref target="sec-COSE-profile">COSE profile
         <dt>ECC families:</dt>
         <dd>
 Public keys for ECDSA or ECDH (see <xref target="sec-interop-alg-ecc"/>) use public key algorithm <tt>id-ecPublicKey</tt> <xref target="RFC5758"/> generally, or use <tt>id-ecDH</tt> <xref target="RFC5480"/> for narrow limiting.
-This is restricted to only <tt>id-ecPublicKey</tt> by CNSAv1 in <xref section="5.4.1" target="RFC8603"/> and by the CA/B Forum <xref target="CABF-SMIME"/>.
+This is restricted to only <tt>id-ecPublicKey</tt> by CNSAv1 in <xref section="5.4.1" target="RFC8603"/> and by the CA/B Forum <xref target="CABF-TLS"/> <xref target="CABF-SMIME"/>.
         </dd>
         <dt>RSA families:</dt>
         <dd>
 Public keys for RSASSA-PSS or RSAES-OAEP (see <xref target="sec-interop-alg-rsa"/>) use public key algorithm <tt>rsaEncryption</tt> <xref target="RFC3279"/> generally, or use <tt>id-RSASSA-PSS</tt> or <tt>id-RSAES-OAEP</tt> <xref target="RFC4055"/> for narrow limiting.
-This is restricted to only <tt>rsaEncryption</tt> by CNSAv1 in <xref section="5.4.2" target="RFC8603"/> and by the CA/B Forum <xref target="CABF-SMIME"/>.
+This is restricted to only <tt>rsaEncryption</tt> by CNSAv1 in <xref section="5.4.2" target="RFC8603"/> and by the CA/B Forum <xref target="CABF-TLS"/> <xref target="CABF-SMIME"/>.
         </dd>
         <dt>ML families:</dt>
         <dd>
